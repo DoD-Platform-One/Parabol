@@ -1,0 +1,10 @@
+{
+  "auths": {
+    "registry1.dso.mil": {
+      "username": "",
+      "password": "",
+      "email": "",
+      "auth": ""
+    }
+  }
+}

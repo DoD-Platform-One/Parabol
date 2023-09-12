@@ -1,0 +1,30 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: parabol-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "{{ .Values.ingress.hostname }}"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: parabol-vs
+spec:
+  hosts:
+  - "{{ .Values.ingress.hostname }}"
+  gateways:
+  - parabol-gateway
+  http:
+  - route:
+    - destination:
+        host: parabol-service
+        port:
+          number: {{ .Values.services.parabol.ports.internal }}
