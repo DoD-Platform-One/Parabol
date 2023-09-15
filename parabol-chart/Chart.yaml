@@ -1,0 +1,4 @@
+apiVersion: v2
+name: parabol
+description: A Helm chart to deploy redis, rethinkdb, postgres, and parabol containers.
+version: 0.0.1

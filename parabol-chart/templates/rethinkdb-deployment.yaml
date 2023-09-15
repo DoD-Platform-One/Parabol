@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rethinkdb-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rethinkdb
+  template:
+    metadata:
+      labels:
+        app: rethinkdb
+    spec:
+      containers:
+      - name: rethinkdb
+        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.rethinkdb.image }}"
+      imagePullSecrets:
+      - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rethinkdb-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  - name: admin
+    port: 29015
+    targetPort: 29015
+  - name: data
+    port: 28015
+    targetPort: 28015
+  selector:
+    app: rethinkdb

@@ -1,0 +1,81 @@
+imageRegistry:
+  host: registry1.dso.mil
+  username: 
+  password: 
+
+services:
+  redis:
+    image: ironbank/opensource/redis/redis6-alpine:6.2.13
+  rethinkdb:
+    image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
+  postgres:
+    image: ironbank/opensource/postgres/postgresql12:12.16
+  parabol:
+    image: ironbank/parabol/parabol:6.112.0
+    env:
+      redisHost: "redis-service"
+      rethinkdbHost: "rethinkdb-service"
+      postgresHost: "postgres-service"
+    ports:
+      internal: 3000
+      external: 80
+
+ingress:
+  enabled: true
+  hostname: parabol.bigbang.dev
+
+parabolDeployment:
+  env:
+    - name: FILE_STORE_PROVIDER
+      value: "local"
+    - name: PORT
+      value: "3000"
+    - name: POSTGRES_DB
+      value: "parabol"
+    - name: POSTGRES_USER
+      value: "postgres"
+    - name: POSTGRES_HOST
+      value: "postgres-service.parabol.svc.cluster.local"
+    - name: POSTGRES_PORT
+      value: "5432"
+    - name: POSTGRES_PASSWORD
+      value: "parabol"
+    - name: REDIS_URL
+      value: "redis://redis-service.parabol.svc.cluster.local:6379"
+    - name: RETHINKDB_URL
+      value: "rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment"
+    - name: GRAPHQL_HOST
+      value: "localhost:3000"
+    - name: GRAPHQL_PROTOCOL
+      value: "http"
+    - name: HOST
+      value: parabol.bigbang.dev
+    - name: INVITATION_SHORTLINK
+      value: "parabol.bigbang.dev/invitation-link"
+    - name: SERVER_ID
+      value: "1"
+    - name: PROTO
+      value: "http"
+    - name: SERVER_SECRET
+      value: "QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK"
+    - name: GOOGLE_CLOUD_CLIENT_EMAIL
+      value: "key_GOOGLE_CLOUD_CLIENT_EMAIL"
+    - name: GOOGLE_CLOUD_PRIVATE_KEY
+      value: "key_GOOGLE_CLOUD_PRIVATE_KEY"
+    - name: GOOGLE_CLOUD_PRIVATE_KEY_ID
+      value: "key_GOOGLE_CLOUD_PRIVATE_KEY_ID"
+    - name: AUTH_INTERNAL_DISABLED
+      value: "false"
+    - name: AUTH_GOOGLE_DISABLED
+      value: "false"
+    - name: AUTH_SSO_DISABLED
+      value: "false"
+
+postgresDeployment:
+  env:
+    - name: POSTGRES_DB
+      value: parabol
+    - name: POSTGRES_PASSWORD
+      value: parabol
+
+  
