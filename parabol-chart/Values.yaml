@@ -1,17 +1,18 @@
 imageRegistry:
   host: registry1.dso.mil
-  username: 
-  password: 
+  username:
+  password:
 
 services:
   redis:
     image: ironbank/opensource/redis/redis6-alpine:6.2.13
+    exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
   rethinkdb:
     image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
   postgres:
     image: ironbank/opensource/postgres/postgresql12:12.16
   parabol:
-    image: ironbank/parabol/parabol:6.112.0
+    image: ironbank/parabol/parabol:6.117.0
     env:
       redisHost: "redis-service"
       rethinkdbHost: "rethinkdb-service"
@@ -77,5 +78,11 @@ postgresDeployment:
       value: parabol
     - name: POSTGRES_PASSWORD
       value: parabol
+
+monitoring:
+  enabled: true
+
+  redis:
+    metricsPort: 9121
 
   
