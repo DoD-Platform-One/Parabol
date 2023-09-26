@@ -11,10 +11,36 @@ spec:
     metadata:
       labels:
         app: redis
+      annotations:
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9121"
+        {{ end }}
     spec:
       containers:
       - name: redis
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.redis.image }}"
+        ports:
+          - containerPort: 6379
+            name: redis
+      {{- if .Values.monitoring.enabled }}      
+      - name: redis-exporter
+        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
+        securityContext:
+          runAsUser: 59000
+          runAsGroup: 59000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+          - containerPort: {{ .Values.monitoring.redis.metricsPort }}
+            name: metrics
+      {{ end }}      
       imagePullSecrets:
       - name: regcred
 ---
@@ -22,11 +48,20 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis-service
+  annotations:
+  labels:  
+    app.kubernetes.io/part-of: parabol   
 spec:
   type: ClusterIP
   ports:
-  - port: 6379
+  - name: redis
+    port: 6379
     targetPort: 6379
+  {{- if .Values.monitoring.enabled }}   
+  - name: metrics
+    port: {{ .Values.monitoring.redis.metricsPort }}
+    targetPort: {{ .Values.monitoring.redis.metricsPort }}
+  {{ end }}  
   selector:
     app: redis
 
