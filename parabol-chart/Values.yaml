@@ -81,6 +81,9 @@ postgresDeployment:
 
 monitoring:
   enabled: true
+  dashboards:
+    namespace: monitoring
+    label: grafana_dashboard
 
   redis:
     metricsPort: 9121
