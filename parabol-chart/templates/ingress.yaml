@@ -21,7 +21,7 @@ spec:
   hosts:
   - "{{ .Values.ingress.hostname }}"
   gateways:
-  - parabol-gateway
+  - istio-system/public
   http:
   - route:
     - destination:
