@@ -21,6 +21,11 @@ spec:
     metadata:
       labels:
         app: postgres
+      annotations:
+        {{- if .Values.monitoring.enabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9817"
+        {{ end }}    
     spec:
       securityContext:
         runAsNonRoot: true
@@ -29,21 +34,45 @@ spec:
       containers:
       - name: postgres
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.image }}"
+        ports:
+          - containerPort: 5432
+            name: postgres-port
         env:
           {{- with .Values.postgresDeployment.env }}
           {{- toYaml . | nindent 12 }}
           {{- end }}
+      {{- if .Values.monitoring.enabled }}    
+      - name: postgres-exporter
+        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.exporter }}"
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: metrics
+          containerPort: {{ .Values.monitoring.postgres.metricsPort }}
+        env:
+          {{- with .Values.monitoring.postgres.env }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{ end }}    
       imagePullSecrets:
       - name: regcred
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: postgres-service
+  labels:  
+    app.kubernetes.io/part-of: parabol   
 spec:
   type: ClusterIP
   ports:
-  - port: 5432
+  - name: postgres-port
+    port: 5432
     targetPort: 5432
+  {{- if .Values.monitoring.enabled }}   
+  - name: metrics
+    port: {{ .Values.monitoring.postgres.metricsPort }}
+    targetPort: {{ .Values.monitoring.postgres.metricsPort }}
+  {{ end }}  
   selector:
     app: postgres
