@@ -15,6 +15,14 @@ spec:
       containers:
       - name: rethinkdb
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.rethinkdb.image }}"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080    
       imagePullSecrets:
       - name: regcred
 ---
