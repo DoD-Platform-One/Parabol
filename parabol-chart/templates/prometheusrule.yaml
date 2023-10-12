@@ -1,0 +1,65 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations:
+  labels:
+    app: parabol
+  name: monitoring-parabol-alerts
+spec:
+  groups:
+  - name: parabol-postgres
+    rules:
+    - alert: PostgresqlDown
+      expr: pg_up == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Parabol Postgresql down (instance {{ "{{ $labels.job }}" }}/{{ "{{ $labels.service }}" }})
+        description: " Parbol Postgresql instance is down"
+    - alert: PostgresqlExporterError
+      expr: pg_exporter_last_scrape_error > 0
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Parabol Postgresql exporter error (instance {{ "{{ $labels.instance }}" }})
+        description: "Postgresql exporter is showing errors. A query may be buggy in query.yaml\n  VALUE = {{ "{{ $value }}" }}\n  LABELS = {{ "{{ $labels }}" }}"
+  - name: parabol-redis
+    rules:
+    - alert: RedisDown
+      expr: redis_up == 0
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Redis down (instance {{ "{{ $labels.instance }}" }})
+        ddescription: "Redis instance is down\n  VALUE = {{ "{{ $value }}" }}\n  LABELS = {{ "{{ $labels }}"}}"
+    - alert: RedisOutOfConfiguredMaxmemory
+      expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Redis out of configured maxmemory (instance {{ "{{ $labels.instance }}" }})
+        description: "Redis is running out of configured maxmemory (> 90%)\n  VALUE = {{ "{{ $value }}" }}\n  LABELS = {{ "{{ $labels }}" }}"
+    - alert: RedisTooManyConnections
+      expr: redis_connected_clients / redis_config_maxclients * 100 > 90
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Redis too many connections (instance {{ "{{ $labels.instance }}" }})
+        description: "Redis is running out of connections (> 90% used)\n  VALUE = {{ "{{ $value }}" }}\n  LABELS = {{ "{{ $labels }}" }}"
+  - name: parabol-resources
+    rules:
+    - alert: RedisDown
+      expr: redis_up == 0
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Redis down (instance {{ "{{ $labels.instance }}" }})
+        ddescription: "Redis instance is down\n  VALUE = {{ "{{ $value }}" }}\n  LABELS = {{ "{{ $labels }}"}}"      
+{{ end }}

@@ -28,6 +28,9 @@ ingress:
   enabled: true
   hostname: parabol.bigbang.dev
 
+networkPolicies:
+  enabled: true
+
 parabolDeployment:
   env:
     - name: FILE_STORE_PROVIDER
