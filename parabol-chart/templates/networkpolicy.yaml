@@ -1,0 +1,27 @@
+
+{{- if and .Values.networkPolicies.enabled .Values.monitoring.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ingress-monitoring-prometheus
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: prometheus 
+      namespaceSelector:
+        matchLabels:
+          app.kubernetes.io/name: monitoring
+    ports:
+    # for redis servicemonitor
+    - port: 9121
+      protocol: TCP
+    # for postgres servicemontior
+    - port: 9187
+      protocol: TCP
+{{- end }}
