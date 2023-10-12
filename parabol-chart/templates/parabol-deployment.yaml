@@ -35,8 +35,22 @@ spec:
           {{- with .Values.parabolDeployment.env }}
           {{- toYaml . | nindent 12 }}
           {{- end }}
+        ports:
+        - name: webserver
+          containerPort: 3000
+          protocol: TCP
+        {{- if .Values.parabolDeployment.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.parabolDeployment.livenessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.parabolDeployment.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.parabolDeployment.readinessProbe | nindent 12 }}
+        {{- end }}  
+  
       imagePullSecrets:
       - name: regcred
+      
 ---
 apiVersion: v1
 kind: Service
@@ -45,7 +59,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 3000
+  - name: webserver
+    port: 3000
     targetPort: 3000
   selector:
     app: parabol

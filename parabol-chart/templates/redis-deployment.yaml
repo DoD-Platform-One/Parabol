@@ -23,6 +23,25 @@ spec:
         ports:
           - containerPort: 6379
             name: redis
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        {{- if .Values.services.redis.localStorage.enabled }}  
+        volumeMounts:
+          - name: redis-persistent-storage
+            mountPath: /data
+        {{ end }}    
       {{- if .Values.monitoring.enabled }}      
       - name: redis-exporter
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
@@ -43,6 +62,12 @@ spec:
       {{ end }}      
       imagePullSecrets:
       - name: regcred
+      {{- if .Values.services.redis.localStorage.enabled }}
+      volumes:
+      - name: redis-persistent-storage
+        persistentVolumeClaim:
+          claimName: redis-pvc
+      {{ end }}    
 ---
 apiVersion: v1
 kind: Service
@@ -64,4 +89,17 @@ spec:
   {{ end }}  
   selector:
     app: redis
+---
+{{- if .Values.services.redis.localStorage.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+{{ end }}
 

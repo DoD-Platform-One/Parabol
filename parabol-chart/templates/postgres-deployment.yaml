@@ -37,6 +37,20 @@ spec:
         ports:
           - containerPort: 5432
             name: postgres-port
+        readinessProbe:
+          exec:
+            command: ["psql", "postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable", "-c", "SELECT 1"]
+          initialDelaySeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        livenessProbe:
+          exec:
+            command: ["psql", "postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable", "-c", "SELECT 1"]
+          initialDelaySeconds: 45
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1  
         env:
           {{- with .Values.postgresDeployment.env }}
           {{- toYaml . | nindent 12 }}

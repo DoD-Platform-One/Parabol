@@ -7,13 +7,15 @@ services:
   redis:
     image: ironbank/opensource/redis/redis6-alpine:6.2.13
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
+    localStorage:
+      enabled: true
   rethinkdb:
     image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
   postgres:
     image: ironbank/opensource/postgres/postgresql12:12.16
     exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
   parabol:
-    image: ironbank/parabol/parabol:6.117.0
+    image: ironbank/parabol/parabol:6.120.0
     env:
       redisHost: "redis-service"
       rethinkdbHost: "rethinkdb-service"
@@ -72,6 +74,25 @@ parabolDeployment:
       value: "false"
     - name: AUTH_SSO_DISABLED
       value: "false"
+
+  livenessProbe: []
+    # initialDelaySeconds: 90
+    # periodSeconds: 30
+    # timeoutSeconds: 60
+    # failureThreshold: 3
+    # successThreshold: 1
+    # httpGet:
+    #   path: /manifest.json
+    #   port: 3000
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      path: /manifest.json
+      port: 3000
 
 postgresDeployment:
   env:
