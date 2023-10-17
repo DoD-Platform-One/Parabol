@@ -1,0 +1,99 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parabol-config
+data:
+  {{- range $key, $value := .Values.parabolDeployment.env }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parabol-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: parabol
+  template:
+    metadata:
+      labels:
+        app: parabol
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+      - name: parabol
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node ./dist/web.js & node ./dist/gqlExecutor.js"]
+        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
+        env:
+          - name: FILE_STORE_PROVIDER
+            value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
+          - name: PORT
+            value: "{{ .Values.parabolDeployment.env.port }}"
+          - name: POSTGRES_DB
+            value: "{{ .Values.parabolDeployment.env.postgresDb }}"
+          - name: POSTGRES_USER
+            value: "{{ .Values.parabolDeployment.env.postgresUser }}"
+          - name: POSTGRES_HOST
+            value: "{{ .Values.parabolDeployment.env.postgresHost }}"
+          - name: POSTGRES_PORT
+            value: "{{ .Values.parabolDeployment.env.postgresPort }}"
+          - name: POSTGRES_PASSWORD
+            value: "{{ .Values.parabolDeployment.env.postgresPassword }}"
+          - name: REDIS_URL
+            value: "{{ .Values.parabolDeployment.env.redisUrl }}"
+          - name: RETHINKDB_URL
+            value: "{{ .Values.parabolDeployment.env.rethinkdbUrl }}"
+          - name: HOST
+            value: "{{ .Values.parabolDeployment.env.host }}"
+          - name: INVITATION_SHORTLINK
+            value: "{{ .Values.parabolDeployment.env.invitationShortlink }}"
+          - name: SERVER_ID
+            value: "{{ .Values.parabolDeployment.env.serverId }}"
+          - name: PROTO
+            value: "{{ .Values.parabolDeployment.env.protocol }}"
+          - name: SERVER_SECRET
+            value: "{{ .Values.parabolDeployment.env.serverSecret }}"
+          - name: AUTH_INTERNAL_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authInternalDisabled }}"
+          - name: AUTH_GOOGLE_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authGooleDisabled }}"
+          - name: AUTH_SSO_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authSsoDisabled }}"
+
+          
+        ports:
+        - name: webserver
+          containerPort: 3000
+          protocol: TCP
+        {{- if .Values.parabolDeployment.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.parabolDeployment.livenessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.parabolDeployment.readinessProbe }}
+        readinessProbe:
+          {{- toYaml .Values.parabolDeployment.readinessProbe | nindent 12 }}
+        {{- end }}  
+  
+      imagePullSecrets:
+      - name: regcred
+      
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parabol-service
+spec:
+  type: ClusterIP
+  ports:
+  - name: webserver
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: parabol

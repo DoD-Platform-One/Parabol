@@ -1,0 +1,87 @@
+imageRegistry:
+  host: registry1.dso.mil
+  username:
+  password:
+
+services:
+  redis:
+    image: ironbank/opensource/redis/redis6-alpine:6.2.13
+    exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
+    localStorage:
+      enabled: true
+  rethinkdb:
+    image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
+  postgres:
+    image: ironbank/opensource/postgres/postgresql12:12.16
+    exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
+  parabol:
+    image: ironbank/parabol/parabol:6.120.0
+    env:
+      redisHost: "redis-service"
+      rethinkdbHost: "rethinkdb-service"
+      postgresHost: "postgres-service"
+    ports:
+      internal: 3000
+      external: 80
+
+ingress:
+  enabled: true
+  hostname: parabol.bigbang.dev
+
+networkPolicies:
+  enabled: true
+
+parabolDeployment:
+  env:
+    fileStoreProvider: local
+    port: 3000
+    host: parabol.bigbang.dev
+    protocol: http
+    serverId: 1
+    serverSecret: QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK
+    invitationShortlink: parabol.bigbang.dev/invitation-link
+    postgresDb: postgres
+    postgresUser: postgres
+    postgresHost: postgres-service.parabol.svc.cluster.local
+    postgresPort: 5432
+    postgresPassword: parabol
+    redisUrl: redis://redis-service.parabol.svc.cluster.local:6379
+    rethinkdbUrl: rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment
+    authInternalDisabled: false
+    authGooleDisabled: false
+    authSsoDisabled: false
+
+  livenessProbe:
+    []
+    # initialDelaySeconds: 90
+    # periodSeconds: 30
+    # timeoutSeconds: 60
+    # failureThreshold: 3
+    # successThreshold: 1
+    # httpGet:
+    #   path: /manifest.json
+    #   port: 3000
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+    httpGet:
+      path: /manifest.json
+      port: 3000
+
+monitoring:
+  enabled: true
+  dashboards:
+    namespace: monitoring
+    label: grafana_dashboard
+
+  redis:
+    metricsPort: 9121
+
+  postgres:
+    metricsPort: 9187
+    env:
+      - name: DATA_SOURCE_NAME
+        value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable

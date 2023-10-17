@@ -4,9 +4,8 @@ kind: ConfigMap
 metadata:
   name: postgres-config
 data:
-  {{- range $key, $value := .Values.postgresDeployment.env }}
-  {{ $key }}: {{ $value | quote }}
-  {{- end }}
+  POSTGRES_DB: parabol
+  POSTGRES_PASSWORD: parabol
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,9 +51,10 @@ spec:
           failureThreshold: 3
           successThreshold: 1  
         env:
-          {{- with .Values.postgresDeployment.env }}
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
+          - name: POSTGRES_DB
+            value: parabol
+          - name: POSTGRES_PASSWORD
+            value: parabol
       {{- if .Values.monitoring.enabled }}    
       - name: postgres-exporter
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.exporter }}"
@@ -63,9 +63,10 @@ spec:
         - name: metrics
           containerPort: {{ .Values.monitoring.postgres.metricsPort }}
         env:
-          {{- with .Values.monitoring.postgres.env }}
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
+          - name: POSTGRES_DB
+            value: parabol
+          - name: POSTGRES_PASSWORD
+            value: parabol
       {{ end }}    
       imagePullSecrets:
       - name: regcred

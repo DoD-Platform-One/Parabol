@@ -1,0 +1,43 @@
+parabol:
+  enabled: true
+  git:
+    repo: https://repo1.dso.mil/big-bang/product/community/parabol.git
+    branch: flux-integration
+    path: chart
+  flux: {}
+
+# Network Policies
+networkPolicies:
+  enabled: false
+
+# Istio
+istioOperator:
+  enabled: true
+istio:
+  enabled: true
+
+# Gatekeeper
+gatekeeper:
+  enabled: false
+clusterAuditor:
+  enabled: false
+
+# Logging
+eckOperator:
+  enabled: false
+elasticsearchKibana:
+  enabled: false
+fluentbit:
+  enabled: false
+
+# Monitoring
+monitoring:
+  enabled: true
+
+# Other Tools
+jaeger:
+  enabled: false
+kiali:
+  enabled: false
+twistlock:
+  enabled: false
