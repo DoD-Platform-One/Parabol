@@ -2,7 +2,7 @@ parabol:
   enabled: true
   git:
     repo: https://repo1.dso.mil/big-bang/product/community/parabol.git
-    branch: flux-integration
+    branch: main
     path: chart
   flux: {}
 
