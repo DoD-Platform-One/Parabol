@@ -1,5 +1,7 @@
 imageRegistry:
   host: registry1.dso.mil
+
+registryCredentials:
   username:
   password:
 
@@ -29,26 +31,60 @@ ingress:
   hostname: parabol.bigbang.dev
 
 networkPolicies:
-  enabled: true
+  enabled: false
 
 parabolDeployment:
   env:
+    # fileStoreProvider: Specifies the provider for file storage
+    #                       - "local" means local file-based storage is used
     fileStoreProvider: local
+
+    # port: The port on which the application will be exposed.
     port: 3000
+
+    # host: The external hostname for Parabol application
     host: parabol.bigbang.dev
+
+    # protocol: The protocol used by the server ("http" or "https").
     protocol: http
+
+    # serverId: Identifier for the server (useful in scaled/multi-server environments).
     serverId: 1
+
+    # serverSecret: The secret key used to generate JWT tokens
     serverSecret: QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK
+
+    # invitationShortlink: The base URL used to construct invitation shortlinks.
     invitationShortlink: parabol.bigbang.dev/invitation-link
+
+    # postgresDb: Name of the PostgreSQL database.
     postgresDb: postgres
+
+    # postgresUser: Username to access the PostgreSQL database.
     postgresUser: postgres
+
+    # postgresHost: Internal hostname used to access the PostgreSQL database.
     postgresHost: postgres-service.parabol.svc.cluster.local
+
+    # postgresPort: Port on which the PostgreSQL server is listening.
     postgresPort: 5432
+
+    # postgresPassword: Password to access the PostgreSQL database.
     postgresPassword: parabol
+
+    # redisURL: The URL used to access the Redis server.
     redisUrl: redis://redis-service.parabol.svc.cluster.local:6379
+
+    # rethinkdbUrl: The URL used to access the RethinkDB server.
     rethinkdbUrl: rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment
+
+    # authInternalDisabled: Flag indicating if internal username/password authentication is disabled ("true" or "false").
     authInternalDisabled: false
+
+    # authGoogleDisabled: Flag indicating if Google authentication is disabled ("true" or "false").
     authGooleDisabled: false
+
+    # authSsoDisabled: Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false").
     authSsoDisabled: false
 
   livenessProbe:
