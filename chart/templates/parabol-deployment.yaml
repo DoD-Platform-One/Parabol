@@ -37,15 +37,15 @@ spec:
           - name: PORT
             value: "{{ .Values.parabolDeployment.env.port }}"
           - name: POSTGRES_DB
-            value: "{{ .Values.parabolDeployment.env.postgresDb }}"
+            value: "{{ .Values.database.env.postgresDb }}"
           - name: POSTGRES_USER
-            value: "{{ .Values.parabolDeployment.env.postgresUser }}"
+            value: "{{ .Values.database.env.postgresUser }}"
           - name: POSTGRES_HOST
-            value: "{{ .Values.parabolDeployment.env.postgresHost }}"
+            value: "{{ .Values.database.env.postgresHost }}"
           - name: POSTGRES_PORT
-            value: "{{ .Values.parabolDeployment.env.postgresPort }}"
+            value: "{{ .Values.database.env.postgresPort }}"
           - name: POSTGRES_PASSWORD
-            value: "{{ .Values.parabolDeployment.env.postgresPassword }}"
+            value: "{{ .Values.database.env.postgresPassword }}"
           - name: REDIS_URL
             value: "{{ .Values.parabolDeployment.env.redisUrl }}"
           - name: RETHINKDB_URL

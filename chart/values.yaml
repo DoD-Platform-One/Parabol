@@ -13,11 +13,19 @@ services:
       enabled: true
   rethinkdb:
     image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
+
   postgres:
-    image: ironbank/opensource/postgres/postgresql12:12.16
+    image: ironbank/opensource/postgres/postgresql:15.4
     exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
+    localStorage:
+      enabled: true
+      volumeSize: 10Gi
+    backups:
+      enabled: true
+      schedule: 0 2 * * *
+
   parabol:
-    image: ironbank/parabol/parabol:6.120.0
+    image: ironbank/parabol/parabol:6.124.0
     env:
       redisHost: "redis-service"
       rethinkdbHost: "rethinkdb-service"
@@ -25,6 +33,23 @@ services:
     ports:
       internal: 3000
       external: 80
+
+database:
+  env:
+    # postgresDb: Name of the PostgreSQL database.
+    postgresDb: parabol
+
+    # postgresUser: Username to access the PostgreSQL database.
+    postgresUser: postgres
+
+    # postgresHost: Internal hostname used to access the PostgreSQL database.
+    postgresHost: postgres-service.parabol.svc.cluster.local
+
+    # postgresPort: Port on which the PostgreSQL server is listening.
+    postgresPort: 5432
+
+    # postgresPassword: Password to access the PostgreSQL database.
+    postgresPassword: parabol
 
 ingress:
   enabled: true
@@ -56,21 +81,6 @@ parabolDeployment:
 
     # invitationShortlink: The base URL used to construct invitation shortlinks.
     invitationShortlink: parabol.bigbang.dev/invitation-link
-
-    # postgresDb: Name of the PostgreSQL database.
-    postgresDb: postgres
-
-    # postgresUser: Username to access the PostgreSQL database.
-    postgresUser: postgres
-
-    # postgresHost: Internal hostname used to access the PostgreSQL database.
-    postgresHost: postgres-service.parabol.svc.cluster.local
-
-    # postgresPort: Port on which the PostgreSQL server is listening.
-    postgresPort: 5432
-
-    # postgresPassword: Password to access the PostgreSQL database.
-    postgresPassword: parabol
 
     # redisURL: The URL used to access the Redis server.
     redisUrl: redis://redis-service.parabol.svc.cluster.local:6379

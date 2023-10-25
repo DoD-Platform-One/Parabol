@@ -1,0 +1,41 @@
+{{- if .Values.services.postgres.backups.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: parabol-postgres-backup
+spec:
+  # Backup the database every day at 2AM
+  schedule: "{{ .Values.services.postgres.backups.schedule }}"
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      template:
+        spec:
+          containers:
+          - name: parabol-postgres-backup
+            image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.image }}"
+            command: ["/bin/sh"]
+            args: ["-c", 'pg_dump "port=$POSTGRES_PORT host=$POSTGRES_HOST user=$POSTGRES_USER password="$POSTGRES_PASSWORD" dbname=$POSTGRES_DB" --format=custom --no-acl --no-owner -f /backups/pgbackup-$(date +"%m-%d-%Y-%H-%M").sql']
+            env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.database.env.postgresDb }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.database.env.postgresUser }}"
+            - name: POSTGRES_HOST
+              value: "{{ .Values.database.env.postgresHost }}"
+            - name: POSTGRES_PORT
+              value: "{{ .Values.database.env.postgresPort }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.database.env.postgresPassword }}"
+            volumeMounts:
+            - mountPath: /backups
+              name: postgres-backup
+          restartPolicy: Never
+          imagePullSecrets:
+            - name: regcred
+          volumes:
+          - name: postgres-backup
+            persistentVolumeClaim:
+                claimName: postgres-backup        
+{{ end }}
+        
