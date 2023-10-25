@@ -28,8 +28,8 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 26
-        runAsGroup: 26
+        runAsUser: 1001
+        runAsGroup: 1001
       containers:
       - name: postgres
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.image }}"
@@ -52,9 +52,27 @@ spec:
           successThreshold: 1  
         env:
           - name: POSTGRES_DB
-            value: parabol
+            value: "{{ .Values.database.env.postgresDb }}"
           - name: POSTGRES_PASSWORD
-            value: parabol
+            value: "{{ .Values.database.env.postgresPassword }}"
+          - name: POSTGRES_USER
+            value: "{{ .Values.database.env.postgresUser }}"
+          - name: POSTGRES_HOST
+            value: "{{ .Values.database.env.postgresHost }}"
+          - name: POSTGRES_PORT
+            value: "{{ .Values.database.env.postgresPort }}"  
+          - name: PGDATA
+            value: "/var/lib/postgresql/data/pgdata"
+        {{- if .Values.services.postgres.localStorage.enabled }}  
+        volumeMounts:
+          - name: postgres-data
+            mountPath: "/var/lib/postgresql/data"
+            readOnly: false
+        {{ end }}    
+        {{- if .Values.services.postgres.backups.enabled }}    
+          - name: postgres-backup
+            mountPath: /backup  
+        {{ end }}    
       {{- if .Values.monitoring.enabled }}    
       - name: postgres-exporter
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.exporter }}"
@@ -64,13 +82,23 @@ spec:
           containerPort: {{ .Values.monitoring.postgres.metricsPort }}
         env:
           - name: POSTGRES_DB
-            value: parabol
+            value: "{{ .Values.database.env.postgresDb }}"
           - name: POSTGRES_PASSWORD
-            value: parabol
+            value: "{{ .Values.database.env.postgresPassword }}"
       {{ end }}    
       imagePullSecrets:
       - name: regcred
-
+      {{- if .Values.services.postgres.localStorage.enabled }}
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-data
+      {{ end }}    
+      {{- if .Values.services.postgres.backups.enabled }}    
+      - name: postgres-backup
+        persistentVolumeClaim:
+          claimName: postgres-backup    
+      {{ end }} 
 ---
 apiVersion: v1
 kind: Service
@@ -91,3 +119,30 @@ spec:
   {{ end }}  
   selector:
     app: postgres
+---
+{{- if .Values.services.postgres.localStorage.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+{{ end }}
+---
+{{- if .Values.services.postgres.backups.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.services.postgres.localStorage.volumeSize }}
+{{ end }}
+
