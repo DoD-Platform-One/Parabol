@@ -97,6 +97,9 @@ parabolDeployment:
     # authSsoDisabled: Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false").
     authSsoDisabled: false
 
+    # isEnterprise: Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater.
+    isEnterprise: true
+
   livenessProbe:
     []
     # initialDelaySeconds: 90
