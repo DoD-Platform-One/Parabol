@@ -67,8 +67,12 @@ spec:
           - name: AUTH_SSO_DISABLED
             value: "{{ .Values.parabolDeployment.env.authSsoDisabled }}"
           - name: IS_ENTERPRISE
-            value: "{{ .Values.parabolDeployment.env.isEnterprise }}"
-
+            value: "{{ .Values.parabolDeployment.env.isEnterprise }}"  
+        {{- if .Values.services.parabol.localStorage.enabled }}  
+        volumeMounts:
+          - name: parabol-persistent-storage
+            mountPath: /data
+        {{ end }}
           
         ports:
         - name: webserver
@@ -85,7 +89,12 @@ spec:
   
       imagePullSecrets:
       - name: regcred
-      
+      {{- if .Values.services.parabol.localStorage.enabled }}
+      volumes:
+      - name: parabol-persistent-storage
+        persistentVolumeClaim:
+          claimName: parabol-data
+      {{ end }} 
 ---
 apiVersion: v1
 kind: Service
@@ -99,3 +108,16 @@ spec:
     targetPort: 3000
   selector:
     app: parabol
+---
+{{- if .Values.services.parabol.localStorage.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: parabol-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.services.parabol.localStorage.volumeSize }}
+{{ end }}    

@@ -33,6 +33,9 @@ services:
     ports:
       internal: 3000
       external: 80
+    localStorage:
+      enabled: true
+      volumeSize: 1Gi
 
 database:
   env:
