@@ -11,8 +11,17 @@ services:
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
     localStorage:
       enabled: true
+
   rethinkdb:
-    image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
+    image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1.u1
+    localStorage:
+      enabled: true
+      volumeSize: 10Gi
+    backups:
+      enabled: false
+      #example - run a backup every night at 3am
+      schedule: 0 3 * * *
+      volumeSize: 10Gi
 
   postgres:
     image: ironbank/opensource/postgres/postgresql:15.4
@@ -21,8 +30,9 @@ services:
       enabled: true
       volumeSize: 10Gi
     backups:
-      enabled: true
+      enabled: false
       schedule: 0 2 * * *
+      volumeSize: 10Gi
 
   parabol:
     image: ironbank/parabol/parabol:6.124.0

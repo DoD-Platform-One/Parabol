@@ -22,9 +22,30 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 8080    
+            port: 8080
+        {{- if .Values.services.rethinkdb.localStorage.enabled }}  
+        volumeMounts:
+          - name: rethinkdb-data
+            mountPath: "/data/rethinkdb_data"
+            readOnly: false
+        {{ end }}
+        {{- if .Values.services.rethinkdb.backups.enabled }}    
+          - name: rethinkdb-backup
+            mountPath: /backup
+        {{ end }}
       imagePullSecrets:
       - name: regcred
+      {{- if .Values.services.rethinkdb.localStorage.enabled }}
+      volumes:
+      - name: rethinkdb-data
+        persistentVolumeClaim:
+          claimName: rethinkdb-data
+      {{ end }}    
+      {{- if .Values.services.rethinkdb.backups.enabled }}    
+      - name: rethinkdb-backup
+        persistentVolumeClaim:
+          claimName: rethinkdb-backup    
+      {{ end }}
 ---
 apiVersion: v1
 kind: Service
@@ -44,3 +65,29 @@ spec:
     targetPort: 28015
   selector:
     app: rethinkdb
+---
+{{- if .Values.services.rethinkdb.localStorage.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: rethinkdb-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.services.rethinkdb.localStorage.volumeSize }}
+{{ end }}
+---
+{{- if .Values.services.rethinkdb.backups.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: rethinkdb-backup
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.services.rethinkdb.backups.volumeSize }}
+{{ end }}
