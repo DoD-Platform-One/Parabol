@@ -6,6 +6,8 @@ metadata:
 spec:
   # Backup the database every day at 2AM
   schedule: "{{ .Values.services.postgres.backups.schedule }}"
+  concurrencyPolicy: "Forbid"
+  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
       backoffLimit: 3
