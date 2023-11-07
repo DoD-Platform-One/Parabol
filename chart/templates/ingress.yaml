@@ -1,3 +1,4 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
@@ -28,3 +29,4 @@ spec:
         host: parabol-service
         port:
           number: {{ .Values.services.parabol.ports.internal }}
+{{ end }}          

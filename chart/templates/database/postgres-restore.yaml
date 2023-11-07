@@ -1,0 +1,44 @@
+{{- if .Values.services.postgres.backups.restore }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgresql-db-restore
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: parabol-postgres-restore
+          image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.image }}"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-c"]
+          args: 
+            - echo "Getting the filename of the last backup.." && 
+              LATEST=$(ls -t backup | head -n1) &&
+              echo "Latest backup is ${LATEST}" 
+              pg_restore -d port="$POSTGRES_PORT" host="$POSTGRES_HOST" user="$POSTGRES_USER" password="$POSTGRES_PASSWORD" dbname="$POSTGRES_DB" /backup/"$LATEST" --no-owner --create --clean && 
+              echo "Backup restored"
+          env:
+            - name: POSTGRES_DB
+              value: "{{ .Values.database.env.postgresDb }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.database.env.postgresUser }}"
+            - name: POSTGRES_HOST
+              value: "{{ .Values.database.env.postgresHost }}"
+            - name: POSTGRES_PORT
+              value: "{{ .Values.database.env.postgresPort }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.database.env.postgresPassword }}"
+          volumeMounts:
+            - mountPath: /backup
+              name: postgres-backup
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: postgres-backup
+        persistentVolumeClaim:
+          claimName: postgres-backup
+{{ end }}                    

@@ -35,7 +35,7 @@ spec:
             command:
             - redis-cli
             - ping
-          initialDelaySeconds: 30
+          initialDelaySeconds: 15
           timeoutSeconds: 5
         {{- if .Values.services.redis.localStorage.enabled }}  
         volumeMounts:

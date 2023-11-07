@@ -22,6 +22,8 @@ services:
       #example - run a backup every night at 3am
       schedule: 0 3 * * *
       volumeSize: 10Gi
+      # set to true to create restore job of latest backup
+      restore: false
 
   postgres:
     image: ironbank/opensource/postgres/postgresql:15.4
@@ -33,9 +35,12 @@ services:
       enabled: false
       schedule: 0 2 * * *
       volumeSize: 10Gi
+      # set to true to create restore job of latest backup
+      restore: false
 
   parabol:
     image: ironbank/parabol/parabol:6.124.0
+    replicas: 1
     env:
       redisHost: "redis-service"
       rethinkdbHost: "rethinkdb-service"
@@ -67,9 +72,6 @@ database:
 ingress:
   enabled: true
   hostname: parabol.bigbang.dev
-
-networkPolicies:
-  enabled: false
 
 parabolDeployment:
   env:
@@ -129,6 +131,12 @@ parabolDeployment:
     timeoutSeconds: 5
     failureThreshold: 3
     successThreshold: 1
+    httpGet:
+      path: /manifest.json
+      port: 3000
+  startupProbe:
+    periodSeconds: 30
+    failureThreshold: 30
     httpGet:
       path: /manifest.json
       port: 3000

@@ -9,14 +9,16 @@ data:
   {{- end }}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: parabol-deployment
+  name: parabol
 spec:
-  replicas: 1
+  replicas: {{ .Values.services.parabol.replicas }}
   selector:
     matchLabels:
       app: parabol
+  updateStrategy: 
+    type: RollingUpdate    
   template:
     metadata:
       labels:
@@ -84,8 +86,12 @@ spec:
         {{- end }}
         {{- if .Values.parabolDeployment.readinessProbe }}
         readinessProbe:
-          {{- toYaml .Values.parabolDeployment.readinessProbe | nindent 12 }}
-        {{- end }}  
+        {{- toYaml .Values.parabolDeployment.readinessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.parabolDeployment.livenessProbe }}
+        startupProbe:
+          {{- toYaml .Values.parabolDeployment.startupProbe | nindent 12 }}
+        {{- end }}    
   
       imagePullSecrets:
       - name: regcred
