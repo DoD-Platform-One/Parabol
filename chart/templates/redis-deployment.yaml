@@ -41,7 +41,7 @@ spec:
         volumeMounts:
           - name: redis-persistent-storage
             mountPath: /data
-        {{ end }}    
+        {{ end }}  
       {{- if .Values.monitoring.enabled }}      
       - name: redis-exporter
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"

@@ -1,118 +1,155 @@
 imageRegistry:
+  # -- Container registry hostname
   host: registry1.dso.mil
 
 registryCredentials:
+  # -- Username container registry
   username:
   password:
 
 services:
   redis:
+    # -- Image to use for deploying Redis
     image: ironbank/opensource/redis/redis6-alpine:6.2.13
+    # -- Image to use for deploying Redis exporter for monitoring
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
+    # -- Use PersistentVolumeClaim for Redis storage
     localStorage:
       enabled: true
+    # -- resource requests and limits
+    resources: {}
 
   rethinkdb:
+    # -- Image to use for deploying ReThinkDB
     image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1.u1
     localStorage:
+      # -- Use PersistentVolumeClaim for RethinkDB storage
       enabled: true
+      # -- Size of PVC volume used
       volumeSize: 10Gi
     backups:
+      # -- Enable automatic backups
       enabled: false
-      #example - run a backup every night at 3am
+      # -- Schedule for backup jobs
+      # example - run every day at 3am
       schedule: 0 3 * * *
+      # -- Size of PVC volume used
       volumeSize: 10Gi
-      # set to true to create restore job of latest backup
+      # -- Enable restore job from last backup
       restore: false
+    # -- Container resource requests and limits
+    resources: {}
 
   postgres:
+    # -- Image to use for deploying PostgreSql
     image: ironbank/opensource/postgres/postgresql:15.4
+    # -- Image to use for deploying Postgres exporter for monitoring
     exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
     localStorage:
+      # -- Use PersistentVolumeClaim for RethinkDB storage
       enabled: true
+      # -- Size of PVC volume used
       volumeSize: 10Gi
     backups:
+      # -- Enable automatic backups
       enabled: false
+      # -- Schedule for backup jobs
+      # example - run every day at 3am
       schedule: 0 2 * * *
+      # -- Size of PVC volume used
       volumeSize: 10Gi
-      # set to true to create restore job of latest backup
+      # -- Enable restore job from last backup
       restore: false
+    # -- Container resource requests and limits
+    resources: {}
 
   parabol:
+    # -- Image to use for deploying Parabol
     image: ironbank/parabol/parabol:6.124.0
+    # -- Number of replicas to deploy
     replicas: 1
     env:
+      # -- Parabol config to reach Redis
       redisHost: "redis-service"
+      # -- Parabol config to reach RethinkDB
       rethinkdbHost: "rethinkdb-service"
+      # -- Parabol config to reach Postgresql
       postgresHost: "postgres-service"
     ports:
+      # -- Exposed port for Parabol to run internal to cluster
       internal: 3000
+      # -- Exposed port for Parabol to run external to cluster
       external: 80
     localStorage:
+      # -- Use PersistentVolumeClaim for RethinkDB storage
       enabled: true
+      # -- Size of PVC volume used
       volumeSize: 1Gi
+    # -- Container resource requests and limits
+    resources: {}
 
 database:
   env:
-    # postgresDb: Name of the PostgreSQL database.
+    # -- Name of the PostgreSQL database.
     postgresDb: parabol
 
-    # postgresUser: Username to access the PostgreSQL database.
+    # -- Username to access the PostgreSQL database.
     postgresUser: postgres
 
-    # postgresHost: Internal hostname used to access the PostgreSQL database.
+    # -- Internal hostname used to access the PostgreSQL database.
     postgresHost: postgres-service.parabol.svc.cluster.local
 
-    # postgresPort: Port on which the PostgreSQL server is listening.
+    # -- Port on which the PostgreSQL server is listening.
     postgresPort: 5432
 
-    # postgresPassword: Password to access the PostgreSQL database.
+    # -- Password to access the PostgreSQL database.
     postgresPassword: parabol
 
 ingress:
+  # -- Enables external routing to Parabol service via Istio
   enabled: true
+  # -- The external hostname for Parabol application
   hostname: parabol.bigbang.dev
 
 parabolDeployment:
   env:
-    # fileStoreProvider: Specifies the provider for file storage
-    #                       - "local" means local file-based storage is used
+    # -- fileStoreProvider: Specifies the provider for file storage - "local" means local file-based storage is used
     fileStoreProvider: local
 
-    # port: The port on which the application will be exposed.
+    # -- The port on which the application will be exposed.
     port: 3000
 
-    # host: The external hostname for Parabol application
+    # -- The external hostname for Parabol application
     host: parabol.bigbang.dev
 
-    # protocol: The protocol used by the server ("http" or "https").
+    # -- The protocol used by the server ("http" or "https").
     protocol: http
 
-    # serverId: Identifier for the server (useful in scaled/multi-server environments).
+    # -- Identifier for the server (useful in scaled/multi-server environments).
     serverId: 1
 
-    # serverSecret: The secret key used to generate JWT tokens
+    # -- The secret key used to generate JWT tokens
     serverSecret: QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK
 
-    # invitationShortlink: The base URL used to construct invitation shortlinks.
+    # -- The base URL used to construct invitation shortlinks.
     invitationShortlink: parabol.bigbang.dev/invitation-link
 
-    # redisURL: The URL used to access the Redis server.
+    # -- The URL used to access the Redis server.
     redisUrl: redis://redis-service.parabol.svc.cluster.local:6379
 
-    # rethinkdbUrl: The URL used to access the RethinkDB server.
+    # -- The URL used to access the RethinkDB server.
     rethinkdbUrl: rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment
 
-    # authInternalDisabled: Flag indicating if internal username/password authentication is disabled ("true" or "false").
+    # -- Flag indicating if internal username/password authentication is disabled ("true" or "false").
     authInternalDisabled: false
 
-    # authGoogleDisabled: Flag indicating if Google authentication is disabled ("true" or "false").
+    # -- Flag indicating if Google authentication is disabled ("true" or "false").
     authGooleDisabled: false
 
-    # authSsoDisabled: Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false").
+    # -- Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false").
     authSsoDisabled: false
 
-    # isEnterprise: Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater.
+    # -- Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater.
     isEnterprise: true
 
   livenessProbe:
@@ -126,32 +163,49 @@ parabolDeployment:
     #   path: /manifest.json
     #   port: 3000
   readinessProbe:
+    # -- Delay before checking for readiness
     initialDelaySeconds: 30
+    # -- The amount of time to check for
     periodSeconds: 10
+    # -- How long before the check timesout
     timeoutSeconds: 5
+    # -- How many time should the check fail before restarting
     failureThreshold: 3
+    # -- How many successes should the check have before ready
     successThreshold: 1
     httpGet:
+      # -- Path to HTTP check
       path: /manifest.json
+      # -- Port for HTTP check
       port: 3000
   startupProbe:
+    # -- The amount of time to check for
     periodSeconds: 30
-    failureThreshold: 30
+    # -- How many time should the check fail before restarting
+    failureThreshold: 3
     httpGet:
+      # -- Path to HTTP check
       path: /manifest.json
+      # -- Port for HTTP check
       port: 3000
 
 monitoring:
+  # -- Enable BigBang Monitoring resources
   enabled: true
   dashboards:
+    # -- K8s namespace where the monitoring stack is deployed
     namespace: monitoring
+    # -- Grafana dashboard labels to check
     label: grafana_dashboard
 
   redis:
+    # -- Port that Redis metrics are exposed on
     metricsPort: 9121
 
   postgres:
+    # -- Port that Postgres metrics are exposed on
     metricsPort: 9187
     env:
+      # -- Postgres exporter env vars
       - name: DATA_SOURCE_NAME
         value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable

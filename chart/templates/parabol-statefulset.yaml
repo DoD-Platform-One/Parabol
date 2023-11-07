@@ -75,7 +75,8 @@ spec:
           - name: parabol-persistent-storage
             mountPath: /data
         {{ end }}
-          
+        resources:
+            {{- toYaml .Values.services.parabol.resources | nindent 12 }}
         ports:
         - name: webserver
           containerPort: 3000
