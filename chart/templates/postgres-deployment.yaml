@@ -72,7 +72,9 @@ spec:
         {{- if .Values.services.postgres.backups.enabled }}    
           - name: postgres-backup
             mountPath: /backup  
-        {{ end }}    
+        {{ end }}
+        resources:
+            {{- toYaml .Values.services.postgres.resources | nindent 12 }}    
       {{- if .Values.monitoring.enabled }}    
       - name: postgres-exporter
         image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.exporter }}"
