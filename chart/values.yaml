@@ -66,6 +66,8 @@ services:
   parabol:
     # -- Image to use for deploying Parabol
     image: ironbank/parabol/parabol:6.124.0
+    # -- Set the StatefulSet ServiceName
+    serviceName: "parabol-stateful-set"
     # -- Number of replicas to deploy
     replicas: 1
     env:
