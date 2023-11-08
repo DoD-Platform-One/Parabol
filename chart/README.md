@@ -155,6 +155,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
+| services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name of Stateful Set |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
 | services.parabol.resources | object | `{}` | Container resource requests and limits |
 | services.postgres.backups.enabled | bool | `false` | Enable automatic backups |

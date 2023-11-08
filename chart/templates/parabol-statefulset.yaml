@@ -13,6 +13,7 @@ kind: StatefulSet
 metadata:
   name: parabol
 spec:
+  serviceName: {{ .Values.services.parabol.serviceName }}
   replicas: {{ .Values.services.parabol.replicas }}
   selector:
     matchLabels:
