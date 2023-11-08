@@ -3,4 +3,4 @@ name: bigbang-parabol
 description: BigBang compatible Helm chart for parabol
 type: application
 version: 0.1.0
-appVersion: "6.124.0"
+appVersion: "7.5.0"

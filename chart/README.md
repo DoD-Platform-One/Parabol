@@ -150,7 +150,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
 | services.parabol.env.rethinkdbHost | string | `"rethinkdb-service"` | Parabol config to reach RethinkDB |
-| services.parabol.image | string | `"ironbank/parabol/parabol:6.124.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:7.5.0"` | Image to use for deploying Parabol |
 | services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
