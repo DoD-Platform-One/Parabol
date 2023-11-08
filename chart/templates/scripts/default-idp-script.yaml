@@ -1,0 +1,108 @@
+{{- if .Values.services.parabol.defaultIDP }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-idp-script
+data:
+  default-idp-script.py: |
+    import os
+    import zlib
+    import base64
+    import urllib.parse
+    from datetime import datetime
+    from rethinkdb import RethinkDB
+    r = RethinkDB()
+
+    # Connect to RethinkDB
+    rethinkDbHost = os.getenv('rethinkDbHost')
+    rethinkDbPort = os.getenv('rethinkDbPort')
+    rethinkDb = os.getenv('rethinkDb')
+    connection = r.connect(rethinkDbHost, rethinkDbPort)
+
+    # IDP configuration
+    idp_stub = os.getenv('idp_stub')
+    idp_url = os.getenv('idp_url')
+    idp_host = os.getenv('idp_host')
+
+    # SAML template
+    saml_template = f"""
+    <samlp:AuthnRequest
+      xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" Version="2.0" IssueInstant="{datetime.utcnow().isoformat()}" Destination="{idp_url}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="https://{idp_host}/saml/{idp_stub}">
+    <saml:Issuer>https://{idp_host}/saml-metadata/{idp_stub}</saml:Issuer>
+      <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="false"/>
+    </samlp:AuthnRequest>
+    """
+
+    # Deflate and encode SAML request
+    saml_request = zlib.compress(saml_template.encode(), zlib.Z_BEST_COMPRESSION)
+    encoded_saml_request = base64.b64encode(saml_request).decode()
+    url_encoded_saml_request = urllib.parse.quote_plus(encoded_saml_request)
+
+    # RethinkDB query template
+    rql_template = (
+        r.db(f"{rethinkDb}")  # Use the database name from the parsed URL
+        .table("SAML")
+        .insert({
+            "id": idp_stub,
+            "url": f"{idp_url}&SAMLRequest={url_encoded_saml_request}"
+        }, conflict='replace')  # This will replace the existing document if the id is already present
+    )
+
+    # Run the RethinkDB query
+    result = rql_template.run(connection)
+
+    # Print the result
+    print(result)
+
+    # Close the connection
+    connection.close()
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: python-job
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: python-container
+        image: registry1.dso.mil/ironbank/opensource/python/python-pipenv/python39-pipenv:2023.10.24
+        command: ["/bin/bash","-c"]
+        args:
+          - echo "Waiting for RethinkDB sleeping 120 seconds. IDP will be ready in 2 minutes." &&
+            sleep 120 &&
+            pip3 install rethinkdb &&
+            python /scripts/default-idp-script.py &&
+            echo "Default IDP configured."
+        env:
+        - name: rethinkDbHost
+          value: "{{ .Values.services.parabol.rethinkDbHost }}"
+        - name: rethinkDbPort
+          value: "{{ .Values.services.parabol.rethinkDbPort }}"
+        - name: rethinkDb
+          value: "{{ .Values.services.parabol.rethinkDb }}"
+        - name: idp_stub
+          value: "{{ .Values.services.parabol.idp_stub }}"
+        - name: idp_url
+          value: "{{ .Values.services.parabol.idp_url }}"
+        - name: idp_host
+          value: "{{ .Values.services.parabol.idp_host }}"
+        volumeMounts:
+        - name: script-volume
+          mountPath: /scripts
+          readOnly: true
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: script-volume
+        configMap:
+          name: default-idp-script
+      restartPolicy: Never
+  {{ end }}
