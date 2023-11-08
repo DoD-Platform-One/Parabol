@@ -66,6 +66,22 @@ services:
   parabol:
     # -- Image to use for deploying Parabol
     image: ironbank/parabol/parabol:7.5.0
+    # -- Determines if there is a default IDP configure change to true to enable
+    defaultIDP: false
+    # -- RethinkDB host
+    rethinkDbHost: "rethinkdb-service.parabol.svc.cluster.local"
+    # -- RethinkDB port
+    rethinkDbPort: "28015"
+    # -- RethinkDB database name
+    rethinkDb: "actionDevelopment"
+    # -- This is the unique ID for the SAML entry in RethinkDB
+    idp_stub: "bigbang"
+    # -- IDP URL from SAML SP
+    idp_url: "https://fqdn.to.idp.bigbang.dev"
+    # -- Parabol hostname
+    idp_host: "parabol.bigbang.dev"
+    # -- Service name for Stateful Set
+    serviceName: "parabol-stateful-set"
     # -- Number of replicas to deploy
     replicas: 1
     env:

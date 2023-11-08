@@ -155,6 +155,13 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
+| services.parabol.defaultIDP | bool | `false` | Enable default IDP configuration |
+| services.parabol.rethinkDbHost | string | `rethinkdb-service.parabol.svc.cluster.local` | RehinkDB host |
+| services.parabol.rethinkDbPort | string | `28015` | RethinkDB port |
+| services.parabol.rethinkDb | string | `"actionDevelopment"` | RethinkDB database name |
+| services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
+| services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
+| services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
 | services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name of Stateful Set |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
 | services.parabol.resources | object | `{}` | Container resource requests and limits |
