@@ -25,7 +25,7 @@ services:
       schedule: 0 2 * * *
 
   parabol:
-    image: ironbank/parabol/parabol:6.124.0
+    image: ironbank/parabol/parabol:7.5.0
     env:
       redisHost: "redis-service"
       rethinkdbHost: "rethinkdb-service"

@@ -1,6 +1,6 @@
 # bigbang-parabol
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 6.124.0](https://img.shields.io/badge/AppVersion-6.124.0-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 7.5.0](https://img.shields.io/badge/AppVersion-7.5.0-informational?style=flat-square)
 
 BigBang compatible Helm chart for parabol
 
