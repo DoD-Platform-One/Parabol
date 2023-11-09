@@ -80,6 +80,16 @@ services:
     idp_url: "https://fqdn.to.idp.bigbang.dev"
     # -- Parabol hostname
     idp_host: "parabol.bigbang.dev"
+    # -- Parabol graphql endpoint
+    ffGqlEndpoint: "https://parabol.bigbang.dev/intranet-graphql"
+    # -- Determines if usage stats/insights is enabled, change to true to enable
+    ffInsights: false
+    # -- Parabol long lived token that is generated from server secret
+    ffInsightsToken: "your_long_lived_token"
+    # -- Parabol user emails that can view usuage stats/insights
+    rethinkffInsightsEmailsDb: "admin@parabol.bigbang.dev"
+    # -- Parabol domains to be whitelisted for usage stats/insights
+    ffInsightsDomain: "parabol.bigbang.dev"
     # -- Service name for Stateful Set
     serviceName: "parabol-stateful-set"
     # -- Number of replicas to deploy
