@@ -162,6 +162,11 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
 | services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
+| services.parabol.ffGqlEndpoint | string | `https://parabol.bigbang.dev/intranet-graphql` | Parabol graphql endpoint |
+| services.parabol.ffInsights | bool | `false` | Determines if usage stats/insights is enabled, change to true to enable |
+| services.parabol.ffInsightsToken | string | `"your_long_lived_token"` | Parabol long lived token that is generated from server secret |
+| services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.bigbang.dev"` | Parabol user emails that can view usuage stats/insights |
+| services.parabol.ffInsightsDomain | string | `"parabol.bigbang.dev"` |  # -- Parabol domains to be whitelisted for usage stats/insights|
 | services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name of Stateful Set |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
 | services.parabol.resources | object | `{}` | Container resource requests and limits |
