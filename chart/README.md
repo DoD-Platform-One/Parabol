@@ -124,6 +124,9 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.env.authInternalDisabled | bool | `false` | Flag indicating if internal username/password authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.authSsoDisabled | bool | `false` | Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - "local" means local file-based storage is used |
+| parabolDeployment.env.goocleCloudPrivateKey | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY"` | Google Service Account Private key (optional variable for use with GCP service account credential) |
+| parabolDeployment.env.goocleCloudPrivateKeyId | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY_ID"` | Google Private Key ID (optional variable for use with GCP service account credential) |
+| parabolDeployment.env.googleCloudClientEmail | string | `"key_GOOGLE_CLOUD_CLIENT_EMAIL"` | Google Service Account Email (optional variable if Google services are used) |
 | parabolDeployment.env.host | string | `"parabol.bigbang.dev"` | The external hostname for Parabol application |
 | parabolDeployment.env.invitationShortlink | string | `"parabol.bigbang.dev/invitation-link"` | The base URL used to construct invitation shortlinks. |
 | parabolDeployment.env.isEnterprise | bool | `true` | Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater. |
@@ -147,29 +150,29 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.startupProbe.periodSeconds | int | `30` | The amount of time to check for |
 | registryCredentials.password | string | `nil` |  |
 | registryCredentials.username | string | `nil` | Username container registry |
+| services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
 | services.parabol.env.rethinkdbHost | string | `"rethinkdb-service"` | Parabol config to reach RethinkDB |
+| services.parabol.ffGqlEndpoint | string | `"https://parabol.bigbang.dev/intranet-graphql"` | Parabol graphql endpoint |
+| services.parabol.ffInsights | bool | `false` | Determines if usage stats/insights is enabled, change to true to enable |
+| services.parabol.ffInsightsDomain | string | `"parabol.bigbang.dev"` | Parabol domains to be whitelisted for usage stats/insights |
+| services.parabol.ffInsightsToken | string | `"your_long_lived_token"` | Parabol long lived token that is generated from server secret |
+| services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
+| services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
+| services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
 | services.parabol.image | string | `"ironbank/parabol/parabol:7.5.0"` | Image to use for deploying Parabol |
 | services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
-| services.parabol.defaultIDP | bool | `false` | Enable default IDP configuration |
-| services.parabol.rethinkDbHost | string | `rethinkdb-service.parabol.svc.cluster.local` | RehinkDB host |
-| services.parabol.rethinkDbPort | string | `28015` | RethinkDB port |
-| services.parabol.rethinkDb | string | `"actionDevelopment"` | RethinkDB database name |
-| services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
-| services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
-| services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
-| services.parabol.ffGqlEndpoint | string | `https://parabol.bigbang.dev/intranet-graphql` | Parabol graphql endpoint |
-| services.parabol.ffInsights | bool | `false` | Determines if usage stats/insights is enabled, change to true to enable |
-| services.parabol.ffInsightsToken | string | `"your_long_lived_token"` | Parabol long lived token that is generated from server secret |
-| services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.bigbang.dev"` | Parabol user emails that can view usuage stats/insights |
-| services.parabol.ffInsightsDomain | string | `"parabol.bigbang.dev"` |  # -- Parabol domains to be whitelisted for usage stats/insights|
-| services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name of Stateful Set |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
 | services.parabol.resources | object | `{}` | Container resource requests and limits |
+| services.parabol.rethinkDb | string | `"actionDevelopment"` | RethinkDB database name |
+| services.parabol.rethinkDbHost | string | `"rethinkdb-service.parabol.svc.cluster.local"` | RethinkDB host |
+| services.parabol.rethinkDbPort | string | `"28015"` | RethinkDB port |
+| services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.bigbang.dev"` | Parabol user emails that can view usuage stats/insights |
+| services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name for Stateful Set |
 | services.postgres.backups.enabled | bool | `false` | Enable automatic backups |
 | services.postgres.backups.restore | bool | `false` | Enable restore job from last backup |
 | services.postgres.backups.schedule | string | `"0 2 * * *"` | Schedule for backup jobs example - run every day at 3am |

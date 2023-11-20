@@ -178,6 +178,15 @@ parabolDeployment:
     # -- Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater.
     isEnterprise: true
 
+    # -- Google Service Account Email (optional variable if Google services are used)
+    googleCloudClientEmail: key_GOOGLE_CLOUD_CLIENT_EMAIL
+
+    # -- Google Service Account Private key (optional variable for use with GCP service account credential)
+    goocleCloudPrivateKey: key_GOOGLE_CLOUD_PRIVATE_KEY
+
+    # -- Google Private Key ID (optional variable for use with GCP service account credential)
+    goocleCloudPrivateKeyId: key_GOOGLE_CLOUD_PRIVATE_KEY_ID
+
   livenessProbe:
     []
     # initialDelaySeconds: 90

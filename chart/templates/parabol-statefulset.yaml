@@ -70,7 +70,13 @@ spec:
           - name: AUTH_SSO_DISABLED
             value: "{{ .Values.parabolDeployment.env.authSsoDisabled }}"
           - name: IS_ENTERPRISE
-            value: "{{ .Values.parabolDeployment.env.isEnterprise }}"  
+            value: "{{ .Values.parabolDeployment.env.isEnterprise }}"
+          - name: GOOGLE_CLOUD_CLIENT_EMAIL
+            value: "{{ .Values.parabolDeployment.env.googleCloudClientEmail }}"
+          - name: GOOGLE_CLOUD_PRIVATE_KEY
+            value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKey }}"
+          - name: GOOGLE_CLOUD_PRIVATE_KEY_ID
+            value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKeyId }}"
         {{- if .Values.services.parabol.localStorage.enabled }}  
         volumeMounts:
           - name: parabol-persistent-storage
