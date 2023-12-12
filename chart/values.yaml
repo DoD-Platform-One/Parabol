@@ -41,6 +41,8 @@ services:
     resources: {}
 
   postgres:
+    # -- Deploy Postgres pods
+    enabled: false
     # -- Image to use for deploying PostgreSql
     image: ironbank/opensource/postgres/postgresql:15.4
     # -- Image to use for deploying Postgres exporter for monitoring
