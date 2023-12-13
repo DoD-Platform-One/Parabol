@@ -33,7 +33,7 @@ spec:
         runAsGroup: 1001
       containers:
       - name: postgres
-        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.image }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.postgres.image }}"
         ports:
           - containerPort: 5432
             name: postgres-port
@@ -78,7 +78,7 @@ spec:
             {{- toYaml .Values.services.postgres.resources | nindent 12 }}    
       {{- if .Values.monitoring.enabled }}    
       - name: postgres-exporter
-        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.postgres.exporter }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.postgres.exporter }}"
         imagePullPolicy: IfNotPresent
         ports:
         - name: metrics
@@ -89,8 +89,10 @@ spec:
           - name: POSTGRES_PASSWORD
             value: "{{ .Values.database.env.postgresPassword }}"
       {{ end }}    
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
-      - name: regcred
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.services.postgres.localStorage.enabled }}
       volumes:
       - name: postgres-data

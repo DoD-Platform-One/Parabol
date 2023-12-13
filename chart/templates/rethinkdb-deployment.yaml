@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: rethinkdb
-        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.rethinkdb.image }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.rethinkdb.image }}"
         resources:
           {{- toYaml .Values.services.rethinkdb.resources | nindent 12 }}
         readinessProbe:
@@ -35,8 +35,10 @@ spec:
           - name: rethinkdb-backup
             mountPath: /backup
         {{ end }}
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
-      - name: regcred
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.services.rethinkdb.localStorage.enabled }}
       volumes:
       - name: rethinkdb-data

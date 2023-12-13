@@ -1,9 +1,16 @@
-imageRegistry:
-  # -- Container registry hostname
-  host: registry1.dso.mil
+global:
+  imageRegistry:
+    # -- Container registry hostname
+    host: registry1.dso.mil
+    # -- Create imagepullsecret with deployment template (must use dockerconfigjson for auth credentials)
+    createSecret: false
+    # -- Secret needed to pull images from registry (must be created in namespace prior or enabled above)
+    ## imagePullSecrets:
+    ##   - mySecretName
+    imagePullSecrets: []
 
 registryCredentials:
-  # -- Username container registry
+  # -- Username / password auth container registry
   username:
   password:
 
@@ -41,8 +48,8 @@ services:
     resources: {}
 
   postgres:
-    # -- Deploy Postgres pods
-    enabled: false
+    # -- Deploy Postgres pods - Disable if using external postgres instance
+    enabled: true
     # -- Image to use for deploying PostgreSql
     image: ironbank/opensource/postgres/postgresql:15.4
     # -- Image to use for deploying Postgres exporter for monitoring
@@ -138,6 +145,10 @@ ingress:
   enabled: true
   # -- The external hostname for Parabol application
   hostname: parabol.bigbang.dev
+  # -- Istio gateway that should be used for routing
+  # ex. gateways:
+  #       - istio-system/public
+  gateways: []
 
 parabolDeployment:
   env:
