@@ -115,6 +115,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | global.imageRegistry.host | string | `"registry1.dso.mil"` | Container registry hostname |
 | global.imageRegistry.imagePullSecrets | list | `[]` | Secret needed to pull images from registry (must be created in namespace prior or enabled above) # imagePullSecrets: #   - mySecretName |
 | ingress.enabled | bool | `true` | Enables external routing to Parabol service via Istio |
+| ingress.gateway | object | `{"create":false}` | Create additional istio gateway resource if needed |
 | ingress.gateways | list | `[]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
 | ingress.hostname | string | `"parabol.bigbang.dev"` | The external hostname for Parabol application |
 | monitoring.dashboards.label | string | `"grafana_dashboard"` | Grafana dashboard labels to check |
@@ -123,8 +124,9 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | monitoring.postgres.env[0] | object | `{"name":"DATA_SOURCE_NAME","value":"postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable"}` | Postgres exporter env vars |
 | monitoring.postgres.metricsPort | int | `9187` | Port that Postgres metrics are exposed on |
 | monitoring.redis.metricsPort | int | `9121` | Port that Redis metrics are exposed on |
-| parabolDeployment.env.authGooleDisabled | bool | `false` | Flag indicating if Google authentication is disabled ("true" or "false"). |
+| parabolDeployment.env.authGooleDisabled | bool | `true` | Flag indicating if Google authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.authInternalDisabled | bool | `false` | Flag indicating if internal username/password authentication is disabled ("true" or "false"). |
+| parabolDeployment.env.authMicrosoftDisabled | bool | `true` | Flag indicating if Microsoft authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.authSsoDisabled | bool | `false` | Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - "local" means local file-based storage is used |
 | parabolDeployment.env.goocleCloudPrivateKey | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY"` | Google Service Account Private key (optional variable for use with GCP service account credential) |

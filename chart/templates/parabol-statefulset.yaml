@@ -67,6 +67,8 @@ spec:
             value: "{{ .Values.parabolDeployment.env.authInternalDisabled }}"
           - name: AUTH_GOOGLE_DISABLED
             value: "{{ .Values.parabolDeployment.env.authGooleDisabled }}"
+          - name: AUTH_MICROSOFT_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authMicrosoftDisabled }}"  
           - name: AUTH_SSO_DISABLED
             value: "{{ .Values.parabolDeployment.env.authSsoDisabled }}"
           - name: IS_ENTERPRISE
