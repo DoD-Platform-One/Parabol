@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: redis
-        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.redis.image }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.image }}"
         ports:
           - containerPort: 6379
             name: redis
@@ -44,7 +44,7 @@ spec:
         {{ end }}  
       {{- if .Values.monitoring.enabled }}      
       - name: redis-exporter
-        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
         securityContext:
           runAsUser: 59000
           runAsGroup: 59000
@@ -60,8 +60,10 @@ spec:
           - containerPort: {{ .Values.monitoring.redis.metricsPort }}
             name: metrics
       {{ end }}      
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
-      - name: regcred
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.services.redis.localStorage.enabled }}
       volumes:
       - name: redis-persistent-storage

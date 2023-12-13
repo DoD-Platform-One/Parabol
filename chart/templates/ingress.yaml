@@ -21,8 +21,10 @@ metadata:
 spec:
   hosts:
   - "{{ .Values.ingress.hostname }}"
-  gateways:
-  - istio-system/public
+  {{- with .Values.ingress.gateways }}
+  gateways: 
+    {{- toYaml . | nindent 4 }}
+  {{ end }}
   http:
   - route:
     - destination:

@@ -33,7 +33,7 @@ spec:
       - name: parabol
         command: ["/bin/sh"]
         args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node ./dist/web.js & node ./dist/gqlExecutor.js"]
-        image: "{{ .Values.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
         env:
           - name: FILE_STORE_PROVIDER
             value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
@@ -101,8 +101,10 @@ spec:
           {{- toYaml .Values.parabolDeployment.startupProbe | nindent 12 }}
         {{- end }}    
   
+      {{- with .Values.global.imagePullSecrets }}
       imagePullSecrets:
-      - name: regcred
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.services.parabol.localStorage.enabled }}
       volumes:
       - name: parabol-persistent-storage

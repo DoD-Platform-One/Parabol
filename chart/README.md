@@ -111,8 +111,11 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | database.env.postgresPassword | string | `"parabol"` | Password to access the PostgreSQL database. |
 | database.env.postgresPort | int | `5432` | Port on which the PostgreSQL server is listening. |
 | database.env.postgresUser | string | `"postgres"` | Username to access the PostgreSQL database. |
-| imageRegistry.host | string | `"registry1.dso.mil"` | Container registry hostname |
+| global.imageRegistry.createSecret | bool | `false` | Create imagepullsecret with deployment template (must use dockerconfigjson for auth credentials) |
+| global.imageRegistry.host | string | `"registry1.dso.mil"` | Container registry hostname |
+| global.imageRegistry.imagePullSecrets | list | `[]` | Secret needed to pull images from registry (must be created in namespace prior or enabled above) # imagePullSecrets: #   - mySecretName |
 | ingress.enabled | bool | `true` | Enables external routing to Parabol service via Istio |
+| ingress.gateways | list | `[]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
 | ingress.hostname | string | `"parabol.bigbang.dev"` | The external hostname for Parabol application |
 | monitoring.dashboards.label | string | `"grafana_dashboard"` | Grafana dashboard labels to check |
 | monitoring.dashboards.namespace | string | `"monitoring"` | K8s namespace where the monitoring stack is deployed |
@@ -149,7 +152,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.startupProbe.httpGet.port | int | `3000` | Port for HTTP check |
 | parabolDeployment.startupProbe.periodSeconds | int | `30` | The amount of time to check for |
 | registryCredentials.password | string | `nil` |  |
-| registryCredentials.username | string | `nil` | Username container registry |
+| registryCredentials.username | string | `nil` | Username / password auth container registry |
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
@@ -161,7 +164,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:7.5.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:7.9.0"` | Image to use for deploying Parabol |
 | services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
@@ -177,6 +180,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.postgres.backups.restore | bool | `false` | Enable restore job from last backup |
 | services.postgres.backups.schedule | string | `"0 2 * * *"` | Schedule for backup jobs example - run every day at 3am |
 | services.postgres.backups.volumeSize | string | `"10Gi"` | Size of PVC volume used |
+| services.postgres.enabled | bool | `true` | Deploy Postgres pods - Disable if using external postgres instance |
 | services.postgres.exporter | string | `"ironbank/opensource/prometheus/postgres-exporter:v0.13.2"` | Image to use for deploying Postgres exporter for monitoring |
 | services.postgres.image | string | `"ironbank/opensource/postgres/postgresql:15.4"` | Image to use for deploying PostgreSql |
 | services.postgres.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
