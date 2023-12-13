@@ -143,6 +143,9 @@ database:
 ingress:
   # -- Enables external routing to Parabol service via Istio
   enabled: true
+  # -- Create additional istio gateway resource if needed
+  gateway:
+    create: false
   # -- The external hostname for Parabol application
   hostname: parabol.bigbang.dev
   # -- Istio gateway that should be used for routing
@@ -183,7 +186,10 @@ parabolDeployment:
     authInternalDisabled: false
 
     # -- Flag indicating if Google authentication is disabled ("true" or "false").
-    authGooleDisabled: false
+    authGooleDisabled: true
+
+    # -- Flag indicating if Microsoft authentication is disabled ("true" or "false").
+    authMicrosoftDisabled: true
 
     # -- Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false").
     authSsoDisabled: false
