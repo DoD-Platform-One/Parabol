@@ -155,6 +155,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.startupProbe.periodSeconds | int | `30` | The amount of time to check for |
 | registryCredentials.password | string | `nil` |  |
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
+| services.parabol.affinity | object | `{}` |  |
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
@@ -169,6 +170,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.image | string | `"ironbank/parabol/parabol:7.9.0"` | Image to use for deploying Parabol |
 | services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
+| services.parabol.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
@@ -178,6 +180,8 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.rethinkDbPort | string | `"28015"` | RethinkDB port |
 | services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.bigbang.dev"` | Parabol user emails that can view usuage stats/insights |
 | services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name for Stateful Set |
+| services.parabol.tolerations | list | `[]` |  |
+| services.postgres.affinity | object | `{}` |  |
 | services.postgres.backups.enabled | bool | `false` | Enable automatic backups |
 | services.postgres.backups.restore | bool | `false` | Enable restore job from last backup |
 | services.postgres.backups.schedule | string | `"0 2 * * *"` | Schedule for backup jobs example - run every day at 3am |
@@ -187,11 +191,17 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.postgres.image | string | `"ironbank/opensource/postgres/postgresql:15.4"` | Image to use for deploying PostgreSql |
 | services.postgres.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.postgres.localStorage.volumeSize | string | `"10Gi"` | Size of PVC volume used |
+| services.postgres.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.postgres.resources | object | `{}` | Container resource requests and limits |
+| services.postgres.tolerations | list | `[]` |  |
+| services.redis.affinity | object | `{}` |  |
 | services.redis.exporter | string | `"ironbank/bitnami/analytics/redis-exporter:v1.54.0"` | Image to use for deploying Redis exporter for monitoring |
 | services.redis.image | string | `"ironbank/opensource/redis/redis6-alpine:6.2.13"` | Image to use for deploying Redis |
 | services.redis.localStorage | object | `{"enabled":true}` | Use PersistentVolumeClaim for Redis storage |
+| services.redis.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.redis.resources | object | `{}` | resource requests and limits |
+| services.redis.tolerations | list | `[]` |  |
+| services.rethinkdb.affinity | object | `{}` |  |
 | services.rethinkdb.backups.enabled | bool | `false` | Enable automatic backups |
 | services.rethinkdb.backups.restore | bool | `false` | Enable restore job from last backup |
 | services.rethinkdb.backups.schedule | string | `"0 3 * * *"` | Schedule for backup jobs example - run every day at 3am |
@@ -199,7 +209,9 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.rethinkdb.image | string | `"ironbank/opensource/rethinkdb/rethinkdb:2.4.1.u1"` | Image to use for deploying ReThinkDB |
 | services.rethinkdb.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.rethinkdb.localStorage.volumeSize | string | `"10Gi"` | Size of PVC volume used |
+| services.rethinkdb.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.rethinkdb.resources | object | `{}` | Container resource requests and limits |
+| services.rethinkdb.tolerations | list | `[]` |  |
 
 ## Security Notes
 
