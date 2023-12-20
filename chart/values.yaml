@@ -25,6 +25,10 @@ services:
       enabled: true
     # -- resource requests and limits
     resources: {}
+    # -- Pod spec for adding node constraints
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
 
   rethinkdb:
     # -- Image to use for deploying ReThinkDB
@@ -46,6 +50,10 @@ services:
       restore: false
     # -- Container resource requests and limits
     resources: {}
+    # -- Pod spec for adding node constraints
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
 
   postgres:
     # -- Deploy Postgres pods - Disable if using external postgres instance
@@ -71,6 +79,10 @@ services:
       restore: false
     # -- Container resource requests and limits
     resources: {}
+    # -- Pod spec for adding node constraints
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
 
   parabol:
     # -- Image to use for deploying Parabol
@@ -122,6 +134,10 @@ services:
       volumeSize: 1Gi
     # -- Container resource requests and limits
     resources: {}
+    # -- Pod spec for adding node constraints
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
 
 database:
   env:
