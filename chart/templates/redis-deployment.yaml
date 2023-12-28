@@ -20,6 +20,10 @@ spec:
       containers:
       - name: redis
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.image }}"
+        securityContext:
+          runAsUser: {{ .Values.services.redis.runAsUser }}
+          runAsGroup: {{ .Values.services.redis.runAsGroup }}
+          allowPrivilegeEscalation: {{ .Values.services.redis.allowPrivilegeEscalation }}
         ports:
           - containerPort: 6379
             name: redis
