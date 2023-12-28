@@ -201,6 +201,9 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.redis.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.redis.resources | object | `{}` | resource requests and limits |
 | services.redis.tolerations | list | `[]` |  |
+| services.redis.runAsUser | int | `999` | Security Context run as user |
+| services.redis.runAsGroup | int | `1000` | Security Context run as group |
+| services.redis.allowPrivilegeEscalation | bool | `false` | Security Context allowPrivilegeEscalation |
 | services.rethinkdb.affinity | object | `{}` |  |
 | services.rethinkdb.backups.enabled | bool | `false` | Enable automatic backups |
 | services.rethinkdb.backups.restore | bool | `false` | Enable restore job from last backup |

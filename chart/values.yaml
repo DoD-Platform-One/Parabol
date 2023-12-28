@@ -29,6 +29,10 @@ services:
     nodeSelector: {}
     affinity: {}
     tolerations: []
+    # -- securityContext settings
+    runAsUser: 999
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
 
   rethinkdb:
     # -- Image to use for deploying ReThinkDB
