@@ -147,7 +147,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: {{ .Values.services.postgres.localStorage.volumeSize }}
 {{ end }}
 ---
 {{- if .Values.services.postgres.backups.enabled }}

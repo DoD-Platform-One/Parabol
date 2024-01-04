@@ -23,6 +23,8 @@ services:
     # -- Use PersistentVolumeClaim for Redis storage
     localStorage:
       enabled: true
+      # -- Size of PVC volume used
+      volumeSize: 1Gi
     # -- resource requests and limits
     resources: {}
     # -- Pod spec for adding node constraints
