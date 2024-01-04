@@ -20,6 +20,12 @@ spec:
       containers:
       - name: redis
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.image }}"
+        command:
+          - redis-server
+          - "/redis-master/redis.conf"
+        env:
+          - name: MASTER
+            value: "true"
         securityContext:
           runAsUser: {{ .Values.services.redis.runAsUser }}
           runAsGroup: {{ .Values.services.redis.runAsGroup }}
@@ -45,6 +51,8 @@ spec:
         volumeMounts:
           - name: redis-persistent-storage
             mountPath: /data
+          - name: config
+            mountPath: /redis-master
         {{ end }}  
       {{- if .Values.monitoring.enabled }}      
       - name: redis-exporter
@@ -85,6 +93,12 @@ spec:
       - name: redis-persistent-storage
         persistentVolumeClaim:
           claimName: redis-pvc
+      - name: config
+        configMap:
+          name: redis-config
+          items:
+          - key: redis-config
+            path: redis.conf    
       {{ end }}    
 ---
 apiVersion: v1
@@ -108,6 +122,16 @@ spec:
   selector:
     app: redis
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis-config: |
+    appendonly yes
+    save ""   
+
+---
 {{- if .Values.services.redis.localStorage.enabled }}
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -118,6 +142,6 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: {{ .Values.services.redis.localStorage.volumeSize }}
 {{ end }}
 
