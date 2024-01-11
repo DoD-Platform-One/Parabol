@@ -103,7 +103,7 @@ spec:
           {{- toYaml .Values.parabolDeployment.startupProbe | nindent 12 }}
         {{- end }}    
   
-      {{- with .Values.global.imagePullSecrets }}
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}

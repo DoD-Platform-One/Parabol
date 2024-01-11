@@ -29,6 +29,7 @@ spec:
         securityContext:
           runAsUser: {{ .Values.services.redis.runAsUser }}
           runAsGroup: {{ .Values.services.redis.runAsGroup }}
+          runAsNonRoot: {{ .Values.services.redis.runAsNonRoot }}
           allowPrivilegeEscalation: {{ .Values.services.redis.allowPrivilegeEscalation }}
         ports:
           - containerPort: 6379
@@ -58,9 +59,10 @@ spec:
       - name: redis-exporter
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
         securityContext:
-          runAsUser: 59000
-          runAsGroup: 59000
-          allowPrivilegeEscalation: false
+          runAsUser: {{ .Values.services.redis.runAsUser }}
+          runAsGroup: {{ .Values.services.redis.runAsGroup }}
+          runAsNonRoot: {{ .Values.services.redis.runAsNonRoot }}
+          allowPrivilegeEscalation: {{ .Values.services.redis.allowPrivilegeEscalation }}
           capabilities:
             drop:
             - ALL
@@ -72,7 +74,7 @@ spec:
           - containerPort: {{ .Values.monitoring.redis.metricsPort }}
             name: metrics
       {{ end }}      
-      {{- with .Values.global.imagePullSecrets }}
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
