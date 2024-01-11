@@ -6,7 +6,7 @@ global:
     createSecret: false
     # -- Secret needed to pull images from registry (must be created in namespace prior or enabled above)
     ## imagePullSecrets:
-    ##   - mySecretName
+    ##   - name: mySecretName
     imagePullSecrets: []
 
 registryCredentials:
@@ -17,7 +17,7 @@ registryCredentials:
 services:
   redis:
     # -- Image to use for deploying Redis
-    image: ironbank/opensource/redis/redis6-alpine:6.2.13
+    image: ironbank/opensource/redis/redis6-alpine:6.2.14
     # -- Image to use for deploying Redis exporter for monitoring
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
     # -- Use PersistentVolumeClaim for Redis storage
@@ -34,6 +34,7 @@ services:
     # -- securityContext settings
     runAsUser: 999
     runAsGroup: 1000
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
 
   rethinkdb:
@@ -92,7 +93,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.9.0
+    image: ironbank/parabol/parabol:7.11.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host

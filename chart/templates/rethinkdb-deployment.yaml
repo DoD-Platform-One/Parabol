@@ -35,7 +35,7 @@ spec:
           - name: rethinkdb-backup
             mountPath: /backup
         {{ end }}
-      {{- with .Values.global.imagePullSecrets }}
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
