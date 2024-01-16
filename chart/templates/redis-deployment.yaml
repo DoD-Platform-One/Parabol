@@ -17,6 +17,8 @@ spec:
         prometheus.io/port: "9121"
         {{ end }}
     spec:
+      securityContext:
+        fsGroup: {{ .Values.services.redis.fsGroup }}
       containers:
       - name: redis
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.image }}"
@@ -48,13 +50,13 @@ spec:
             - ping
           initialDelaySeconds: 15
           timeoutSeconds: 5
-        {{- if .Values.services.redis.localStorage.enabled }}  
         volumeMounts:
-          - name: redis-persistent-storage
-            mountPath: /data
+          - name: data
+            mountPath: /data    
           - name: config
-            mountPath: /redis-master
-        {{ end }}  
+            mountPath: /redis-master/redis.conf
+            readOnly: true
+            subPath: redis.conf
       {{- if .Values.monitoring.enabled }}      
       - name: redis-exporter
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
@@ -90,18 +92,16 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.services.redis.localStorage.enabled }}
       volumes:
-      - name: redis-persistent-storage
-        persistentVolumeClaim:
-          claimName: redis-pvc
+      - name: data
+        emptyDir: {}
       - name: config
         configMap:
+          defaultMode: 420
           name: redis-config
           items:
           - key: redis-config
-            path: redis.conf    
-      {{ end }}    
+            path: redis.conf
 ---
 apiVersion: v1
 kind: Service
@@ -130,20 +130,7 @@ metadata:
   name: redis-config
 data:
   redis-config: |
-    appendonly yes
+    appendonly no
     save ""   
 
----
-{{- if .Values.services.redis.localStorage.enabled }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: redis-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.services.redis.localStorage.volumeSize }}
-{{ end }}
 

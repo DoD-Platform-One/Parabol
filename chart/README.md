@@ -113,7 +113,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | database.env.postgresUser | string | `"postgres"` | Username to access the PostgreSQL database. |
 | global.imageRegistry.createSecret | bool | `false` | Create imagepullsecret with deployment template (must use dockerconfigjson for auth credentials) |
 | global.imageRegistry.host | string | `"registry1.dso.mil"` | Container registry hostname |
-| global.imageRegistry.imagePullSecrets | list | `[]` | Secret needed to pull images from registry (must be created in namespace prior or enabled above) # imagePullSecrets: #   - mySecretName |
+| global.imageRegistry.imagePullSecrets | list | `[]` | Secret needed to pull images from registry (must be created in namespace prior or enabled above) # imagePullSecrets: #   - name: mySecretName |
 | ingress.enabled | bool | `true` | Enables external routing to Parabol service via Istio |
 | ingress.gateway | object | `{"create":false}` | Create additional istio gateway resource if needed |
 | ingress.gateways | list | `[]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
@@ -167,7 +167,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:7.9.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:7.11.0"` | Image to use for deploying Parabol |
 | services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.nodeSelector | object | `{}` | Pod spec for adding node constraints |
@@ -195,15 +195,16 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.postgres.resources | object | `{}` | Container resource requests and limits |
 | services.postgres.tolerations | list | `[]` |  |
 | services.redis.affinity | object | `{}` |  |
+| services.redis.allowPrivilegeEscalation | bool | `false` |  |
 | services.redis.exporter | string | `"ironbank/bitnami/analytics/redis-exporter:v1.54.0"` | Image to use for deploying Redis exporter for monitoring |
-| services.redis.image | string | `"ironbank/opensource/redis/redis6-alpine:6.2.13"` | Image to use for deploying Redis |
-| services.redis.localStorage | object | `{"enabled":true}` | Use PersistentVolumeClaim for Redis storage |
+| services.redis.fsGroup | int | `1000` | securityContext settings |
+| services.redis.image | string | `"ironbank/opensource/redis/redis6-alpine:6.2.14"` | Image to use for deploying Redis |
 | services.redis.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.redis.resources | object | `{}` | resource requests and limits |
+| services.redis.runAsGroup | int | `1000` |  |
+| services.redis.runAsNonRoot | bool | `true` |  |
+| services.redis.runAsUser | int | `999` |  |
 | services.redis.tolerations | list | `[]` |  |
-| services.redis.runAsUser | int | `999` | Security Context run as user |
-| services.redis.runAsGroup | int | `1000` | Security Context run as group |
-| services.redis.allowPrivilegeEscalation | bool | `false` | Security Context allowPrivilegeEscalation |
 | services.rethinkdb.affinity | object | `{}` |  |
 | services.rethinkdb.backups.enabled | bool | `false` | Enable automatic backups |
 | services.rethinkdb.backups.restore | bool | `false` | Enable restore job from last backup |
