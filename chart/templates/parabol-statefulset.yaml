@@ -32,7 +32,7 @@ spec:
       containers:
       - name: parabol
         command: ["/bin/sh"]
-        args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node ./dist/web.js & node ./dist/gqlExecutor.js"]
+        args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node ./dist/web.js & SERVER_ID=8 node ./dist/gqlExecutor.js"]
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
         env:
           - name: FILE_STORE_PROVIDER
