@@ -79,6 +79,8 @@ spec:
             value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKey }}"
           - name: GOOGLE_CLOUD_PRIVATE_KEY_ID
             value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKeyId }}"
+          - name: SAML_ISSUER
+            value: "{{ .Values.parabolDeployment.env.samlIssuer }}"  
         {{- if .Values.services.parabol.localStorage.enabled }}  
         volumeMounts:
           - name: parabol-persistent-storage

@@ -89,7 +89,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.14.0
+    image: ironbank/parabol/parabol:7.18.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host
@@ -224,6 +224,9 @@ parabolDeployment:
 
     # -- Google Private Key ID (optional variable for use with GCP service account credential)
     goocleCloudPrivateKeyId: key_GOOGLE_CLOUD_PRIVATE_KEY_ID
+
+    # -- SAML Issuer (Override default issuer client with this value)
+    samlIssuer: ""
 
   livenessProbe:
     []

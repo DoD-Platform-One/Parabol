@@ -139,6 +139,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.env.protocol | string | `"http"` | The protocol used by the server ("http" or "https"). |
 | parabolDeployment.env.redisUrl | string | `"redis://redis-service.parabol.svc.cluster.local:6379"` | The URL used to access the Redis server. |
 | parabolDeployment.env.rethinkdbUrl | string | `"rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment"` | The URL used to access the RethinkDB server. |
+| parabolDeployment.env.samlIssuer | string | `""` | SAML Issuer (Override default issuer client with this value) |
 | parabolDeployment.env.serverId | int | `1` | Identifier for the server (useful in scaled/multi-server environments). |
 | parabolDeployment.env.serverSecret | string | `"QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK"` | The secret key used to generate JWT tokens |
 | parabolDeployment.livenessProbe | list | `[]` |  |
@@ -167,7 +168,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:7.11.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:7.18.0"` | Image to use for deploying Parabol |
 | services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
 | services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
 | services.parabol.nodeSelector | object | `{}` | Pod spec for adding node constraints |
@@ -224,3 +225,18 @@ It's essential to treat the `values.yaml` file with care, especially if it conta
 ## Configuration Notes
 
 You will have to update `dockerconfigjson` and `registryCredentials.username & registryCredentials.password` in your values file with proper registry information.
+
+### SSO
+
+#### SAML - Allow all domains within single instance
+
+Admins can use a single SAML record for the entire instance if SSO is the only way to log in to the app & a SAML record already exists. To set up SAML, they can temporarily enable email/password auth & then after it's set up successfully they can disable that.
+
+The following env vars must be set to the exact values below to enable this:
+
+``` plain
+AUTH_INTERNAL_DISABLED = 'true'
+AUTH_GOOGLE_DISABLED = 'true'
+AUTH_MICROSOFT_DISABLED = 'true'
+AUTH_SSO_DISABLED = 'false'
+```
