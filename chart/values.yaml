@@ -89,7 +89,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.19.5
+    image: ironbank/parabol/parabol:7.20.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host
