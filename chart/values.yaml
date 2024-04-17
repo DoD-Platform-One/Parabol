@@ -89,7 +89,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.22.2
+    image: ironbank/parabol/parabol:7.27.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host
@@ -103,17 +103,17 @@ services:
     # -- IDP URL from SAML SP
     idp_url: "https://fqdn.to.idp.bigbang.dev"
     # -- Parabol hostname
-    idp_host: "parabol.bigbang.dev"
+    idp_host: "parabol.dev.bigbang.mil"
     # -- Parabol graphql endpoint
-    ffGqlEndpoint: "https://parabol.bigbang.dev/intranet-graphql"
+    ffGqlEndpoint: "https://parabol.dev.bigbang.mil/intranet-graphql"
     # -- Determines if usage stats/insights is enabled, change to true to enable
     ffInsights: false
     # -- Parabol long lived token that is generated from server secret
     ffInsightsToken: "your_long_lived_token"
     # -- Parabol user emails that can view usuage stats/insights
-    rethinkffInsightsEmailsDb: "admin@parabol.bigbang.dev"
+    rethinkffInsightsEmailsDb: "admin@parabol.dev.bigbang.mil"
     # -- Parabol domains to be whitelisted for usage stats/insights
-    ffInsightsDomain: "parabol.bigbang.dev"
+    ffInsightsDomain: "parabol.dev.bigbang.mil"
     # -- Service name for Stateful Set
     serviceName: "parabol-stateful-set"
     # -- Number of replicas to deploy
@@ -166,11 +166,12 @@ ingress:
   gateway:
     create: false
   # -- The external hostname for Parabol application
-  hostname: parabol.bigbang.dev
+  hostname: parabol.dev.bigbang.mil
   # -- Istio gateway that should be used for routing
   # ex. gateways:
   #       - istio-system/public
-  gateways: []
+  gateways: 
+    - istio-system/public
 
 parabolDeployment:
   env:
@@ -181,10 +182,10 @@ parabolDeployment:
     port: 3000
 
     # -- The external hostname for Parabol application
-    host: parabol.bigbang.dev
+    host: parabol.dev.bigbang.mil
 
     # -- The protocol used by the server ("http" or "https").
-    protocol: http
+    protocol: https
 
     # -- Identifier for the server (useful in scaled/multi-server environments).
     serverId: 1
@@ -193,7 +194,7 @@ parabolDeployment:
     serverSecret: QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK
 
     # -- The base URL used to construct invitation shortlinks.
-    invitationShortlink: parabol.bigbang.dev/invitation-link
+    invitationShortlink: parabol.dev.bigbang.mil/invitation-link
 
     # -- The URL used to access the Redis server.
     redisUrl: redis://redis-service.parabol.svc.cluster.local:6379

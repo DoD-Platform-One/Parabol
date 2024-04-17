@@ -9,16 +9,15 @@ data:
   {{- end }}
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: parabol
 spec:
-  serviceName: {{ .Values.services.parabol.serviceName }}
   replicas: {{ .Values.services.parabol.replicas }}
   selector:
     matchLabels:
       app: parabol
-  updateStrategy: 
+  strategy: 
     type: RollingUpdate    
   template:
     metadata:
@@ -32,7 +31,7 @@ spec:
       containers:
       - name: parabol
         command: ["/bin/sh"]
-        args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node ./dist/web.js & SERVER_ID=8 node ./dist/gqlExecutor.js"]
+        args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node --trace-warnings ./dist/web.js & SERVER_ID=8 node --trace-warnings ./dist/gqlExecutor.js"]
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
         env:
           - name: FILE_STORE_PROVIDER
