@@ -1,14 +1,19 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: rethinkdb-deployment
+  name: rethinkdb
 spec:
   replicas: 1
+  serviceName: rethinkdb
   selector:
     matchLabels:
       app: rethinkdb
   template:
     metadata:
+      annotations:
+        {{- with .Values.services.rethinkdb.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         app: rethinkdb
     spec:

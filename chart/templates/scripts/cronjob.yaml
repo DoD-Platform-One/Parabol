@@ -1,0 +1,26 @@
+{{- if .Values.services.parabol.cronjob }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: parabol-restart
+  annotations:
+    sidecar.istio.io/inject: "false"
+spec:
+  schedule: "0 */2 * * *" # Schedule it to run every 2hrs
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: restart-deployment
+            image: registry1.dso.mil/ironbank/opensource/kubernetes/kubectl:v1.28.8
+            command: ["kubectl", "scale", "--replicas=0", "deployment/parabol-gqlexecutor", "--namespace=parabol"]
+          restartPolicy: OnFailure
+          {{- with .Values.global.imageRegistry.imagePullSecrets }}
+          imagePullSecrets:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{ end }}          

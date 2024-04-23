@@ -9,10 +9,11 @@ data:
   POSTGRES_PASSWORD: parabol
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: postgres-deployment
+  name: postgres
 spec:
+  serviceName: postgres
   replicas: 1
   selector:
     matchLabels:
@@ -22,10 +23,13 @@ spec:
       labels:
         app: postgres
       annotations:
+        {{- with .Values.services.postgres.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- if .Values.monitoring.enabled }}
         prometheus.io/scrape: "true"
         prometheus.io/port: "9817"
-        {{ end }}    
+        {{- end }} 
     spec:
       securityContext:
         runAsNonRoot: true
