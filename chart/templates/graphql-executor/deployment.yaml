@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: parabol-config
+  name: gqlexecutor-config
 data:
   {{- range $key, $value := .Values.parabolDeployment.env }}
   {{ $key }}: {{ $value | quote }}
@@ -11,16 +11,20 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: parabol
+  name: parabol-gqlexecutor
 spec:
-  replicas: {{ .Values.services.parabol.replicas }}
+  replicas: {{ .Values.services.gqlexecutor.replicas }}
+  strategy:
+    type: "RollingUpdate"
   selector:
     matchLabels:
-      app: parabol
-  strategy: 
-    type: RollingUpdate    
+      app: parabol 
   template:
     metadata:
+      annotations:
+        {{- with .Values.services.gqlexecutor.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         app: parabol
     spec:
@@ -31,7 +35,7 @@ spec:
       containers:
       - name: parabol
         command: ["/bin/sh"]
-        args: ["-c", "sleep 15s && NODE_ENV=production && DEBUG=* && node ./dist/preDeploy.js && node --trace-warnings ./dist/web.js & SERVER_ID=8 node --trace-warnings ./dist/gqlExecutor.js"]
+        args: ["-c", "sleep 10s && export SERVER_ID=`./ip-to-server_id/index.js $(POD_IP)` && node --trace-warnings ./dist/gqlExecutor.js"]
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
         env:
           - name: FILE_STORE_PROVIDER
@@ -56,8 +60,6 @@ spec:
             value: "{{ .Values.parabolDeployment.env.host }}"
           - name: INVITATION_SHORTLINK
             value: "{{ .Values.parabolDeployment.env.invitationShortlink }}"
-          - name: SERVER_ID
-            value: "{{ .Values.parabolDeployment.env.serverId }}"
           - name: PROTO
             value: "{{ .Values.parabolDeployment.env.protocol }}"
           - name: SERVER_SECRET
@@ -79,76 +81,58 @@ spec:
           - name: GOOGLE_CLOUD_PRIVATE_KEY_ID
             value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKeyId }}"
           - name: SAML_ISSUER
-            value: "{{ .Values.parabolDeployment.env.samlIssuer }}"  
-        {{- if .Values.services.parabol.localStorage.enabled }}  
+            value: "{{ .Values.parabolDeployment.env.samlIssuer }}"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        {{- if .Values.services.gqlexecutor.ephemeralStorage.enabled }} 
         volumeMounts:
-          - name: parabol-persistent-storage
+          - name: ephemeral-disk
             mountPath: /data
-        {{ end }}
+        {{- end }}
         resources:
-            {{- toYaml .Values.services.parabol.resources | nindent 12 }}
+            {{- toYaml .Values.services.gqlexecutor.resources | nindent 12 }}
         ports:
-        - name: webserver
-          containerPort: 3000
-          protocol: TCP
-        {{- if .Values.parabolDeployment.livenessProbe }}
+        {{- if .Values.services.gqlexecutor.livenessProbe }}
         livenessProbe:
-          {{- toYaml .Values.parabolDeployment.livenessProbe | nindent 12 }}
+          {{- toYaml .Values.services.gqlexecutor.livenessProbe | nindent 12 }}
         {{- end }}
-        {{- if .Values.parabolDeployment.readinessProbe }}
+        {{- if .Values.services.gqlexecutor.readinessProbe }}
         readinessProbe:
-        {{- toYaml .Values.parabolDeployment.readinessProbe | nindent 12 }}
+        {{- toYaml .Values.services.gqlexecutor.readinessProbe | nindent 12 }}
         {{- end }}
-        {{- if .Values.parabolDeployment.livenessProbe }}
+        {{- if .Values.services.gqlexecutor.livenessProbe }}
         startupProbe:
-          {{- toYaml .Values.parabolDeployment.startupProbe | nindent 12 }}
+          {{- toYaml .Values.services.gqlexecutor.startupProbe | nindent 12 }}
         {{- end }}    
   
       {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.services.parabol.nodeSelector }}
+      {{- with .Values.services.gqlexecutor.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.services.parabol.affinity }}
+      {{- with .Values.services.gqlexecutor.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.services.parabol.tolerations }}
+      {{- with .Values.services.gqlexecutor.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.services.parabol.localStorage.enabled }}
       volumes:
-      - name: parabol-persistent-storage
-        persistentVolumeClaim:
-          claimName: parabol-data
-      {{ end }} 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: parabol-service
-spec:
-  type: ClusterIP
-  ports:
-  - name: webserver
-    port: 3000
-    targetPort: 3000
-  selector:
-    app: parabol
----
-{{- if .Values.services.parabol.localStorage.enabled }}
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: parabol-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ .Values.services.parabol.localStorage.volumeSize }}
-{{ end }}    
+      {{- if .Values.services.gqlexecutor.ephemeralStorage.enabled }}
+        - name: parabol-ephemeral-disk
+          ephemeral:
+            volumeClaimTemplate:
+              metadata:
+                labels:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: {{ .Values.services.parabol.ephemeralStorage.storage }}
+        {{- end }}

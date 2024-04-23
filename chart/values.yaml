@@ -7,7 +7,8 @@ global:
     # -- Secret needed to pull images from registry (must be created in namespace prior or enabled above)
     ## imagePullSecrets:
     ##   - name: mySecretName
-    imagePullSecrets: []
+    imagePullSecrets:
+    - name: regcred
 
 registryCredentials:
   # -- Username / password auth container registry
@@ -26,6 +27,8 @@ services:
     nodeSelector: {}
     affinity: {}
     tolerations: []
+    # -- Pod annotations
+    annotations: {}
     # -- securityContext settings
     fsGroup: 1000
     runAsUser: 999
@@ -57,6 +60,9 @@ services:
     nodeSelector: {}
     affinity: {}
     tolerations: []
+    # -- Pod annotations
+    annotations: {}
+    # traffic.sidecar.istio.io/excludeInboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
 
   postgres:
     # -- Deploy Postgres pods - Disable if using external postgres instance
@@ -86,6 +92,9 @@ services:
     nodeSelector: {}
     affinity: {}
     tolerations: []
+    # -- Pod annotations
+    annotations: {}
+    # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
 
   parabol:
     # -- Image to use for deploying Parabol
@@ -101,7 +110,7 @@ services:
     # -- This is the unique ID for the SAML entry in RethinkDB
     idp_stub: "bigbang"
     # -- IDP URL from SAML SP
-    idp_url: "https://fqdn.to.idp.bigbang.dev"
+    idp_url: "https://fqdn.to.idp.dev.bigbang.mil"
     # -- Parabol hostname
     idp_host: "parabol.dev.bigbang.mil"
     # -- Parabol graphql endpoint
@@ -114,10 +123,8 @@ services:
     rethinkffInsightsEmailsDb: "admin@parabol.dev.bigbang.mil"
     # -- Parabol domains to be whitelisted for usage stats/insights
     ffInsightsDomain: "parabol.dev.bigbang.mil"
-    # -- Service name for Stateful Set
-    serviceName: "parabol-stateful-set"
     # -- Number of replicas to deploy
-    replicas: 1
+    replicas: 2
     env:
       # -- Parabol config to reach Redis
       redisHost: "redis-service"
@@ -130,17 +137,94 @@ services:
       internal: 3000
       # -- Exposed port for Parabol to run external to cluster
       external: 80
-    localStorage:
+    ephemeralStorage:
       # -- Use PersistentVolumeClaim for RethinkDB storage
-      enabled: true
+      enabled: false
       # -- Size of PVC volume used
-      volumeSize: 1Gi
+      storage: 10Gi
     # -- Container resource requests and limits
-    resources: {}
+    resources:
+      limits:
+        memory: 2048Mi
+      requests:
+        cpu: 1000m
+        memory: 2048Mi
     # -- Pod spec for adding node constraints
     nodeSelector: {}
     affinity: {}
     tolerations: []
+    # -- Pod annotations
+    annotations: {}
+    # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
+
+    cronjob: false
+
+    livenessProbe: []
+    # initialDelaySeconds: 90
+    # periodSeconds: 30
+    # timeoutSeconds: 60
+    # failureThreshold: 3
+    # successThreshold: 1
+    # httpGet:
+    #   path: /manifest.json
+    #   port: 3000
+    readinessProbe:
+      # -- Delay before checking for readiness
+      initialDelaySeconds: 30
+      # -- The amount of time to check for
+      periodSeconds: 10
+      # -- How long before the check timesout
+      timeoutSeconds: 5
+      # -- How many time should the check fail before restarting
+      failureThreshold: 3
+      # -- How many successes should the check have before ready
+      successThreshold: 1
+      httpGet:
+        # -- Path to HTTP check
+        path: /manifest.json
+        # -- Port for HTTP check
+        port: 3000
+    startupProbe:
+      # -- The amount of time to check for
+      periodSeconds: 30
+      # -- How many time should the check fail before restarting
+      failureThreshold: 3
+      httpGet:
+        # -- Path to HTTP check
+        path: /manifest.json
+        # -- Port for HTTP check
+        port: 3000
+
+  gqlexecutor:
+    # -- Image to use for deploying Parabol
+    image: ironbank/parabol/parabol:7.27.0
+    # -- Determines if there is a default IDP configure change to true to enable
+    replicas: 2
+    # -- Container resource requests and limits
+    resources:
+      limits:
+        memory: 4096Mi
+      requests:
+        cpu: 1000m
+        memory: 4096Mi
+    # -- Pod spec for adding node constraints
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+    livenessProbe: []
+    readinessProbe: []
+    startupProbe: []
+    # -- Pod annotations
+    annotations: {}
+    # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
+
+    ephemeralStorage:
+      # -- Attach volume for debugging
+      enabled: false
+      # -- Size of PVC volume used
+      storage: 10Gi
+      # -- Container resource requests and limits
+      # -- Container resource requests and limits
 
 database:
   env:
@@ -170,8 +254,8 @@ ingress:
   # -- Istio gateway that should be used for routing
   # ex. gateways:
   #       - istio-system/public
-  gateways: 
-    - istio-system/public
+  gateways:
+  - istio-system/public
 
 parabolDeployment:
   env:
@@ -229,42 +313,6 @@ parabolDeployment:
     # -- SAML Issuer (Override default issuer client with this value)
     samlIssuer: ""
 
-  livenessProbe:
-    []
-    # initialDelaySeconds: 90
-    # periodSeconds: 30
-    # timeoutSeconds: 60
-    # failureThreshold: 3
-    # successThreshold: 1
-    # httpGet:
-    #   path: /manifest.json
-    #   port: 3000
-  readinessProbe:
-    # -- Delay before checking for readiness
-    initialDelaySeconds: 30
-    # -- The amount of time to check for
-    periodSeconds: 10
-    # -- How long before the check timesout
-    timeoutSeconds: 5
-    # -- How many time should the check fail before restarting
-    failureThreshold: 3
-    # -- How many successes should the check have before ready
-    successThreshold: 1
-    httpGet:
-      # -- Path to HTTP check
-      path: /manifest.json
-      # -- Port for HTTP check
-      port: 3000
-  startupProbe:
-    # -- The amount of time to check for
-    periodSeconds: 30
-    # -- How many time should the check fail before restarting
-    failureThreshold: 3
-    httpGet:
-      # -- Path to HTTP check
-      path: /manifest.json
-      # -- Port for HTTP check
-      port: 3000
 
 monitoring:
   # -- Enable BigBang Monitoring resources
@@ -283,6 +331,7 @@ monitoring:
     # -- Port that Postgres metrics are exposed on
     metricsPort: 9187
     env:
-      # -- Postgres exporter env vars
-      - name: DATA_SOURCE_NAME
-        value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
+    # -- Postgres exporter env vars
+    - name: DATA_SOURCE_NAME
+      value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
+

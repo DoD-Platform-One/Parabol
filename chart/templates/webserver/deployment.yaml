@@ -1,0 +1,141 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parabol-config
+data:
+  {{- range $key, $value := .Values.parabolDeployment.env }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parabol-webserver
+spec:
+  replicas: {{ .Values.services.parabol.replicas }}
+  selector:
+    matchLabels:
+      app: parabol 
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.services.parabol.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app: parabol
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+      - name: parabol
+        command: ["/bin/sh"]
+        args: ["-c", "sleep 15s && export SERVER_ID=`./ip-to-server_id/index.js $(POD_IP)` && node dist/preDeploy.js && node --trace-warnings ./dist/web.js"]
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
+        env:
+          - name: FILE_STORE_PROVIDER
+            value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
+          - name: PORT
+            value: "{{ .Values.parabolDeployment.env.port }}"
+          - name: POSTGRES_DB
+            value: "{{ .Values.database.env.postgresDb }}"
+          - name: POSTGRES_USER
+            value: "{{ .Values.database.env.postgresUser }}"
+          - name: POSTGRES_HOST
+            value: "{{ .Values.database.env.postgresHost }}"
+          - name: POSTGRES_PORT
+            value: "{{ .Values.database.env.postgresPort }}"
+          - name: POSTGRES_PASSWORD
+            value: "{{ .Values.database.env.postgresPassword }}"
+          - name: REDIS_URL
+            value: "{{ .Values.parabolDeployment.env.redisUrl }}"
+          - name: RETHINKDB_URL
+            value: "{{ .Values.parabolDeployment.env.rethinkdbUrl }}"
+          - name: HOST
+            value: "{{ .Values.parabolDeployment.env.host }}"
+          - name: INVITATION_SHORTLINK
+            value: "{{ .Values.parabolDeployment.env.invitationShortlink }}"
+          - name: SERVER_ID
+            value: "{{ .Values.parabolDeployment.env.serverId }}"
+          - name: PROTO
+            value: "{{ .Values.parabolDeployment.env.protocol }}"
+          - name: SERVER_SECRET
+            value: "{{ .Values.parabolDeployment.env.serverSecret }}"
+          - name: AUTH_INTERNAL_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authInternalDisabled }}"
+          - name: AUTH_GOOGLE_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authGooleDisabled }}"
+          - name: AUTH_MICROSOFT_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authMicrosoftDisabled }}"  
+          - name: AUTH_SSO_DISABLED
+            value: "{{ .Values.parabolDeployment.env.authSsoDisabled }}"
+          - name: IS_ENTERPRISE
+            value: "{{ .Values.parabolDeployment.env.isEnterprise }}"
+          - name: GOOGLE_CLOUD_CLIENT_EMAIL
+            value: "{{ .Values.parabolDeployment.env.googleCloudClientEmail }}"
+          - name: GOOGLE_CLOUD_PRIVATE_KEY
+            value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKey }}"
+          - name: GOOGLE_CLOUD_PRIVATE_KEY_ID
+            value: "{{ .Values.parabolDeployment.env.goocleCloudPrivateKeyId }}"
+          - name: SAML_ISSUER
+            value: "{{ .Values.parabolDeployment.env.samlIssuer }}"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP   
+        {{- if .Values.services.parabol.ephemeralStorage.enabled }} 
+        volumeMounts:
+          - name: ephemeral-disk
+            mountPath: /data
+        {{- end }}
+        resources:
+            {{- toYaml .Values.services.parabol.resources | nindent 12 }}
+        ports:
+        - name: webserver
+          containerPort: 3000
+          protocol: TCP
+        {{- if .Values.services.parabol.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.services.parabol.livenessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.services.parabol.readinessProbe }}
+        readinessProbe:
+        {{- toYaml .Values.services.parabol.readinessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.services.parabol.livenessProbe }}
+        startupProbe:
+          {{- toYaml .Values.services.parabol.startupProbe | nindent 12 }}
+        {{- end }}    
+  
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.parabol.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.parabol.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.parabol.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.services.parabol.ephemeralStorage.enabled }}
+        - name: parabol-ephemeral-disk
+          ephemeral:
+            volumeClaimTemplate:
+              metadata:
+                labels:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: {{ .Values.services.parabol.ephemeralStorage.storage }}
+        {{- end }}
