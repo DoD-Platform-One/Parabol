@@ -157,6 +157,7 @@ services:
     annotations: {}
     # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
 
+    # -- Enable gql restart cronjob
     cronjob: false
 
     livenessProbe: []
@@ -259,8 +260,11 @@ ingress:
 
 parabolDeployment:
   env:
-    # -- fileStoreProvider: Specifies the provider for file storage - "local" means local file-based storage is used
+    # -- fileStoreProvider: Specifies the provider for file storage - local | s3
     fileStoreProvider: local
+
+    # -- Base url for static assets
+    cdnBaseUrl: ''
 
     # -- The port on which the application will be exposed.
     port: 3000
@@ -270,9 +274,6 @@ parabolDeployment:
 
     # -- The protocol used by the server ("http" or "https").
     protocol: https
-
-    # -- Identifier for the server (useful in scaled/multi-server environments).
-    serverId: 1
 
     # -- The secret key used to generate JWT tokens
     serverSecret: QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK
@@ -312,6 +313,12 @@ parabolDeployment:
 
     # -- SAML Issuer (Override default issuer client with this value)
     samlIssuer: ""
+
+    # -- AWS S3 configuration for static assets
+    awsAccessKeyId: key_AWS_ACCESS_KEY_ID
+    awsRegion: key_AWS_REGION
+    awsSecretAccessKey: key_AWS_SECRET_ACCESS_KEY
+    awsS3Bucket: BUCKET_NAME
 
 
 monitoring:
