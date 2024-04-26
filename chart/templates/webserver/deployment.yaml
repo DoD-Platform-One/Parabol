@@ -16,7 +16,8 @@ spec:
   replicas: {{ .Values.services.parabol.replicas }}
   selector:
     matchLabels:
-      app: parabol 
+      app.kubernetes.io/component: webserver
+      app.kubernetes.io/name: parabol 
   template:
     metadata:
       annotations:
@@ -24,7 +25,8 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        app: parabol
+        app.kubernetes.io/component: webserver
+        app.kubernetes.io/name: parabol  
     spec:
       securityContext:
         runAsNonRoot: true

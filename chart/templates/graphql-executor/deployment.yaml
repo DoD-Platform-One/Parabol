@@ -18,15 +18,17 @@ spec:
     type: "RollingUpdate"
   selector:
     matchLabels:
-      app: parabol 
-  template:
+      app.kubernetes.io/component: graphql-executor
+      app.kubernetes.io/name: parabol
+  template:    
     metadata:
       annotations:
         {{- with .Values.services.gqlexecutor.annotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        app: parabol
+        app.kubernetes.io/component: graphql-executor
+        app.kubernetes.io/name: parabol  
     spec:
       securityContext:
         runAsNonRoot: true
