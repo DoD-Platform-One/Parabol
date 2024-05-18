@@ -32,8 +32,10 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1001
-        runAsGroup: 1001
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch" 
       containers:
       - name: parabol
         command: ["/bin/sh"]
@@ -98,11 +100,12 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-        {{- if .Values.services.gqlexecutor.ephemeralStorage.enabled }} 
+        {{- if .Values.services.parabol.localStorage.enabled }} 
         volumeMounts:
-          - name: ephemeral-disk
-            mountPath: /data
-        {{- end }}
+          - name: parabol-data-volume
+            mountPath: /home/node/parabol/self-hosted
+            subPath: self-hosted
+        {{- end }}        
         resources:
             {{- toYaml .Values.services.gqlexecutor.resources | nindent 12 }}
         ports:
@@ -135,16 +138,9 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.services.parabol.localStorage.enabled }}
       volumes:
-      {{- if .Values.services.gqlexecutor.ephemeralStorage.enabled }}
-        - name: parabol-ephemeral-disk
-          ephemeral:
-            volumeClaimTemplate:
-              metadata:
-                labels:
-              spec:
-                accessModes: [ "ReadWriteOnce" ]
-                resources:
-                  requests:
-                    storage: {{ .Values.services.parabol.ephemeralStorage.storage }}
-        {{- end }}
+      - name: parabol-data-volume
+        persistentVolumeClaim:
+          claimName: parabol-data-pvc
+      {{- end }}

@@ -1,0 +1,15 @@
+{{- if .Values.services.parabol.localStorage.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: parabol-data-pvc
+spec:
+  {{- with .Values.services.parabol.localStorage.accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}  
+  storageClassName: {{ .Values.services.parabol.localStorage.storageClassName}}
+  resources:
+    requests:
+      storage: {{ .Values.services.parabol.localStorage.storage }}
+{{ end }}

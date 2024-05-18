@@ -1,0 +1,23 @@
+{{- if .Values.services.parabol.localStorage.awsEbs }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: parabol-data-volume
+spec:
+  capacity:
+    storage: {{ .Values.services.parabol.localStorage.storage }}
+  {{- with .Values.services.parabol.localStorage.accessModes }}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  storageClassName: {{ .Values.services.parabol.localStorage.storageClassName }}
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    name: parabol-data-pvc
+    namespace: {{.Release.Namespace }}
+  {{- if .Values.services.parabol.localStorage.awsEbs}}
+  csi:
+    driver: {{ .Values.services.parabol.localStorage.driver }}
+    volumeHandle: {{ .Values.services.parabol.localStorage.efsId }}
+  {{- end }}
+{{ end }}    
