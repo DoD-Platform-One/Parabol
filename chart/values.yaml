@@ -98,7 +98,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.27.0
+    image: ironbank/parabol/parabol:7.30.1
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host
@@ -124,7 +124,7 @@ services:
     # -- Parabol domains to be whitelisted for usage stats/insights
     ffInsightsDomain: "parabol.dev.bigbang.mil"
     # -- Number of replicas to deploy
-    replicas: 2
+    replicas: 1
     env:
       # -- Parabol config to reach Redis
       redisHost: "redis-service"
@@ -137,11 +137,22 @@ services:
       internal: 3000
       # -- Exposed port for Parabol to run external to cluster
       external: 80
-    ephemeralStorage:
-      # -- Use PersistentVolumeClaim for RethinkDB storage
-      enabled: false
+
+    localStorage:
+      # -- Attach volume for local storage
+      enabled: true
+      #-- Use AWS EBS volume
+      awsEbs: true
       # -- Size of PVC volume used
-      storage: 10Gi
+      storage: 5Gi
+      # -- Storage Class used (efs-sc, local-path)
+      storageClassName: efs-sc
+      accessModes:
+      - ReadWriteMany
+      # -- CSI Driver
+      driver: efs.csi.aws.com
+      efsId: "example"
+
     # -- Container resource requests and limits
     resources:
       limits:
@@ -198,9 +209,9 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.27.0
+    image: ironbank/parabol/parabol:7.30.1
     # -- Determines if there is a default IDP configure change to true to enable
-    replicas: 2
+    replicas: 1
     # -- Container resource requests and limits
     resources:
       limits:
@@ -219,13 +230,8 @@ services:
     annotations: {}
     # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
 
-    ephemeralStorage:
-      # -- Attach volume for debugging
-      enabled: false
-      # -- Size of PVC volume used
-      storage: 10Gi
-      # -- Container resource requests and limits
-      # -- Container resource requests and limits
+
+
 
 database:
   env:
