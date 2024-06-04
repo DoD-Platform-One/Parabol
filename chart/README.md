@@ -113,11 +113,11 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | database.env.postgresUser | string | `"postgres"` | Username to access the PostgreSQL database. |
 | global.imageRegistry.createSecret | bool | `false` | Create imagepullsecret with deployment template (must use dockerconfigjson for auth credentials) |
 | global.imageRegistry.host | string | `"registry1.dso.mil"` | Container registry hostname |
-| global.imageRegistry.imagePullSecrets | list | `[]` | Secret needed to pull images from registry (must be created in namespace prior or enabled above) # imagePullSecrets: #   - name: mySecretName |
+| global.imageRegistry.imagePullSecrets | list | `[{"name":"regcred"}]` | Secret needed to pull images from registry (must be created in namespace prior or enabled above) # imagePullSecrets: #   - name: mySecretName |
 | ingress.enabled | bool | `true` | Enables external routing to Parabol service via Istio |
 | ingress.gateway | object | `{"create":false}` | Create additional istio gateway resource if needed |
-| ingress.gateways | list | `[]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
-| ingress.hostname | string | `"parabol.bigbang.dev"` | The external hostname for Parabol application |
+| ingress.gateways | list | `["istio-system/public"]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
+| ingress.hostname | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |
 | monitoring.dashboards.label | string | `"grafana_dashboard"` | Grafana dashboard labels to check |
 | monitoring.dashboards.namespace | string | `"monitoring"` | K8s namespace where the monitoring stack is deployed |
 | monitoring.enabled | bool | `true` | Enable BigBang Monitoring resources |
@@ -128,61 +128,82 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.env.authInternalDisabled | bool | `false` | Flag indicating if internal username/password authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.authMicrosoftDisabled | bool | `true` | Flag indicating if Microsoft authentication is disabled ("true" or "false"). |
 | parabolDeployment.env.authSsoDisabled | bool | `false` | Flag indicating if Single Sign-On (SSO) authentication is disabled ("true" or "false"). |
-| parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - "local" means local file-based storage is used |
+| parabolDeployment.env.awsAccessKeyId | string | `"key_AWS_ACCESS_KEY_ID"` | AWS S3 configuration for static assets |
+| parabolDeployment.env.awsRegion | string | `"key_AWS_REGION"` |  |
+| parabolDeployment.env.awsS3Bucket | string | `"BUCKET_NAME"` |  |
+| parabolDeployment.env.awsSecretAccessKey | string | `"key_AWS_SECRET_ACCESS_KEY"` |  |
+| parabolDeployment.env.cdnBaseUrl | string | `""` | Base url for static assets |
+| parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - local | s3 |
 | parabolDeployment.env.goocleCloudPrivateKey | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY"` | Google Service Account Private key (optional variable for use with GCP service account credential) |
 | parabolDeployment.env.goocleCloudPrivateKeyId | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY_ID"` | Google Private Key ID (optional variable for use with GCP service account credential) |
 | parabolDeployment.env.googleCloudClientEmail | string | `"key_GOOGLE_CLOUD_CLIENT_EMAIL"` | Google Service Account Email (optional variable if Google services are used) |
-| parabolDeployment.env.host | string | `"parabol.bigbang.dev"` | The external hostname for Parabol application |
-| parabolDeployment.env.invitationShortlink | string | `"parabol.bigbang.dev/invitation-link"` | The base URL used to construct invitation shortlinks. |
+| parabolDeployment.env.host | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |
+| parabolDeployment.env.invitationShortlink | string | `"parabol.dev.bigbang.mil/invitation-link"` | The base URL used to construct invitation shortlinks. |
 | parabolDeployment.env.isEnterprise | bool | `true` | Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater. |
 | parabolDeployment.env.port | int | `3000` | The port on which the application will be exposed. |
-| parabolDeployment.env.protocol | string | `"http"` | The protocol used by the server ("http" or "https"). |
+| parabolDeployment.env.protocol | string | `"https"` | The protocol used by the server ("http" or "https"). |
 | parabolDeployment.env.redisUrl | string | `"redis://redis-service.parabol.svc.cluster.local:6379"` | The URL used to access the Redis server. |
 | parabolDeployment.env.rethinkdbUrl | string | `"rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment"` | The URL used to access the RethinkDB server. |
 | parabolDeployment.env.samlIssuer | string | `""` | SAML Issuer (Override default issuer client with this value) |
-| parabolDeployment.env.serverId | int | `1` | Identifier for the server (useful in scaled/multi-server environments). |
 | parabolDeployment.env.serverSecret | string | `"QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK"` | The secret key used to generate JWT tokens |
-| parabolDeployment.livenessProbe | list | `[]` |  |
-| parabolDeployment.readinessProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
-| parabolDeployment.readinessProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
-| parabolDeployment.readinessProbe.httpGet.port | int | `3000` | Port for HTTP check |
-| parabolDeployment.readinessProbe.initialDelaySeconds | int | `30` | Delay before checking for readiness |
-| parabolDeployment.readinessProbe.periodSeconds | int | `10` | The amount of time to check for |
-| parabolDeployment.readinessProbe.successThreshold | int | `1` | How many successes should the check have before ready |
-| parabolDeployment.readinessProbe.timeoutSeconds | int | `5` | How long before the check timesout |
-| parabolDeployment.startupProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
-| parabolDeployment.startupProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
-| parabolDeployment.startupProbe.httpGet.port | int | `3000` | Port for HTTP check |
-| parabolDeployment.startupProbe.periodSeconds | int | `30` | The amount of time to check for |
 | registryCredentials.password | string | `nil` |  |
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
+| services.gqlexecutor.affinity | object | `{}` |  |
+| services.gqlexecutor.annotations | object | `{}` | Pod annotations |
+| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:7.32.1"` | Image to use for deploying Parabol |
+| services.gqlexecutor.livenessProbe | list | `[]` |  |
+| services.gqlexecutor.nodeSelector | object | `{}` | Pod spec for adding node constraints |
+| services.gqlexecutor.readinessProbe | list | `[]` |  |
+| services.gqlexecutor.replicas | int | `1` | Determines if there is a default IDP configure change to true to enable |
+| services.gqlexecutor.resources | object | `{"limits":{"memory":"4096Mi"},"requests":{"cpu":"1000m","memory":"4096Mi"}}` | Container resource requests and limits |
+| services.gqlexecutor.startupProbe | list | `[]` |  |
+| services.gqlexecutor.tolerations | list | `[]` |  |
 | services.parabol.affinity | object | `{}` |  |
+| services.parabol.annotations | object | `{}` | Pod annotations |
+| services.parabol.cronjob | bool | `false` | Enable gql restart cronjob |
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
 | services.parabol.env.rethinkdbHost | string | `"rethinkdb-service"` | Parabol config to reach RethinkDB |
-| services.parabol.ffGqlEndpoint | string | `"https://parabol.bigbang.dev/intranet-graphql"` | Parabol graphql endpoint |
+| services.parabol.ffGqlEndpoint | string | `"https://parabol.dev.bigbang.mil/intranet-graphql"` | Parabol graphql endpoint |
 | services.parabol.ffInsights | bool | `false` | Determines if usage stats/insights is enabled, change to true to enable |
-| services.parabol.ffInsightsDomain | string | `"parabol.bigbang.dev"` | Parabol domains to be whitelisted for usage stats/insights |
+| services.parabol.ffInsightsDomain | string | `"parabol.dev.bigbang.mil"` | Parabol domains to be whitelisted for usage stats/insights |
 | services.parabol.ffInsightsToken | string | `"your_long_lived_token"` | Parabol long lived token that is generated from server secret |
-| services.parabol.idp_host | string | `"parabol.bigbang.dev"` | Parabol hostname |
+| services.parabol.idp_host | string | `"parabol.dev.bigbang.mil"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
-| services.parabol.idp_url | string | `"https://fqdn.to.idp.bigbang.dev"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:7.18.0"` | Image to use for deploying Parabol |
-| services.parabol.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
-| services.parabol.localStorage.volumeSize | string | `"1Gi"` | Size of PVC volume used |
+| services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
+| services.parabol.image | string | `"ironbank/parabol/parabol:7.32.1"` | Image to use for deploying Parabol |
+| services.parabol.livenessProbe | list | `[]` |  |
+| services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
+| services.parabol.localStorage.awsEbs | bool | `true` |  |
+| services.parabol.localStorage.driver | string | `"efs.csi.aws.com"` | CSI Driver |
+| services.parabol.localStorage.efsId | string | `"example"` |  |
+| services.parabol.localStorage.enabled | bool | `true` | Attach volume for local storage |
+| services.parabol.localStorage.storage | string | `"5Gi"` | Size of PVC volume used |
+| services.parabol.localStorage.storageClassName | string | `"efs-sc"` | Storage Class used (efs-sc, local-path) |
 | services.parabol.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
+| services.parabol.readinessProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
+| services.parabol.readinessProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
+| services.parabol.readinessProbe.httpGet.port | int | `3000` | Port for HTTP check |
+| services.parabol.readinessProbe.initialDelaySeconds | int | `30` | Delay before checking for readiness |
+| services.parabol.readinessProbe.periodSeconds | int | `10` | The amount of time to check for |
+| services.parabol.readinessProbe.successThreshold | int | `1` | How many successes should the check have before ready |
+| services.parabol.readinessProbe.timeoutSeconds | int | `5` | How long before the check timesout |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
-| services.parabol.resources | object | `{}` | Container resource requests and limits |
+| services.parabol.resources | object | `{"limits":{"memory":"2048Mi"},"requests":{"cpu":"1000m","memory":"2048Mi"}}` | Container resource requests and limits |
 | services.parabol.rethinkDb | string | `"actionDevelopment"` | RethinkDB database name |
 | services.parabol.rethinkDbHost | string | `"rethinkdb-service.parabol.svc.cluster.local"` | RethinkDB host |
 | services.parabol.rethinkDbPort | string | `"28015"` | RethinkDB port |
-| services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.bigbang.dev"` | Parabol user emails that can view usuage stats/insights |
-| services.parabol.serviceName | string | `"parabol-stateful-set"` | Service name for Stateful Set |
+| services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.dev.bigbang.mil"` | Parabol user emails that can view usuage stats/insights |
+| services.parabol.startupProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
+| services.parabol.startupProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
+| services.parabol.startupProbe.httpGet.port | int | `3000` | Port for HTTP check |
+| services.parabol.startupProbe.periodSeconds | int | `30` | The amount of time to check for |
 | services.parabol.tolerations | list | `[]` |  |
 | services.postgres.affinity | object | `{}` |  |
+| services.postgres.annotations | object | `{}` | Pod annotations |
 | services.postgres.backups.enabled | bool | `false` | Enable automatic backups |
 | services.postgres.backups.restore | bool | `false` | Enable restore job from last backup |
 | services.postgres.backups.schedule | string | `"0 2 * * *"` | Schedule for backup jobs example - run every day at 3am |
@@ -197,6 +218,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.postgres.tolerations | list | `[]` |  |
 | services.redis.affinity | object | `{}` |  |
 | services.redis.allowPrivilegeEscalation | bool | `false` |  |
+| services.redis.annotations | object | `{}` | Pod annotations |
 | services.redis.exporter | string | `"ironbank/bitnami/analytics/redis-exporter:v1.54.0"` | Image to use for deploying Redis exporter for monitoring |
 | services.redis.fsGroup | int | `1000` | securityContext settings |
 | services.redis.image | string | `"ironbank/opensource/redis/redis6-alpine:6.2.14"` | Image to use for deploying Redis |
@@ -207,6 +229,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.redis.runAsUser | int | `999` |  |
 | services.redis.tolerations | list | `[]` |  |
 | services.rethinkdb.affinity | object | `{}` |  |
+| services.rethinkdb.annotations | object | `{}` | Pod annotations |
 | services.rethinkdb.backups.enabled | bool | `false` | Enable automatic backups |
 | services.rethinkdb.backups.restore | bool | `false` | Enable restore job from last backup |
 | services.rethinkdb.backups.schedule | string | `"0 3 * * *"` | Schedule for backup jobs example - run every day at 3am |
@@ -226,6 +249,27 @@ It's essential to treat the `values.yaml` file with care, especially if it conta
 
 You will have to update `dockerconfigjson` and `registryCredentials.username & registryCredentials.password` in your values file with proper registry information.
 
+### SuperUsers
+Superusers have the ability to run mutations and advanced configuration within Parabol
+
+To add superuser permissions to an existing user:
+- shell into the webserver container for the currently running Parabol deployment
+- run the `assignSURole.js` script
+```
+node ./assignSURole.js -a <users_email_address>
+```
+- You will see console output for the added user
+
+### CUI Banner
+To enable / disable and configure the CUI banner for Parabol deployments, the following env vars will need to be set
+``` plain
+# GLOBAL BANNER
+GLOBAL_BANNER_ENABLED='true'
+GLOBAL_BANNER_TEXT='UNCLASSIFIED NOT APPROVED FOR CUI (IL-2)'
+GLOBAL_BANNER_BG_COLOR='#007a33'
+GLOBAL_BANNER_COLOR='#FFFFFF'
+```
+
 ### SSO
 
 #### SAML - Allow all domains within single instance
@@ -240,76 +284,5 @@ AUTH_GOOGLE_DISABLED = 'true'
 AUTH_MICROSOFT_DISABLED = 'true'
 AUTH_SSO_DISABLED = 'false'
 ```
-## Integrations
-
-### Mattermost
-Parabol leverages Mattermost's incoming webhook feature to connect a team to a channel.
-
-See https://developers.mattermost.com/integrate/webhooks/incoming/ to create an incoming webhook
-
-Add that url in Parabol team settings > integrations > mattermost > add webhook
-
-### JIRA Server
-#### Preparation
-
-- create a new folder and run [this script](https://github.com/ParabolInc/parabol/blob/master/scripts/create-jira-keys.sh)
-
-    
-    ```bash
-    cd parabol-keys
-    mkdir guideline
-    ./scripts/create-jira-keys.sh
-    ```
-You will need the output from the script to configure the integration on both the Parabol and JIRA applications.
-
-#### These steps require JIRA admin permissions and are performed on the JIRA server instance
-
-- Navigate to JIRA administration > Applications > Application links
-- Create a new application link for Parabol
-- Select `Atlassian Product` for type and enter the Parabol URL for the corresponding environment (ex. parabol.preprod.dso.mil) and select continue
-- You may get a confirmation window about the URL that was entered, hit continue
-- In the create link window enter the following:
-    - Application Name (ex. parabol integration)
-    - Check the `create incoming link` checkbox
-- Hit continue
-- In the incoming link window you will need to enter the following:
-    - `Consumer key`
-    - `Consumer name` (same consumer name entered from the previous step)
-    - `Public Key`
-- Those items are the same from the script that was run in the preparation step
-
-#### Parabol configuration
-A superuser will need to run this migration from the graphql endpoint
-- Navigate to Admin graphql endpoint at https://your-parabol-instance/admin/graphql
-- Run the following mutation and replace the needed information parabol team id, jira server base url, consumer key, private key
-```
-mutation AddJiraServer {
-  addIntegrationProvider(input: {
-    teamId: "<PARABOL_TEAM_ID>"
-    service: jiraServer
-    authStrategy: oauth1
-    scope:team
-    oAuth1ProviderMetadataInput: {
-      serverBaseUrl: "<YOUR_JIRA_SERVER_URL>"
-      consumerKey: "<CONSUMER_KEY>"
-      consumerSecret: """-----BEGIN RSA PRIVATE KEY-----
-<PRIVATE_KEY>
------END RSA PRIVATE KEY-----
-"""
-    }
-  }) {
-    __typename
-    ... on AddIntegrationProviderSuccess {
-      provider {
-        id
-        isActive
-        teamId
-        ... on IntegrationProviderOAuth1 {
-          id
-          serverBaseUrl
-        }
-      }
-    }
-  }
-}
-```
+### Integrations
+Please see the [Integrations](./chart/docs/integrations.md) documentation
