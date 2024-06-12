@@ -93,7 +93,15 @@ spec:
           - name: AWS_SECRET_ACCESS_KEY
             value: "{{ .Values.parabolDeployment.env.awsSecretAccessKey }}"
           - name: AWS_S3_BUCKET
-            value: "{{ .Values.parabolDeployment.env.awsS3Bucket }}"  
+            value: "{{ .Values.parabolDeployment.env.awsS3Bucket }}" 
+          - name: GLOBAL_BANNER_ENABLED
+            value: "{{ .Values.parabolDeployment.env.globalBannerEnabled }}"
+          - name: GLOBAL_BANNER_TEXT
+            value: "{{ .Values.parabolDeployment.env.globalBannerText }}"
+          - name: GLOBAL_BANNER_BG_COLOR
+            value: "{{ .Values.parabolDeployment.env.globalBannerBgColor }}"
+          - name: GLOBAL_BANNER_COLOR
+            value: "{{ .Values.parabolDeployment.env.globalBannerColor }}"    
           - name: POD_IP
             valueFrom:
               fieldRef:

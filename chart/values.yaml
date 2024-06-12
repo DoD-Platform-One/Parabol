@@ -98,7 +98,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.32.1
+    image: ironbank/parabol/parabol:7.36.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host
@@ -209,7 +209,7 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.32.1
+    image: ironbank/parabol/parabol:7.36.0
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -325,6 +325,12 @@ parabolDeployment:
     awsRegion: key_AWS_REGION
     awsSecretAccessKey: key_AWS_SECRET_ACCESS_KEY
     awsS3Bucket: BUCKET_NAME
+
+    # -- CUI Banner configuration
+    globalBannerEnabled: 'true'
+    globalBannerText: 'UNCLASSIFIED NOT APPROVED FOR CUI (IL-2)'
+    globalBannerColor: '#FFFFFF'
+    globalBannerBgColor: '#007a33'
 
 
 monitoring:
