@@ -1,14 +1,14 @@
-## Integrations
+# Integrations
 
-### Mattermost
+## Mattermost
 Parabol leverages Mattermost's incoming webhook feature to connect a team to a channel.
 
 See https://developers.mattermost.com/integrate/webhooks/incoming/ to create an incoming webhook
 
 Add that url in Parabol team settings > integrations > mattermost > add webhook
 
-### JIRA Server
-#### Preparation
+## JIRA Server
+### Preparation
 
 - create a new folder and run [this script](https://github.com/ParabolInc/parabol/blob/master/scripts/create-jira-keys.sh)
 
@@ -36,22 +36,24 @@ You will need the output from the script to configure the integration on both th
     - `Public Key`
 - Those items are the same from the script that was run in the preparation step
 
-#### Parabol configuration
+### Parabol configuration
+:information_source: ***The following configuration will scope a single JIRA provider to an entire instance***
+
 A superuser will need to run this migration from the graphql endpoint
 - Navigate to Admin graphql endpoint at https://your-parabol-instance/admin/graphql
-- Run the following mutation and replace the needed information parabol team id, jira server base url, consumer key, private key
-```
-mutation AddJiraServer {
+- Run the following mutation and replace the needed information: jira server base url, consumer key, private key (consumer secret).
+``` commandline
+mutation AddJiraServerGloballyOnPPMI {
   addIntegrationProvider(input: {
-    teamId: "<PARABOL_TEAM_ID>"
+    teamId: "aGhostTeam"
     service: jiraServer
     authStrategy: oauth1
-    scope:org
+    scope: global
     oAuth1ProviderMetadataInput: {
-      serverBaseUrl: "<YOUR_JIRA_SERVER_URL>"
-      consumerKey: "<CONSUMER_KEY>"
+      serverBaseUrl: "<JIRA_SERVER_URL>"
+      consumerKey: "<CONSUMER_KEY_FROM_SCRIPT>"
       consumerSecret: """-----BEGIN RSA PRIVATE KEY-----
-<PRIVATE_KEY>
+...
 -----END RSA PRIVATE KEY-----
 """
     }
