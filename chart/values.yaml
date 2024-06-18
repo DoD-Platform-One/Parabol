@@ -332,6 +332,16 @@ parabolDeployment:
     globalBannerColor: '#FFFFFF'
     globalBannerBgColor: '#007a33'
 
+    # -- SMTP configuration
+    mailProvider: 'smtp'
+    mailFrom: 'key_MAIL_FROM'
+    mailSmtpHost: 'key_MAIL_SMTP_HOST'
+    mailSmtpPort: '587'
+    mailSmtpUser: 'key_MAIL_SMTP_USER'
+    mailSmtpPassword: 'key_MAIL_SMTP_PASSWORD'
+    mailSmtpUseTls: '1' # set to '0' for false
+    mailsmtpCiphers: 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH'
+
 
 monitoring:
   # -- Enable BigBang Monitoring resources

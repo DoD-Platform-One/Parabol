@@ -104,6 +104,22 @@ spec:
             value: "{{ .Values.parabolDeployment.env.globalBannerBgColor }}"
           - name: GLOBAL_BANNER_COLOR
             value: "{{ .Values.parabolDeployment.env.globalBannerColor }}"
+          - name: MAIL_PROVIDER
+            value: "{{ .Values.parabolDeployment.env.mailProvider }}"
+          - name: MAIL_FROM
+            value: "{{ .Values.parabolDeployment.env.mailFrom }}"
+          - name: MAIL_SMTP_HOST
+            value: "{{ .Values.parabolDeployment.env.mailSmtpHost }}"
+          - name: MAIL_SMTP_PORT
+            value: "{{ .Values.parabolDeployment.env.mailSmtpPort }}"
+          - name: MAIL_SMTP_USER
+            value: "{{ .Values.parabolDeployment.env.mailSmtpUser }}"
+          - name: MAIL_SMTP_PASSWORD
+            value: "{{ .Values.parabolDeployment.env.mailSmtpPassword }}"
+          - name: MAIL_SMTP_USE_TLS
+            value: "{{ .Values.parabolDeployment.env.mailSmtpUseTls }}"
+          - name: MAIL_SMTP_CIPHERS
+            value: "{{ .Values.parabolDeployment.env.mailsmtpCiphers }}"
           - name: POD_IP
             valueFrom:
               fieldRef:
