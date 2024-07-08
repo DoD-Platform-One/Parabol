@@ -33,13 +33,17 @@ spec:
         {{- if .Values.services.rethinkdb.localStorage.enabled }}  
         volumeMounts:
           - name: rethinkdb-data
-            mountPath: "/data/rethinkdb_data"
+            mountPath: "/rethinkdb_data"
             readOnly: false
         {{ end }}
         {{- if .Values.services.rethinkdb.backups.enabled }}    
           - name: rethinkdb-backup
             mountPath: /backup
         {{ end }}
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
       {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
