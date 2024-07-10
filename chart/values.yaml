@@ -98,7 +98,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.37.6
+    image: ironbank/parabol/parabol:7.38.2
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- RethinkDB host
@@ -209,7 +209,7 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.37.6
+    image: ironbank/parabol/parabol:7.38.2
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -230,6 +230,34 @@ services:
     annotations: {}
     # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
 
+  chronos:
+    # -- Enable or disable Chronos
+    enabled: true
+    # -- Enable local storage for debugging
+    localStorage:
+      enabled: false
+      storage: 1 Gi
+    # -- Image to use for deploying Parabol
+    image: ironbank/parabol/parabol:7.38.2
+    # -- Determines if there is a default IDP configure change to true to enable
+    replicas: 1
+    # -- Container resource requests and limits
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    # -- Pod spec for adding node constraints
+    nodeSelector: {}
+    affinity: {}
+    tolerations: []
+    livenessProbe: []
+    readinessProbe: []
+    startupProbe: []
+    # -- Pod annotations
+    annotations: {}
 
 
 
@@ -363,4 +391,3 @@ monitoring:
     # -- Postgres exporter env vars
     - name: DATA_SOURCE_NAME
       value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
-
