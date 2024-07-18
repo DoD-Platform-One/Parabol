@@ -370,6 +370,13 @@ parabolDeployment:
     mailSmtpUseTls: '1' # set to '0' for false
     mailsmtpCiphers: 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH'
 
+    # -- Chronos configuration
+    chronosScheduleJobs: '0 */10 * * * *'
+    chronosUpdateTokens: '0 0 0 1,15 * *'
+    chronosProcessRecurrence: '0 */5 * * * *'
+    chronosAutoPause: '0 0 5 * * *'
+    chronosBatchEmails: '0 0 10 * * *'
+
 
 monitoring:
   # -- Enable BigBang Monitoring resources
