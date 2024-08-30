@@ -68,7 +68,7 @@ services:
     # -- Deploy Postgres pods - Disable if using external postgres instance
     enabled: true
     # -- Image to use for deploying PostgreSql
-    image: ironbank/opensource/postgres/postgresql:15.4
+    image: ironbank/opensource/postgres/postgresql:16.2
     # -- Image to use for deploying Postgres exporter for monitoring
     exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
     localStorage:
