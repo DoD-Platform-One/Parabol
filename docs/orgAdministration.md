@@ -19,3 +19,63 @@ The way membership works in Parabol is any user can create a Team and invite oth
 - **Billing Leader** - can view organization usage statistics
 - **Team Lead** - each team has a Lead role, they can add and remove other members from their team
 - **User** - can participate in meetings on their team, access that team's data
+
+## Set or Remove Org Admin Role
+
+### Look up the user id
+
+```graphql
+query {
+  user(email: "jordan+dev@parabol.co") {
+    id
+  }
+}
+```
+
+### Returns
+
+```json
+{
+  "data": {
+    "user": {
+      "id": "local|v1It4k6W9q"
+    }
+  }
+}
+```
+
+### **Give user the Org Admin role**
+
+With this mutation you will give a certain user with `userId` the org admin role rights for the organization with `orgId`: 
+
+```graphql
+mutation {
+  setOrgUserRole(orgId: "Skc7syWwNox", userId: "local|v1It4k6W9q", role: ORG_ADMIN) {
+    ... on SetOrgUserRoleSuccess {
+      updatedOrgMember {
+        id
+        role
+      }
+    }
+  }
+}
+
+```
+
+## **Remove the Org Admin role from user**
+
+With this mutation you will remove the the org admin role rights for a certain user with `userId` on the organization with `orgId`:
+
+```graphql
+mutation {
+  setOrgUserRole(orgId: "Skc7syWwNox", userId: "local|v1It4k6W9q", role: null) {
+    ... on SetOrgUserRoleSuccess {
+      updatedOrgMember {
+        id
+        role
+      }
+    }
+  }
+}
+
+```
