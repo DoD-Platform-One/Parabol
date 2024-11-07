@@ -51,8 +51,6 @@ spec:
             value: "{{ .Values.database.env.postgresPassword }}"
           - name: REDIS_URL
             value: "{{ .Values.parabolDeployment.env.redisUrl }}"
-          - name: RETHINKDB_URL
-            value: "{{ .Values.parabolDeployment.env.rethinkdbUrl }}"
           - name: HOST
             value: "{{ .Values.parabolDeployment.env.host }}"
           - name: INVITATION_SHORTLINK

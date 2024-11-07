@@ -1,8 +1,7 @@
 # parabol
+![Version: 2.0.0-bb.2](https://img.shields.io/badge/Version-2.0.0--bb.2-informational?style=flat-square) ![AppVersion: 8.3.1](https://img.shields.io/badge/AppVersion-8.3.1-informational?style=flat-square)
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)
-
-A Helm chart to deploy redis, rethinkdb, postgres, and parabol containers.
+A Helm chart to deploy redis, postgres, and parabol containers.
 
 ## Deploying the Helm Chart with Custom Values
 
@@ -16,7 +15,7 @@ This README provides guidance on how to deploy a Helm chart using the provided `
 
 ### Minimum Resource Requirements
 
-Each Parabol deployment may require differing CPU, RAM, and storage requirements based upon the number of users and intensity of usage. From experience here are the minimums we suggest to support an installation supporting 10 to 1,000 users. The following assumes the higher end of 1,000 users with the tech stack consisting of Parabol, RethinkDB, Postgres, and Redis running in Kubernetes (for physical or virtual machines adjust accordingly to match).
+Each Parabol deployment may require differing CPU, RAM, and storage requirements based upon the number of users and intensity of usage. From experience here are the minimums we suggest to support an installation supporting 10 to 1,000 users. The following assumes the higher end of 1,000 users with the tech stack consisting of Parabol, Postgres, and Redis running in Kubernetes (for physical or virtual machines adjust accordingly to match).
 
 ``` yaml
 CPU and Memory:
@@ -27,13 +26,6 @@ CPU and Memory:
         requests:
           cpu: 1
           memory: 6Gi
-    RethinkDB
-        limits:
-          cpu: 2
-          memory: 4Gi
-        requests:
-          cpu: 1
-          memory: 2Gi
     Redis
         limits:
           cpu: 1
@@ -51,14 +43,13 @@ CPU and Memory:
 
 Storage:
     Parabol PVC: minimum 1Gi
-    RethinkDB PVC: minimum 3Gi
     Redis PVC: minimum 500Mi
     Postgres PVC: minimum 3Gi
 ```
 
 ### Changing Resource Allocation
 
-By default Parabol is deployed without minimum allocations for cpu and memory. To change the resources configurations allocated to Parabol, add the above yaml to the `resources` section within the values file for each deployment (parabol, rethinkdb, redis, or postgres). Add at least the minimums from the `Minimum Resource Requirements` above and re-deploy the helm chart.
+By default Parabol is deployed without minimum allocations for cpu and memory. To change the resources configurations allocated to Parabol, add the above yaml to the `resources` section within the values file for each deployment (parabol, redis, or postgres). Add at least the minimums from the `Minimum Resource Requirements` above and re-deploy the helm chart.
 
 ## Instructions
 
@@ -88,7 +79,7 @@ helm uninstall parabol -n parabol
 
 ## Values Overview
 
-The provided `values.yaml` contains configurations for deploying services like Redis, RethinkDB, PostgreSQL, and Parabol. Here's a brief explanation:
+The provided `values.yaml` contains configurations for deploying services like Redis, PostgreSQL, and Parabol. Here's a brief explanation:
 
 - **imageRegistry**: Specifies the registry details like host, username, and password.
 - **services**: Defines the images and configurations for each service.
@@ -101,6 +92,10 @@ The provided `values.yaml` contains configurations for deploying services like R
   - Alertmanager rules are enabled for Redis and Postgres
 
 Make sure not to expose sensitive details like passwords in the `values.yaml`. It's preferable to use Kubernetes secrets for sensitive data.
+
+## Values
+
+A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
 ## Values
 
@@ -133,24 +128,52 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.env.awsS3Bucket | string | `"BUCKET_NAME"` |  |
 | parabolDeployment.env.awsSecretAccessKey | string | `"key_AWS_SECRET_ACCESS_KEY"` |  |
 | parabolDeployment.env.cdnBaseUrl | string | `""` | Base url for static assets |
+| parabolDeployment.env.chronosAutoPause | string | `"0 0 5 * * *"` |  |
+| parabolDeployment.env.chronosBatchEmails | string | `"0 0 10 * * *"` |  |
+| parabolDeployment.env.chronosProcessRecurrence | string | `"0 */5 * * * *"` |  |
+| parabolDeployment.env.chronosScheduleJobs | string | `"0 */10 * * * *"` | Chronos configuration |
+| parabolDeployment.env.chronosUpdateTokens | string | `"0 0 0 1,15 * *"` |  |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - local | s3 |
+| parabolDeployment.env.globalBannerBgColor | string | `"#007a33"` |  |
+| parabolDeployment.env.globalBannerColor | string | `"#FFFFFF"` |  |
+| parabolDeployment.env.globalBannerEnabled | string | `"true"` | CUI Banner configuration |
+| parabolDeployment.env.globalBannerText | string | `"UNCLASSIFIED NOT APPROVED FOR CUI (IL-2)"` |  |
 | parabolDeployment.env.goocleCloudPrivateKey | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY"` | Google Service Account Private key (optional variable for use with GCP service account credential) |
 | parabolDeployment.env.goocleCloudPrivateKeyId | string | `"key_GOOGLE_CLOUD_PRIVATE_KEY_ID"` | Google Private Key ID (optional variable for use with GCP service account credential) |
 | parabolDeployment.env.googleCloudClientEmail | string | `"key_GOOGLE_CLOUD_CLIENT_EMAIL"` | Google Service Account Email (optional variable if Google services are used) |
 | parabolDeployment.env.host | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |
 | parabolDeployment.env.invitationShortlink | string | `"parabol.dev.bigbang.mil/invitation-link"` | The base URL used to construct invitation shortlinks. |
 | parabolDeployment.env.isEnterprise | bool | `true` | Flag indicating if the default tier for the instance is Enterprise. Use this for privately managed instances to make all new orgs, teams, and users enterprise tier. This flag is implemented in 7.2.0 or greater. |
+| parabolDeployment.env.mailFrom | string | `"key_MAIL_FROM"` |  |
+| parabolDeployment.env.mailProvider | string | `"smtp"` | SMTP configuration |
+| parabolDeployment.env.mailSmtpHost | string | `"key_MAIL_SMTP_HOST"` |  |
+| parabolDeployment.env.mailSmtpPassword | string | `"key_MAIL_SMTP_PASSWORD"` |  |
+| parabolDeployment.env.mailSmtpPort | string | `"587"` |  |
+| parabolDeployment.env.mailSmtpUseTls | string | `"1"` |  |
+| parabolDeployment.env.mailSmtpUser | string | `"key_MAIL_SMTP_USER"` |  |
+| parabolDeployment.env.mailsmtpCiphers | string | `"HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH"` |  |
 | parabolDeployment.env.port | int | `3000` | The port on which the application will be exposed. |
 | parabolDeployment.env.protocol | string | `"https"` | The protocol used by the server ("http" or "https"). |
 | parabolDeployment.env.redisUrl | string | `"redis://redis-service.parabol.svc.cluster.local:6379"` | The URL used to access the Redis server. |
-| parabolDeployment.env.rethinkdbUrl | string | `"rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment"` | The URL used to access the RethinkDB server. |
 | parabolDeployment.env.samlIssuer | string | `""` | SAML Issuer (Override default issuer client with this value) |
 | parabolDeployment.env.serverSecret | string | `"QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK"` | The secret key used to generate JWT tokens |
 | registryCredentials.password | string | `nil` |  |
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
+| services.chronos.affinity | object | `{}` |  |
+| services.chronos.annotations | object | `{}` | Pod annotations |
+| services.chronos.enabled | bool | `true` | Enable or disable Chronos |
+| services.chronos.image | string | `"ironbank/parabol/parabol:8.3.1"` | Image to use for deploying Parabol |
+| services.chronos.livenessProbe | list | `[]` |  |
+| services.chronos.localStorage | object | `{"enabled":false,"storage":"1 Gi"}` | Enable local storage for debugging |
+| services.chronos.nodeSelector | object | `{}` | Pod spec for adding node constraints |
+| services.chronos.readinessProbe | list | `[]` |  |
+| services.chronos.replicas | int | `1` | Determines if there is a default IDP configure change to true to enable |
+| services.chronos.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Container resource requests and limits |
+| services.chronos.startupProbe | list | `[]` |  |
+| services.chronos.tolerations | list | `[]` |  |
 | services.gqlexecutor.affinity | object | `{}` |  |
 | services.gqlexecutor.annotations | object | `{}` | Pod annotations |
-| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:7.32.1"` | Image to use for deploying Parabol |
+| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.3.1"` | Image to use for deploying Parabol |
 | services.gqlexecutor.livenessProbe | list | `[]` |  |
 | services.gqlexecutor.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.gqlexecutor.readinessProbe | list | `[]` |  |
@@ -164,15 +187,15 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
-| services.parabol.env.rethinkdbHost | string | `"rethinkdb-service"` | Parabol config to reach RethinkDB |
 | services.parabol.ffGqlEndpoint | string | `"https://parabol.dev.bigbang.mil/intranet-graphql"` | Parabol graphql endpoint |
 | services.parabol.ffInsights | bool | `false` | Determines if usage stats/insights is enabled, change to true to enable |
 | services.parabol.ffInsightsDomain | string | `"parabol.dev.bigbang.mil"` | Parabol domains to be whitelisted for usage stats/insights |
+| services.parabol.ffInsightsEmailsDb | string | `"admin@parabol.dev.bigbang.mil"` | Parabol user emails that can view usuage stats/insights |
 | services.parabol.ffInsightsToken | string | `"your_long_lived_token"` | Parabol long lived token that is generated from server secret |
 | services.parabol.idp_host | string | `"parabol.dev.bigbang.mil"` | Parabol hostname |
-| services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in RethinkDB |
+| services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:7.32.1"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:8.3.1"` | Image to use for deploying Parabol |
 | services.parabol.livenessProbe | list | `[]` |  |
 | services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
 | services.parabol.localStorage.awsEbs | bool | `true` |  |
@@ -193,10 +216,6 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.readinessProbe.timeoutSeconds | int | `5` | How long before the check timesout |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
 | services.parabol.resources | object | `{"limits":{"memory":"2048Mi"},"requests":{"cpu":"1000m","memory":"2048Mi"}}` | Container resource requests and limits |
-| services.parabol.rethinkDb | string | `"actionDevelopment"` | RethinkDB database name |
-| services.parabol.rethinkDbHost | string | `"rethinkdb-service.parabol.svc.cluster.local"` | RethinkDB host |
-| services.parabol.rethinkDbPort | string | `"28015"` | RethinkDB port |
-| services.parabol.rethinkffInsightsEmailsDb | string | `"admin@parabol.dev.bigbang.mil"` | Parabol user emails that can view usuage stats/insights |
 | services.parabol.startupProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
 | services.parabol.startupProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
 | services.parabol.startupProbe.httpGet.port | int | `3000` | Port for HTTP check |
@@ -210,8 +229,8 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.postgres.backups.volumeSize | string | `"10Gi"` | Size of PVC volume used |
 | services.postgres.enabled | bool | `true` | Deploy Postgres pods - Disable if using external postgres instance |
 | services.postgres.exporter | string | `"ironbank/opensource/prometheus/postgres-exporter:v0.13.2"` | Image to use for deploying Postgres exporter for monitoring |
-| services.postgres.image | string | `"ironbank/opensource/postgres/postgresql:15.4"` | Image to use for deploying PostgreSql |
-| services.postgres.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
+| services.postgres.image | string | `"ironbank/opensource/postgres/postgresql:16.2"` | Image to use for deploying PostgreSql |
+| services.postgres.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for Postgres storage |
 | services.postgres.localStorage.volumeSize | string | `"10Gi"` | Size of PVC volume used |
 | services.postgres.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.postgres.resources | object | `{}` | Container resource requests and limits |
@@ -228,18 +247,6 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.redis.runAsNonRoot | bool | `true` |  |
 | services.redis.runAsUser | int | `999` |  |
 | services.redis.tolerations | list | `[]` |  |
-| services.rethinkdb.affinity | object | `{}` |  |
-| services.rethinkdb.annotations | object | `{}` | Pod annotations |
-| services.rethinkdb.backups.enabled | bool | `false` | Enable automatic backups |
-| services.rethinkdb.backups.restore | bool | `false` | Enable restore job from last backup |
-| services.rethinkdb.backups.schedule | string | `"0 3 * * *"` | Schedule for backup jobs example - run every day at 3am |
-| services.rethinkdb.backups.volumeSize | string | `"10Gi"` | Size of PVC volume used |
-| services.rethinkdb.image | string | `"ironbank/opensource/rethinkdb/rethinkdb:2.4.1.u1"` | Image to use for deploying ReThinkDB |
-| services.rethinkdb.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for RethinkDB storage |
-| services.rethinkdb.localStorage.volumeSize | string | `"10Gi"` | Size of PVC volume used |
-| services.rethinkdb.nodeSelector | object | `{}` | Pod spec for adding node constraints |
-| services.rethinkdb.resources | object | `{}` | Container resource requests and limits |
-| services.rethinkdb.tolerations | list | `[]` |  |
 
 ## Security Notes
 

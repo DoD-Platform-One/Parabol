@@ -11,8 +11,6 @@ services:
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
     localStorage:
       enabled: true
-  rethinkdb:
-    image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1
 
   postgres:
     image: ironbank/opensource/postgres/postgresql:15.4
@@ -28,7 +26,6 @@ services:
     image: ironbank/parabol/parabol:7.5.0
     env:
       redisHost: "redis-service"
-      rethinkdbHost: "rethinkdb-service"
       postgresHost: "postgres-service"
     ports:
       internal: 3000
@@ -62,22 +59,20 @@ parabolDeployment:
     serverSecret: QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK
     invitationShortlink: parabol.bigbang.dev/invitation-link
     redisUrl: redis://redis-service.parabol.svc.cluster.local:6379
-    rethinkdbUrl: rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment
     authInternalDisabled: false
     authGooleDisabled: false
     authSsoDisabled: false
     isEnterprise: true
 
-  livenessProbe:
-    []
-    # initialDelaySeconds: 90
-    # periodSeconds: 30
-    # timeoutSeconds: 60
-    # failureThreshold: 3
-    # successThreshold: 1
-    # httpGet:
-    #   path: /manifest.json
-    #   port: 3000
+  livenessProbe: []
+  # initialDelaySeconds: 90
+  # periodSeconds: 30
+  # timeoutSeconds: 60
+  # failureThreshold: 3
+  # successThreshold: 1
+  # httpGet:
+  #   path: /manifest.json
+  #   port: 3000
   readinessProbe:
     initialDelaySeconds: 30
     periodSeconds: 10
@@ -98,5 +93,5 @@ monitoring:
   postgres:
     metricsPort: 9187
     env:
-      - name: DATA_SOURCE_NAME
-        value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
+    - name: DATA_SOURCE_NAME
+      value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
