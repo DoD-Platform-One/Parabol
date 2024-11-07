@@ -15,6 +15,7 @@ registryCredentials:
   username:
   password:
 
+
 services:
   redis:
     # -- Image to use for deploying Redis
@@ -36,34 +37,6 @@ services:
     runAsNonRoot: true
     allowPrivilegeEscalation: false
 
-  rethinkdb:
-    # -- Image to use for deploying ReThinkDB
-    image: ironbank/opensource/rethinkdb/rethinkdb:2.4.1.u1
-    localStorage:
-      # -- Use PersistentVolumeClaim for RethinkDB storage
-      enabled: true
-      # -- Size of PVC volume used
-      volumeSize: 10Gi
-    backups:
-      # -- Enable automatic backups
-      enabled: false
-      # -- Schedule for backup jobs
-      # example - run every day at 3am
-      schedule: 0 3 * * *
-      # -- Size of PVC volume used
-      volumeSize: 10Gi
-      # -- Enable restore job from last backup
-      restore: false
-    # -- Container resource requests and limits
-    resources: {}
-    # -- Pod spec for adding node constraints
-    nodeSelector: {}
-    affinity: {}
-    tolerations: []
-    # -- Pod annotations
-    annotations: {}
-    # traffic.sidecar.istio.io/excludeInboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
-
   postgres:
     # -- Deploy Postgres pods - Disable if using external postgres instance
     enabled: true
@@ -72,7 +45,7 @@ services:
     # -- Image to use for deploying Postgres exporter for monitoring
     exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
     localStorage:
-      # -- Use PersistentVolumeClaim for RethinkDB storage
+      # -- Use PersistentVolumeClaim for Postgres storage
       enabled: true
       # -- Size of PVC volume used
       volumeSize: 10Gi
@@ -98,16 +71,10 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.52.1
+    image: ironbank/parabol/parabol:8.3.1
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
-    # -- RethinkDB host
-    rethinkDbHost: "rethinkdb-service.parabol.svc.cluster.local"
-    # -- RethinkDB port
-    rethinkDbPort: "28015"
-    # -- RethinkDB database name
-    rethinkDb: "actionDevelopment"
-    # -- This is the unique ID for the SAML entry in RethinkDB
+    # -- This is the unique ID for the SAML entry in DB
     idp_stub: "bigbang"
     # -- IDP URL from SAML SP
     idp_url: "https://fqdn.to.idp.dev.bigbang.mil"
@@ -120,7 +87,7 @@ services:
     # -- Parabol long lived token that is generated from server secret
     ffInsightsToken: "your_long_lived_token"
     # -- Parabol user emails that can view usuage stats/insights
-    rethinkffInsightsEmailsDb: "admin@parabol.dev.bigbang.mil"
+    ffInsightsEmailsDb: "admin@parabol.dev.bigbang.mil"
     # -- Parabol domains to be whitelisted for usage stats/insights
     ffInsightsDomain: "parabol.dev.bigbang.mil"
     # -- Number of replicas to deploy
@@ -128,8 +95,6 @@ services:
     env:
       # -- Parabol config to reach Redis
       redisHost: "redis-service"
-      # -- Parabol config to reach RethinkDB
-      rethinkdbHost: "rethinkdb-service"
       # -- Parabol config to reach Postgresql
       postgresHost: "postgres-service"
     ports:
@@ -209,7 +174,7 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.52.1
+    image: ironbank/parabol/parabol:8.3.1
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -238,7 +203,7 @@ services:
       enabled: false
       storage: 1 Gi
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:7.52.1
+    image: ironbank/parabol/parabol:8.3.1
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -258,8 +223,6 @@ services:
     startupProbe: []
     # -- Pod annotations
     annotations: {}
-
-
 
 database:
   env:
@@ -318,9 +281,6 @@ parabolDeployment:
     # -- The URL used to access the Redis server.
     redisUrl: redis://redis-service.parabol.svc.cluster.local:6379
 
-    # -- The URL used to access the RethinkDB server.
-    rethinkdbUrl: rethinkdb://rethinkdb-service.parabol.svc.cluster.local:28015/actionDevelopment
-
     # -- Flag indicating if internal username/password authentication is disabled ("true" or "false").
     authInternalDisabled: false
 
@@ -376,7 +336,6 @@ parabolDeployment:
     chronosProcessRecurrence: '0 */5 * * * *'
     chronosAutoPause: '0 0 5 * * *'
     chronosBatchEmails: '0 0 10 * * *'
-
 
 monitoring:
   # -- Enable BigBang Monitoring resources
