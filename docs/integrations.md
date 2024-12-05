@@ -75,4 +75,36 @@ mutation AddJiraServerGloballyOnPPMI {
 ```
 Once the provider has been validated, each team member will need to connect and authorize JIRA Server with their account. This can be done on the team page > Integrations tab  
 
-![JIRA Server Integration](images/jira_integration.png "San Juan Mountains")
+![JIRA Server Integration](images/jira_integration.png "JIRA Server Integration")
+
+## Gitlab (Self-hosted)
+
+Parabol supports integration with self-hosted Gitlab instances via Oauth Application. To enable this integration, you will need to create an Oauth Application in Gitlab. NOTE: You must have administrative access to the Gitlab instance to create the new application.
+
+### Create an Oauth Application
+
+1. Navigate to `Admin Area` > `Applications` > `Add new Application`
+![GItlab server](images/gitlab.png "GItlab server")
+
+2. Enter the following information:
+
+   - Name: `Parabol`
+   - Redirect URI: `https://<your-parabol-instance-hostname>/auth/gitlab` (ex. <https://www.parabol.co/auth/gitlab>)
+   - Confidential: `true`
+   - Scopes: `api`
+![GItlab server](images/gitlab2.png "GItlab server")
+
+3. Click `Save application`
+
+### Parabol Gitlab provider configuration
+
+An Org Admin is required to configure the Gitlab provider. See [Set or Remove Org Admin Role](orgAdministration.md#set-or-remove-org-admin-role) for instructions on how to add an Org Admin.
+
+1. Navigate to `Your Organization` > `Integration Settings`
+2. Click `Add Server`
+3. Enter the following information from the Gitlab application created above:
+    - Server base URL
+    - Application ID
+    - Secret
+
+![GItlab server](images/gitlab_parabol.png "GItlab server")
