@@ -71,7 +71,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.5.1
+    image: ironbank/parabol/parabol:8.11.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -174,7 +174,7 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.5.1
+    image: ironbank/parabol/parabol:8.11.0
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -203,7 +203,7 @@ services:
       enabled: false
       storage: 1 Gi
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.5.1
+    image: ironbank/parabol/parabol:8.11.0
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
