@@ -115,11 +115,18 @@ spec:
           - name: MAIL_SMTP_USE_TLS
             value: "{{ .Values.parabolDeployment.env.mailSmtpUseTls }}"
           - name: MAIL_SMTP_CIPHERS
-            value: "{{ .Values.parabolDeployment.env.mailsmtpCiphers }}"               
+            value: "{{ .Values.parabolDeployment.env.mailsmtpCiphers }}"
+          - name: MATTERMOST_URL
+            value: "{{ .Values.parabolDeployment.env.mattermost.instanceUrl }}"
+          - name: MATTERMOST_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-mattermost-secret
+                key: secret
           - name: POD_IP
             valueFrom:
               fieldRef:
-                fieldPath: status.podIP   
+                fieldPath: status.podIP      
         {{- if .Values.services.parabol.localStorage.enabled }} 
         volumeMounts:
           - name: parabol-data-volume
