@@ -79,3 +79,17 @@ mutation {
 }
 
 ```
+
+## **Superusers**
+
+Certain users may need elevated privileges and administrative access, granting them the ability to manage and control various aspects of the system. Unlike regular users, superusers can perform advanced tasks such as creating and managing user accounts, configuring system settings, overseeing permissions, and accessing restricted data. This role is typically reserved for system administrators, or trusted personnel who need comprehensive control to maintain, troubleshoot, or enhance the application.
+
+### To add or remove the superuser role to an account:
+Shell into a running webserver pod and run the following command (with an admin email)
+
+``` bash
+node dist/assignSURole.js --add EMAIL_TO_ADD
+```
+
+### To remove the superuser role from a user account:
+Repeat the above step and replace `--add` with `--remove` followed by the user email
