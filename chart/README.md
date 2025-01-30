@@ -95,6 +95,8 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 
 ## Values
 
+![Version: 2.1.1-bb.2](https://img.shields.io/badge/Version-2.1.1--bb.2-informational?style=flat-square) ![AppVersion: 8.17.0](https://img.shields.io/badge/AppVersion-8.17.0-informational?style=flat-square)
+
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
 ## Values
@@ -152,6 +154,10 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | parabolDeployment.env.mailSmtpUseTls | string | `"1"` |  |
 | parabolDeployment.env.mailSmtpUser | string | `"key_MAIL_SMTP_USER"` |  |
 | parabolDeployment.env.mailsmtpCiphers | string | `"HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH"` |  |
+| parabolDeployment.env.mattermost | object | `{"enabled":true,"instanceUrl":"https://mattermost.example.com","mattermostSecret":"MATTERMOST_SECRET"}` | Mattermost Plugin integration |
+| parabolDeployment.env.mattermost.enabled | bool | `true` | Create mattermost plugin secret |
+| parabolDeployment.env.mattermost.instanceUrl | string | `"https://mattermost.example.com"` | Mattermost instance URL |
+| parabolDeployment.env.mattermost.mattermostSecret | string | `"MATTERMOST_SECRET"` | Mattermost plugin secret |
 | parabolDeployment.env.port | int | `3000` | The port on which the application will be exposed. |
 | parabolDeployment.env.protocol | string | `"https"` | The protocol used by the server ("http" or "https"). |
 | parabolDeployment.env.redisUrl | string | `"redis://redis-service.parabol.svc.cluster.local:6379"` | The URL used to access the Redis server. |
@@ -162,7 +168,7 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | services.chronos.affinity | object | `{}` |  |
 | services.chronos.annotations | object | `{}` | Pod annotations |
 | services.chronos.enabled | bool | `true` | Enable or disable Chronos |
-| services.chronos.image | string | `"ironbank/parabol/parabol:8.3.1"` | Image to use for deploying Parabol |
+| services.chronos.image | string | `"ironbank/parabol/parabol:8.17.0"` | Image to use for deploying Parabol |
 | services.chronos.livenessProbe | list | `[]` |  |
 | services.chronos.localStorage | object | `{"enabled":false,"storage":"1 Gi"}` | Enable local storage for debugging |
 | services.chronos.nodeSelector | object | `{}` | Pod spec for adding node constraints |
@@ -173,7 +179,7 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | services.chronos.tolerations | list | `[]` |  |
 | services.gqlexecutor.affinity | object | `{}` |  |
 | services.gqlexecutor.annotations | object | `{}` | Pod annotations |
-| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.3.1"` | Image to use for deploying Parabol |
+| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.17.0"` | Image to use for deploying Parabol |
 | services.gqlexecutor.livenessProbe | list | `[]` |  |
 | services.gqlexecutor.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.gqlexecutor.readinessProbe | list | `[]` |  |
@@ -195,7 +201,7 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | services.parabol.idp_host | string | `"parabol.dev.bigbang.mil"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:8.3.1"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:8.17.0"` | Image to use for deploying Parabol |
 | services.parabol.livenessProbe | list | `[]` |  |
 | services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
 | services.parabol.localStorage.awsEbs | bool | `true` |  |
@@ -247,6 +253,8 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | services.redis.runAsNonRoot | bool | `true` |  |
 | services.redis.runAsUser | int | `999` |  |
 | services.redis.tolerations | list | `[]` |  |
+
+----------------------------------------------
 
 ## Security Notes
 
