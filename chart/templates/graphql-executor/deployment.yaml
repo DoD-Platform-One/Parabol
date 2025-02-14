@@ -102,6 +102,10 @@ spec:
             value: "{{ .Values.parabolDeployment.env.globalBannerBgColor }}"
           - name: GLOBAL_BANNER_COLOR
             value: "{{ .Values.parabolDeployment.env.globalBannerColor }}"
+          - name: GIF_PROVIDER
+            value: "{{ .Values.parabolDeployment.env.gifProvider }}"
+          - name: TENOR_SECRET
+            value: "{{ .Values.parabolDeployment.env.tenorSecret }}"    
           - name: MAIL_PROVIDER
             value: "{{ .Values.parabolDeployment.env.mailProvider }}"
           - name: MAIL_FROM
