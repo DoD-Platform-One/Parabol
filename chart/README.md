@@ -1,5 +1,5 @@
 # parabol
-![Version: 2.0.0-bb.2](https://img.shields.io/badge/Version-2.0.0--bb.2-informational?style=flat-square) ![AppVersion: 8.3.1](https://img.shields.io/badge/AppVersion-8.3.1-informational?style=flat-square)
+![Version: 2.2.1-bb.2](https://img.shields.io/badge/Version-2.2.1--bb.2-informational?style=flat-square) ![AppVersion: 8.25.3](https://img.shields.io/badge/AppVersion-8.25.3-informational?style=flat-square)
 
 A Helm chart to deploy redis, postgres, and parabol containers.
 
@@ -95,12 +95,6 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 
 ## Values
 
-![Version: 2.1.1-bb.2](https://img.shields.io/badge/Version-2.1.1--bb.2-informational?style=flat-square) ![AppVersion: 8.17.0](https://img.shields.io/badge/AppVersion-8.17.0-informational?style=flat-square)
-
-A Helm chart to deploy Redis, Postgres, and Parabol containers.
-
-## Values
-
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | database.env.postgresDb | string | `"parabol"` | Name of the PostgreSQL database. |
@@ -136,6 +130,7 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | parabolDeployment.env.chronosScheduleJobs | string | `"0 */10 * * * *"` | Chronos configuration |
 | parabolDeployment.env.chronosUpdateTokens | string | `"0 0 0 1,15 * *"` |  |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - local | s3 |
+| parabolDeployment.env.gifProvider | string | `"tenor"` | gif image provider ( tenor, gifabol, empty string to hide gif search) |
 | parabolDeployment.env.globalBannerBgColor | string | `"#007a33"` |  |
 | parabolDeployment.env.globalBannerColor | string | `"#FFFFFF"` |  |
 | parabolDeployment.env.globalBannerEnabled | string | `"true"` | CUI Banner configuration |
@@ -163,12 +158,13 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | parabolDeployment.env.redisUrl | string | `"redis://redis-service.parabol.svc.cluster.local:6379"` | The URL used to access the Redis server. |
 | parabolDeployment.env.samlIssuer | string | `""` | SAML Issuer (Override default issuer client with this value) |
 | parabolDeployment.env.serverSecret | string | `"QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK"` | The secret key used to generate JWT tokens |
+| parabolDeployment.env.tenorSecret | string | `""` | Tenor API key for gif search |
 | registryCredentials.password | string | `nil` |  |
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
 | services.chronos.affinity | object | `{}` |  |
 | services.chronos.annotations | object | `{}` | Pod annotations |
 | services.chronos.enabled | bool | `true` | Enable or disable Chronos |
-| services.chronos.image | string | `"ironbank/parabol/parabol:8.17.0"` | Image to use for deploying Parabol |
+| services.chronos.image | string | `"ironbank/parabol/parabol:8.25.3"` | Image to use for deploying Parabol |
 | services.chronos.livenessProbe | list | `[]` |  |
 | services.chronos.localStorage | object | `{"enabled":false,"storage":"1 Gi"}` | Enable local storage for debugging |
 | services.chronos.nodeSelector | object | `{}` | Pod spec for adding node constraints |
@@ -179,7 +175,7 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | services.chronos.tolerations | list | `[]` |  |
 | services.gqlexecutor.affinity | object | `{}` |  |
 | services.gqlexecutor.annotations | object | `{}` | Pod annotations |
-| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.17.0"` | Image to use for deploying Parabol |
+| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.25.3"` | Image to use for deploying Parabol |
 | services.gqlexecutor.livenessProbe | list | `[]` |  |
 | services.gqlexecutor.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.gqlexecutor.readinessProbe | list | `[]` |  |
@@ -201,7 +197,7 @@ A Helm chart to deploy Redis, Postgres, and Parabol containers.
 | services.parabol.idp_host | string | `"parabol.dev.bigbang.mil"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:8.17.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:8.25.3"` | Image to use for deploying Parabol |
 | services.parabol.livenessProbe | list | `[]` |  |
 | services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
 | services.parabol.localStorage.awsEbs | bool | `true` |  |

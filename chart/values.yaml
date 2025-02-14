@@ -71,7 +71,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.17.0
+    image: ironbank/parabol/parabol:8.25.3
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -174,7 +174,7 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.17.0
+    image: ironbank/parabol/parabol:8.25.3
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -203,7 +203,7 @@ services:
       enabled: false
       storage: 1 Gi
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.17.0
+    image: ironbank/parabol/parabol:8.25.3
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -307,6 +307,12 @@ parabolDeployment:
 
     # -- SAML Issuer (Override default issuer client with this value)
     samlIssuer: ""
+    
+    # -- gif image provider ( tenor, gifabol, empty string to hide gif search)
+    gifProvider: 'tenor'
+    
+    # -- Tenor API key for gif search
+    tenorSecret: ''
 
     # -- AWS S3 configuration for static assets
     awsAccessKeyId: key_AWS_ACCESS_KEY_ID
@@ -345,6 +351,7 @@ parabolDeployment:
       instanceUrl: 'https://mattermost.example.com'
       # -- Mattermost plugin secret
       mattermostSecret: 'MATTERMOST_SECRET'
+      
 
 
 monitoring:
