@@ -122,6 +122,8 @@ spec:
             value: "{{ .Values.parabolDeployment.env.mailSmtpUseTls }}"
           - name: MAIL_SMTP_CIPHERS
             value: "{{ .Values.parabolDeployment.env.mailsmtpCiphers }}"
+          - name: HOCUS_POCUS_PORT
+            value: "{{ .Values.parabolDeployment.env.hocusPocusPort }}"  
           - name: MATTERMOST_URL
             value: "{{ .Values.parabolDeployment.env.mattermost.instanceUrl }}"
           - name: MATTERMOST_SECRET
