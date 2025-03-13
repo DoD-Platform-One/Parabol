@@ -71,7 +71,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.25.3
+    image: ironbank/parabol/parabol:8.35.0
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -174,7 +174,7 @@ services:
 
   gqlexecutor:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.25.3
+    image: ironbank/parabol/parabol:8.35.0
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -203,7 +203,7 @@ services:
       enabled: false
       storage: 1 Gi
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.25.3
+    image: ironbank/parabol/parabol:8.35.0
     # -- Determines if there is a default IDP configure change to true to enable
     replicas: 1
     # -- Container resource requests and limits
@@ -265,6 +265,9 @@ parabolDeployment:
 
     # -- The port on which the application will be exposed.
     port: 3000
+
+    # -- Websocket port for Pages support
+    hocusPocusPort: 3003
 
     # -- The external hostname for Parabol application
     host: parabol.dev.bigbang.mil

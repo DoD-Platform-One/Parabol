@@ -119,6 +119,8 @@ spec:
             value: "{{ .Values.parabolDeployment.env.chronosScheduleJobs }}"
           - name: CHRONOS_BATCH_EMAILS
             value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"
+          - name: HOCUS_POCUS_PORT
+            value: "{{ .Values.parabolDeployment.env.hocusPocusPort }}"
           - name: POD_IP
             valueFrom:
               fieldRef:

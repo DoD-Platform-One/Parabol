@@ -8,6 +8,9 @@ spec:
   - name: webserver
     port: 3000
     targetPort: 3000
+  - name: websocket
+    port: 3003
+    targetPort: 3003
   selector:
     app.kubernetes.io/component: webserver
     app.kubernetes.io/name: parabol
