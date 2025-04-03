@@ -1,5 +1,5 @@
 # parabol
-![Version: 2.3.1-bb.2](https://img.shields.io/badge/Version-2.3.1--bb.2-informational?style=flat-square) ![AppVersion: 8.35.0](https://img.shields.io/badge/AppVersion-8.35.0-informational?style=flat-square)
+![Version: 2.3.2-bb.2](https://img.shields.io/badge/Version-2.3.2--bb.2-informational?style=flat-square) ![AppVersion: 8.38.0](https://img.shields.io/badge/AppVersion-8.38.0-informational?style=flat-square)
 
 A Helm chart to deploy redis, postgres, and parabol containers.
 
@@ -165,7 +165,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.chronos.affinity | object | `{}` |  |
 | services.chronos.annotations | object | `{}` | Pod annotations |
 | services.chronos.enabled | bool | `true` | Enable or disable Chronos |
-| services.chronos.image | string | `"ironbank/parabol/parabol:8.35.0"` | Image to use for deploying Parabol |
+| services.chronos.image | string | `"ironbank/parabol/parabol:8.38.0"` | Image to use for deploying Parabol |
 | services.chronos.livenessProbe | list | `[]` |  |
 | services.chronos.localStorage | object | `{"enabled":false,"storage":"1 Gi"}` | Enable local storage for debugging |
 | services.chronos.nodeSelector | object | `{}` | Pod spec for adding node constraints |
@@ -176,7 +176,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.chronos.tolerations | list | `[]` |  |
 | services.gqlexecutor.affinity | object | `{}` |  |
 | services.gqlexecutor.annotations | object | `{}` | Pod annotations |
-| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.35.0"` | Image to use for deploying Parabol |
+| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.38.0"` | Image to use for deploying Parabol |
 | services.gqlexecutor.livenessProbe | list | `[]` |  |
 | services.gqlexecutor.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.gqlexecutor.readinessProbe | list | `[]` |  |
@@ -198,7 +198,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.idp_host | string | `"parabol.dev.bigbang.mil"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:8.35.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:8.38.0"` | Image to use for deploying Parabol |
 | services.parabol.livenessProbe | list | `[]` |  |
 | services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
 | services.parabol.localStorage.awsEbs | bool | `true` |  |
