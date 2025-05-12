@@ -71,7 +71,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.38.0
+    image: ironbank/parabol/parabol:10.3.3
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -121,10 +121,10 @@ services:
     # -- Container resource requests and limits
     resources:
       limits:
-        memory: 2048Mi
+        memory: 3Gi
       requests:
         cpu: 1000m
-        memory: 2048Mi
+        memory: 3Gi
     # -- Pod spec for adding node constraints
     nodeSelector: {}
     affinity: {}
@@ -151,78 +151,17 @@ services:
       # -- The amount of time to check for
       periodSeconds: 10
       # -- How long before the check timesout
-      timeoutSeconds: 5
+      timeoutSeconds: 1
       # -- How many time should the check fail before restarting
       failureThreshold: 3
       # -- How many successes should the check have before ready
       successThreshold: 1
       httpGet:
         # -- Path to HTTP check
-        path: /manifest.json
+        path: /ready
         # -- Port for HTTP check
         port: 3000
-    startupProbe:
-      # -- The amount of time to check for
-      periodSeconds: 30
-      # -- How many time should the check fail before restarting
-      failureThreshold: 3
-      httpGet:
-        # -- Path to HTTP check
-        path: /manifest.json
-        # -- Port for HTTP check
-        port: 3000
-
-  gqlexecutor:
-    # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.38.0
-    # -- Determines if there is a default IDP configure change to true to enable
-    replicas: 1
-    # -- Container resource requests and limits
-    resources:
-      limits:
-        memory: 4096Mi
-      requests:
-        cpu: 1000m
-        memory: 4096Mi
-    # -- Pod spec for adding node constraints
-    nodeSelector: {}
-    affinity: {}
-    tolerations: []
-    livenessProbe: []
-    readinessProbe: []
     startupProbe: []
-    # -- Pod annotations
-    annotations: {}
-    # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
-
-  chronos:
-    # -- Enable or disable Chronos
-    enabled: true
-    # -- Enable local storage for debugging
-    localStorage:
-      enabled: false
-      storage: 1 Gi
-    # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:8.38.0
-    # -- Determines if there is a default IDP configure change to true to enable
-    replicas: 1
-    # -- Container resource requests and limits
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
-    # -- Pod spec for adding node constraints
-    nodeSelector: {}
-    affinity: {}
-    tolerations: []
-    livenessProbe: []
-    readinessProbe: []
-    startupProbe: []
-    # -- Pod annotations
-    annotations: {}
 
 database:
   env:

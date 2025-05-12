@@ -120,6 +120,16 @@ spec:
             value: "{{ .Values.parabolDeployment.env.mailSmtpUseTls }}"
           - name: MAIL_SMTP_CIPHERS
             value: "{{ .Values.parabolDeployment.env.mailsmtpCiphers }}"
+          - name: CHRONOS_AUTOPAUSE
+            value: "{{ .Values.parabolDeployment.env.chronosAutoPause }}"
+          - name: CHRONOS_UPDATE_TOKENS
+            value: "{{ .Values.parabolDeployment.env.chronosUpdateTokens }}"
+          - name: CHRONOS_PROCESS_RECURRENCE
+            value: "{{ .Values.parabolDeployment.env.chronosProcessRecurrence }}"
+          - name: CHRONOS_SCHEDULE_JOBS
+            value: "{{ .Values.parabolDeployment.env.chronosScheduleJobs }}"
+          - name: CHRONOS_BATCH_EMAILS
+            value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"  
           - name: HOCUS_POCUS_PORT
             value: "{{ .Values.parabolDeployment.env.hocusPocusPort }}"
           - name: MATTERMOST_URL

@@ -1,5 +1,5 @@
 # parabol
-![Version: 2.3.2-bb.2](https://img.shields.io/badge/Version-2.3.2--bb.2-informational?style=flat-square) ![AppVersion: 8.38.0](https://img.shields.io/badge/AppVersion-8.38.0-informational?style=flat-square)
+![Version: 3.0.0-bb.2](https://img.shields.io/badge/Version-3.0.0--bb.2-informational?style=flat-square) ![AppVersion: 10.3.3](https://img.shields.io/badge/AppVersion-10.3.3-informational?style=flat-square)
 
 A Helm chart to deploy redis, postgres, and parabol containers.
 
@@ -162,28 +162,6 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.env.tenorSecret | string | `""` | Tenor API key for gif search |
 | registryCredentials.password | string | `nil` |  |
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
-| services.chronos.affinity | object | `{}` |  |
-| services.chronos.annotations | object | `{}` | Pod annotations |
-| services.chronos.enabled | bool | `true` | Enable or disable Chronos |
-| services.chronos.image | string | `"ironbank/parabol/parabol:8.38.0"` | Image to use for deploying Parabol |
-| services.chronos.livenessProbe | list | `[]` |  |
-| services.chronos.localStorage | object | `{"enabled":false,"storage":"1 Gi"}` | Enable local storage for debugging |
-| services.chronos.nodeSelector | object | `{}` | Pod spec for adding node constraints |
-| services.chronos.readinessProbe | list | `[]` |  |
-| services.chronos.replicas | int | `1` | Determines if there is a default IDP configure change to true to enable |
-| services.chronos.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Container resource requests and limits |
-| services.chronos.startupProbe | list | `[]` |  |
-| services.chronos.tolerations | list | `[]` |  |
-| services.gqlexecutor.affinity | object | `{}` |  |
-| services.gqlexecutor.annotations | object | `{}` | Pod annotations |
-| services.gqlexecutor.image | string | `"ironbank/parabol/parabol:8.38.0"` | Image to use for deploying Parabol |
-| services.gqlexecutor.livenessProbe | list | `[]` |  |
-| services.gqlexecutor.nodeSelector | object | `{}` | Pod spec for adding node constraints |
-| services.gqlexecutor.readinessProbe | list | `[]` |  |
-| services.gqlexecutor.replicas | int | `1` | Determines if there is a default IDP configure change to true to enable |
-| services.gqlexecutor.resources | object | `{"limits":{"memory":"4096Mi"},"requests":{"cpu":"1000m","memory":"4096Mi"}}` | Container resource requests and limits |
-| services.gqlexecutor.startupProbe | list | `[]` |  |
-| services.gqlexecutor.tolerations | list | `[]` |  |
 | services.parabol.affinity | object | `{}` |  |
 | services.parabol.annotations | object | `{}` | Pod annotations |
 | services.parabol.cronjob | bool | `false` | Enable gql restart cronjob |
@@ -198,7 +176,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.idp_host | string | `"parabol.dev.bigbang.mil"` | Parabol hostname |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
-| services.parabol.image | string | `"ironbank/parabol/parabol:8.38.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:10.3.3"` | Image to use for deploying Parabol |
 | services.parabol.livenessProbe | list | `[]` |  |
 | services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
 | services.parabol.localStorage.awsEbs | bool | `true` |  |
@@ -211,18 +189,15 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.parabol.ports.external | int | `80` | Exposed port for Parabol to run external to cluster |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
 | services.parabol.readinessProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
-| services.parabol.readinessProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
+| services.parabol.readinessProbe.httpGet.path | string | `"/ready"` | Path to HTTP check |
 | services.parabol.readinessProbe.httpGet.port | int | `3000` | Port for HTTP check |
 | services.parabol.readinessProbe.initialDelaySeconds | int | `30` | Delay before checking for readiness |
 | services.parabol.readinessProbe.periodSeconds | int | `10` | The amount of time to check for |
 | services.parabol.readinessProbe.successThreshold | int | `1` | How many successes should the check have before ready |
-| services.parabol.readinessProbe.timeoutSeconds | int | `5` | How long before the check timesout |
+| services.parabol.readinessProbe.timeoutSeconds | int | `1` | How long before the check timesout |
 | services.parabol.replicas | int | `1` | Number of replicas to deploy |
-| services.parabol.resources | object | `{"limits":{"memory":"2048Mi"},"requests":{"cpu":"1000m","memory":"2048Mi"}}` | Container resource requests and limits |
-| services.parabol.startupProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
-| services.parabol.startupProbe.httpGet.path | string | `"/manifest.json"` | Path to HTTP check |
-| services.parabol.startupProbe.httpGet.port | int | `3000` | Port for HTTP check |
-| services.parabol.startupProbe.periodSeconds | int | `30` | The amount of time to check for |
+| services.parabol.resources | object | `{"limits":{"memory":"3Gi"},"requests":{"cpu":"1000m","memory":"3Gi"}}` | Container resource requests and limits |
+| services.parabol.startupProbe | list | `[]` |  |
 | services.parabol.tolerations | list | `[]` |  |
 | services.postgres.affinity | object | `{}` |  |
 | services.postgres.annotations | object | `{}` | Pod annotations |
