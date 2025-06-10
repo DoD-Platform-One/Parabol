@@ -18,6 +18,8 @@ registryCredentials:
 
 services:
   redis:
+    # -- Deploy Redis pods - Disable if using external redis instance
+    enabled: true
     # -- Image to use for deploying Redis
     image: ironbank/opensource/redis/redis6-alpine:6.2.14
     # -- Image to use for deploying Redis exporter for monitoring
@@ -71,7 +73,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:10.3.3
+    image: ironbank/parabol/parabol:10.7.2
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -242,10 +244,10 @@ parabolDeployment:
     googleCloudClientEmail: key_GOOGLE_CLOUD_CLIENT_EMAIL
 
     # -- Google Service Account Private key (optional variable for use with GCP service account credential)
-    goocleCloudPrivateKey: key_GOOGLE_CLOUD_PRIVATE_KEY
+    googleCloudPrivateKey: key_GOOGLE_CLOUD_PRIVATE_KEY
 
     # -- Google Private Key ID (optional variable for use with GCP service account credential)
-    goocleCloudPrivateKeyId: key_GOOGLE_CLOUD_PRIVATE_KEY_ID
+    googleCloudPrivateKeyId: key_GOOGLE_CLOUD_PRIVATE_KEY_ID
 
     # -- SAML Issuer (Override default issuer client with this value)
     samlIssuer: ""
