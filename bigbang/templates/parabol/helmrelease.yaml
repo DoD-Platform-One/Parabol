@@ -1,6 +1,8 @@
 {{- $pkg := "parabol" }}
-{{- $fluxSettings := merge (get .Values $pkg).flux .Values.flux -}}
-{{- if (get .Values $pkg).enabled }}
+{{- $pkgValues := get .Values $pkg | default dict }}
+{{- $fluxSettings := merge (default dict $pkgValues.flux) (default dict .Values.flux) -}}
+{{- if $pkgValues.enabled }}
+
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
@@ -8,12 +10,12 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: {{ $pkg }}
-    {{- include "commonLabels" . | nindent 4}}
+    {{- include "commonLabels" . | nindent 4 }}
 spec:
-  targetNamespace: {{ $pkg }}
+  targetNamespace: {{ default .Release.Namespace $pkg }}
   chart:
     spec:
-      chart: {{ (get .Values $pkg).git.path }}
+      chart: {{ $pkgValues.git.path | default "charts/parabol" }}
       interval: 5m
       sourceRef:
         kind: GitRepository
@@ -22,9 +24,9 @@ spec:
 
   {{- toYaml $fluxSettings | nindent 2 }}
 
-  {{- if (get .Values $pkg).postRenderers }}
+  {{- if $pkgValues.postRenderers }}
   postRenderers:
-  {{ toYaml (get .Values $pkg).postRenderers | nindent 4 }}
+{{- toYaml $pkgValues.postRenderers | nindent 4 }}
   {{- end }}
   valuesFrom:
     - name: {{ .Release.Name }}-{{ $pkg }}-values
@@ -36,15 +38,14 @@ spec:
     - name: {{ .Release.Name }}-{{ $pkg }}-values
       kind: Secret
       valuesKey: "overlays"
-   {{- if or .Values.istio.enabled .Values.monitoring.enabled }}
+  {{- if or .Values.istio.enabled .Values.monitoring.enabled }}
   dependsOn:
-    {{- if .Values.istio.enabled }}
+  {{- if .Values.istio.enabled }}
     - name: istio
       namespace: {{ .Release.Namespace }}
-    {{- end }}
-    {{- if .Values.monitoring.enabled }}
+  {{- end }}
+  {{- if .Values.monitoring.enabled }}
     - name: monitoring
       namespace: {{ .Release.Namespace }}
-    {{- end }}
-  {{- end }}   
+  {{- end }}
 {{- end }}

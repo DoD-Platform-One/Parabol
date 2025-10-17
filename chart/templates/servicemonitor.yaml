@@ -1,4 +1,4 @@
-{{- if .Values.monitoring.enabled }}
+{{- if and .Values.monitoring.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -8,13 +8,17 @@ metadata:
     prometheus: default
 spec:
   endpoints:
-  - port: metrics
-    interval: 30s
-    scrapeTimeout: 25s
+    - port: metrics
+      interval: 30s
+      scrapeTimeout: 25s
   namespaceSelector:
     matchNames:
       - parabol
   selector:
     matchLabels:
       app.kubernetes.io/part-of: parabol
-{{ end }}      
+{{- else }}
+{{- if .Values.monitoring.enabled }}
+# Skipping ServiceMonitor 'parabol-servicemonitor' because CRD 'monitoring.coreos.com/v1' is not installed
+{{- end }}
+{{- end }}

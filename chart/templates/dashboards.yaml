@@ -9,7 +9,7 @@ items:
 - apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: {{ printf "%s-%s" $pkg $dashboardName | trunc 63 | trimSuffix "-" }}
+    name: {{ (printf "%s-%s" (default "parabol" $pkg) (default "dashboard" $dashboardName)) | trunc 63 | trimSuffix "-" | lower }}
     namespace: {{ default $.Release.Namespace $.Values.monitoring.dashboards.namespace }}
     labels:
       {{- if $.Values.monitoring.dashboards.label }}
