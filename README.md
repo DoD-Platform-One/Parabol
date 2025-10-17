@@ -1,15 +1,4 @@
-# Parabol Big Bang Chart Repository
+<!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
+# parabol
 
-Parabol gives structure to your meetings to get your team talking and moving forward faster.
-
-This repository contains the charts and configuration files necessary for configuring, deploying, upgrading, or uninstalling Parabol on a Big Bang-style Kubernetes environment.
-
-## Documentaton
-To learn how to use these charts, please see
-[./chart/README.md](./chart/README.md)
-
-## See also
-   - [Parabol website](https://parabol.co)
-   - [Parabol Open-Source GitHub Repository](https://github.com/ParabolInc/parabol)
-   - [Parabol on Repo1 Iron Bank](https://repo1.dso.mil/dsop/parabol/parabol)
-  
+![Version: 3.8.0-bb.1](https://img.shields.io/badge/Version-3.8.0--bb.1-informational?style=flat-square) ![AppVersion: 10.26.7](https://img.shields.io/badge/AppVersion-10.26.7-informational?style=flat-square)

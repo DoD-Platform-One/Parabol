@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled }}
+{{- if and .Values.ingress.enabled (.Capabilities.APIVersions.Has "networking.istio.io/v1beta1") }}
   {{- if .Values.ingress.gateway.create }}
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
@@ -8,13 +8,13 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "{{ .Values.ingress.hostname }}"
-  {{ end }}
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "{{ .Values.ingress.hostname }}"
+  {{- end }}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -22,15 +22,19 @@ metadata:
   name: parabol-vs
 spec:
   hosts:
-  - "{{ .Values.ingress.hostname }}"
+    - "{{ .Values.ingress.hostname }}"
   {{- with .Values.ingress.gateways }}
-  gateways: 
+  gateways:
     {{- toYaml . | nindent 4 }}
-  {{ end }}
+  {{- end }}
   http:
-  - route:
-    - destination:
-        host: parabol-service
-        port:
-          number: {{ .Values.services.parabol.ports.internal }}
-{{ end }}          
+    - route:
+        - destination:
+            host: parabol-service
+            port:
+              number: {{ .Values.services.parabol.ports.internal }}
+{{- else }}
+{{- if .Values.ingress.enabled }}
+# Skipping Istio Gateway/VirtualService because CRD 'networking.istio.io/v1beta1' is not installed
+{{- end }}
+{{- end }}

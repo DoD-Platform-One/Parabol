@@ -17,7 +17,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: webserver
-      app.kubernetes.io/name: parabol 
+      app.kubernetes.io/name: parabol
   template:
     metadata:
       annotations:
@@ -26,24 +26,24 @@ spec:
         {{- end }}
       labels:
         app.kubernetes.io/component: webserver
-        app.kubernetes.io/name: parabol  
+        app.kubernetes.io/name: parabol
     spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: "OnRootMismatch"       
+        fsGroupChangePolicy: "OnRootMismatch"
       containers:
       - name: parabol
         command: ["/bin/sh"]
-        args: ["-c", "sleep 15s && export SERVER_ID=`../tools/index.js $(POD_IP)` && node dist/preDeploy.js && node --trace-warnings ./dist/web.js"]
+        args: ["-c", "sleep 15s && export SERVER_ID=`../tools/ip-to-server_id/index.js $(POD_IP)` && node dist/preDeploy.js && node --trace-warnings ./dist/web.js"]
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
         env:
           - name: FILE_STORE_PROVIDER
             value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
           - name: CDN_BASE_URL
-            value: "{{ .Values.parabolDeployment.env.cdnBaseUrl }}"  
+            value: "{{ .Values.parabolDeployment.env.cdnBaseUrl }}"
           - name: PORT
             value: "{{ .Values.parabolDeployment.env.port }}"
           - name: POSTGRES_DB
@@ -71,7 +71,7 @@ spec:
           - name: AUTH_GOOGLE_DISABLED
             value: "{{ .Values.parabolDeployment.env.authGooleDisabled }}"
           - name: AUTH_MICROSOFT_DISABLED
-            value: "{{ .Values.parabolDeployment.env.authMicrosoftDisabled }}"  
+            value: "{{ .Values.parabolDeployment.env.authMicrosoftDisabled }}"
           - name: AUTH_SSO_DISABLED
             value: "{{ .Values.parabolDeployment.env.authSsoDisabled }}"
           - name: IS_ENTERPRISE
@@ -91,7 +91,7 @@ spec:
           - name: AWS_SECRET_ACCESS_KEY
             value: "{{ .Values.parabolDeployment.env.awsSecretAccessKey }}"
           - name: AWS_S3_BUCKET
-            value: "{{ .Values.parabolDeployment.env.awsS3Bucket }}" 
+            value: "{{ .Values.parabolDeployment.env.awsS3Bucket }}"
           - name: GLOBAL_BANNER_ENABLED
             value: "{{ .Values.parabolDeployment.env.globalBannerEnabled }}"
           - name: GLOBAL_BANNER_TEXT
@@ -103,7 +103,7 @@ spec:
           - name: GIF_PROVIDER
             value: "{{ .Values.parabolDeployment.env.gifProvider }}"
           - name: TENOR_SECRET
-            value: "{{ .Values.parabolDeployment.env.tenorSecret }}"    
+            value: "{{ .Values.parabolDeployment.env.tenorSecret }}"
           - name: MAIL_PROVIDER
             value: "{{ .Values.parabolDeployment.env.mailProvider }}"
           - name: MAIL_FROM
@@ -129,7 +129,7 @@ spec:
           - name: CHRONOS_SCHEDULE_JOBS
             value: "{{ .Values.parabolDeployment.env.chronosScheduleJobs }}"
           - name: CHRONOS_BATCH_EMAILS
-            value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"  
+            value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"
           - name: HOCUS_POCUS_PORT
             value: "{{ .Values.parabolDeployment.env.hocusPocusPort }}"
           - name: MATTERMOST_URL
@@ -142,8 +142,8 @@ spec:
           - name: POD_IP
             valueFrom:
               fieldRef:
-                fieldPath: status.podIP      
-        {{- if .Values.services.parabol.localStorage.enabled }} 
+                fieldPath: status.podIP
+        {{- if .Values.services.parabol.localStorage.enabled }}
         volumeMounts:
           - name: parabol-data-volume
             mountPath: /home/node/parabol/self-hosted
@@ -166,8 +166,8 @@ spec:
         {{- if .Values.services.parabol.livenessProbe }}
         startupProbe:
           {{- toYaml .Values.services.parabol.startupProbe | nindent 12 }}
-        {{- end }}    
-  
+        {{- end }}
+
       {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
