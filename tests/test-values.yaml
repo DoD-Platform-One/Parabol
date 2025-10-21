@@ -95,3 +95,5 @@ monitoring:
     env:
     - name: DATA_SOURCE_NAME
       value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
+grafana:
+  enabled: true
