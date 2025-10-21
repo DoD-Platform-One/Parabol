@@ -43,9 +43,11 @@ spec:
   {{- if .Values.istio.enabled }}
     - name: istio
       namespace: {{ .Release.Namespace }}
+    - name: istio-crds
+      namespace: {{ .Release.Namespace }}
   {{- end }}
   {{- if .Values.monitoring.enabled }}
-    - name: monitoring
+    - name: grafana
       namespace: {{ .Release.Namespace }}
   {{- end }}
 {{- end }}

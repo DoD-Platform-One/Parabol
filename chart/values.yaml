@@ -73,7 +73,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:10.26.7
+    image: ironbank/parabol/parabol:10.27.7
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -134,9 +134,6 @@ services:
     # -- Pod annotations
     annotations: {}
     # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
-
-    # -- Enable gql restart cronjob
-    cronjob: false
 
     livenessProbe: []
     # initialDelaySeconds: 90
@@ -318,3 +315,5 @@ monitoring:
     # -- Postgres exporter env vars
     - name: DATA_SOURCE_NAME
       value: postgresql://postgres:parabol@localhost:5432/parabol?sslmode=disable
+grafana:
+  enabled: true

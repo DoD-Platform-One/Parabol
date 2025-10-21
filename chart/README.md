@@ -164,7 +164,6 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
 | services.parabol.affinity | object | `{}` |  |
 | services.parabol.annotations | object | `{}` | Pod annotations |
-| services.parabol.cronjob | bool | `false` | Enable gql restart cronjob |
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |

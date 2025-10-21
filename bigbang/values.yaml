@@ -33,6 +33,8 @@ fluentbit:
 # Monitoring
 monitoring:
   enabled: true
+grafana:
+  enabled: true
 
 # Other Tools
 jaeger:
