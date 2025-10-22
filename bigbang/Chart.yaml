@@ -2,5 +2,5 @@ apiVersion: v2
 name: bigbang-parabol
 description: BigBang compatible Helm chart for parabol
 type: application
-version: 3.9.0-bb.1
-appVersion: 10.27.7
+version: 3.9.0-bb.2
+appVersion: 10.28.1
