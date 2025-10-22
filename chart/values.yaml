@@ -73,7 +73,7 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:10.27.7
+    image: ironbank/parabol/parabol:10.28.1
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
