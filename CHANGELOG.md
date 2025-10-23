@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [3.9.0-bb.2] - 2020-10-22
+## [3.9.0-bb.3] - 2020-10-22
 ### Changed (https://keepachangelog.com/en/1.0.0/#how)
 - Improve CI
 - AppVersion to 10.28.1
