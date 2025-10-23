@@ -1,10 +1,10 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # bigbang-parabol
 
-![Version: 3.9.0-bb.2](https://img.shields.io/badge/Version-3.9.0--bb.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.28.1](https://img.shields.io/badge/AppVersion-10.28.1-informational?style=flat-square) <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
+![Version: 3.9.0-bb.3](https://img.shields.io/badge/Version-3.9.0--bb.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 10.28.1](https://img.shields.io/badge/AppVersion-10.28.1-informational?style=flat-square) <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.9.0-bb.2](https://img.shields.io/badge/Version-3.9.0--bb.2-informational?style=flat-square) ![AppVersion: 10.28.1](https://img.shields.io/badge/AppVersion-10.28.1-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.9.0-bb.3](https://img.shields.io/badge/Version-3.9.0--bb.3-informational?style=flat-square) ![AppVersion: 10.28.1](https://img.shields.io/badge/AppVersion-10.28.1-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -46,7 +46,7 @@ helm install parabol chart/
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
 | registryCredentials.password | string | `nil` |  |
 | services.redis.enabled | bool | `true` | Deploy Redis pods - Disable if using external redis instance |
-| services.redis.image | string | `"ironbank/opensource/redis/redis6-alpine:6.2.14"` | Image to use for deploying Redis |
+| services.redis.image | string | `"ironbank/opensource/redis/redis8:8.2.2"` | Image to use for deploying Redis |
 | services.redis.exporter | string | `"ironbank/bitnami/analytics/redis-exporter:v1.54.0"` | Image to use for deploying Redis exporter for monitoring |
 | services.redis.resources | object | `{}` | resource requests and limits |
 | services.redis.nodeSelector | object | `{}` | Pod spec for adding node constraints |

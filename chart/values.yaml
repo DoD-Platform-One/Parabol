@@ -21,7 +21,7 @@ services:
     # -- Deploy Redis pods - Disable if using external redis instance
     enabled: true
     # -- Image to use for deploying Redis
-    image: ironbank/opensource/redis/redis6-alpine:6.2.14
+    image: ironbank/opensource/redis/redis8:8.2.2
     # -- Image to use for deploying Redis exporter for monitoring
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
     # -- resource requests and limits

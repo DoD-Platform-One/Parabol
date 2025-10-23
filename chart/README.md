@@ -1,5 +1,5 @@
 # parabol
-![Version: 3.0.0-bb.2](https://img.shields.io/badge/Version-3.0.0--bb.2-informational?style=flat-square) ![AppVersion: 10.3.3](https://img.shields.io/badge/AppVersion-10.3.3-informational?style=flat-square)
+![Version: 3.0.0-bb.3](https://img.shields.io/badge/Version-3.0.0--bb.3-informational?style=flat-square) ![AppVersion: 10.3.3](https://img.shields.io/badge/AppVersion-10.3.3-informational?style=flat-square)
 
 A Helm chart to deploy redis, postgres, and parabol containers.
 
@@ -217,7 +217,7 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | services.redis.annotations | object | `{}` | Pod annotations |
 | services.redis.exporter | string | `"ironbank/bitnami/analytics/redis-exporter:v1.54.0"` | Image to use for deploying Redis exporter for monitoring |
 | services.redis.fsGroup | int | `1000` | securityContext settings |
-| services.redis.image | string | `"ironbank/opensource/redis/redis6-alpine:6.2.14"` | Image to use for deploying Redis |
+| services.redis.image | string | `"ironbank/opensource/redis/redis8:8.2.2` | Image to use for deploying Redis |
 | services.redis.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.redis.resources | object | `{}` | resource requests and limits |
 | services.redis.runAsGroup | int | `1000` |  |
