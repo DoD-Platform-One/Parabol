@@ -4,11 +4,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [3.9.0-bb.3] - 2020-10-22
+## [3.9.0] - 2025-10-23
+### Changed (https://keepachangelog.com/en/1.0.0/#how)
+- New CI pipeline
+- AppVersion to 10.29.0
+
+
+## [3.9.0-bb.3] - 2025-10-22
 ### Changed (https://keepachangelog.com/en/1.0.0/#how)
 - Improve CI
 - AppVersion to 10.28.1
 
-## [3.8.0] - 2020-10-16
+## [3.8.0] - 2025-10-16
 ### Changed (https://keepachangelog.com/en/1.0.0/#how)
 - AppVersion to 10.27.6
