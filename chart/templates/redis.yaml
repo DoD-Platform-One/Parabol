@@ -58,12 +58,12 @@ spec:
           timeoutSeconds: 5
         volumeMounts:
           - name: data
-            mountPath: /data    
+            mountPath: /data
           - name: config
             mountPath: /redis-master/redis.conf
             readOnly: true
             subPath: redis.conf
-      {{- if .Values.monitoring.enabled }}      
+      {{- if .Values.monitoring.enabled }}
       - name: redis-exporter
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.exporter }}"
         securityContext:
@@ -81,7 +81,7 @@ spec:
         ports:
           - containerPort: {{ .Values.monitoring.redis.metricsPort }}
             name: metrics
-      {{ end }}      
+      {{ end }}
       {{- with .Values.global.imageRegistry.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -114,19 +114,19 @@ kind: Service
 metadata:
   name: redis-service
   annotations:
-  labels:  
-    app.kubernetes.io/part-of: parabol   
+  labels:
+    app.kubernetes.io/part-of: parabol
 spec:
   type: ClusterIP
   ports:
   - name: redis
     port: 6379
     targetPort: 6379
-  {{- if .Values.monitoring.enabled }}   
+  {{- if .Values.monitoring.enabled }}
   - name: metrics
     port: {{ .Values.monitoring.redis.metricsPort }}
     targetPort: {{ .Values.monitoring.redis.metricsPort }}
-  {{ end }}  
+  {{ end }}
   selector:
     app: redis
 ---
@@ -136,7 +136,8 @@ metadata:
   name: redis-config
 data:
   redis-config: |
+    protected-mode no
+    bind 0.0.0.0
     appendonly no
-    save ""   
-{{ end }} 
-
+    save ""
+{{ end }}

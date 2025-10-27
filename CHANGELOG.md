@@ -4,7 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [3.9.0] - 2025-10-23
+## [3.9.1] - 2025-10-23
 ### Changed (https://keepachangelog.com/en/1.0.0/#how)
 - New CI pipeline
 - AppVersion to 10.29.0
