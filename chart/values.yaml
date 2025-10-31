@@ -276,6 +276,8 @@ parabolDeployment:
     mailSmtpPassword: 'key_MAIL_SMTP_PASSWORD'
     mailSmtpUseTls: '1' # set to '0' for false
     mailsmtpCiphers: 'HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH'
+    mailSmtpURL: ''
+    mailSmtpDebug: 'false'
 
     # -- Chronos configuration
     chronosScheduleJobs: '0 */10 * * * *'

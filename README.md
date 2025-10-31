@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.9.1](https://img.shields.io/badge/Version-3.9.1-informational?style=flat-square) ![AppVersion: 10.29.0](https://img.shields.io/badge/AppVersion-10.29.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.9.2](https://img.shields.io/badge/Version-3.9.2-informational?style=flat-square) ![AppVersion: 10.31.0](https://img.shields.io/badge/AppVersion-10.31.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -150,6 +150,8 @@ helm install parabol chart/
 | parabolDeployment.env.mailSmtpPassword | string | `"key_MAIL_SMTP_PASSWORD"` |  |
 | parabolDeployment.env.mailSmtpUseTls | string | `"1"` |  |
 | parabolDeployment.env.mailsmtpCiphers | string | `"HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH"` |  |
+| parabolDeployment.env.mailSmtpURL | string | `""` |  |
+| parabolDeployment.env.mailSmtpDebug | string | `"false"` |  |
 | parabolDeployment.env.chronosScheduleJobs | string | `"0 */10 * * * *"` | Chronos configuration |
 | parabolDeployment.env.chronosUpdateTokens | string | `"0 0 0 1,15 * *"` |  |
 | parabolDeployment.env.chronosProcessRecurrence | string | `"0 */5 * * * *"` |  |
@@ -174,3 +176,4 @@ Please see the [contributing guide](./CONTRIBUTING.md) if you are interested in 
 ---
 
 _This file is programatically generated using `helm-docs` and some BigBang-specific templates. The `gluon` repository has [instructions for regenerating package READMEs](https://repo1.dso.mil/big-bang/product/packages/gluon/-/blob/master/docs/bb-package-readme.md)._
+

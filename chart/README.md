@@ -150,6 +150,8 @@ Make sure not to expose sensitive details like passwords in the `values.yaml`. I
 | parabolDeployment.env.mailSmtpUseTls | string | `"1"` |  |
 | parabolDeployment.env.mailSmtpUser | string | `"key_MAIL_SMTP_USER"` |  |
 | parabolDeployment.env.mailsmtpCiphers | string | `"HIGH:MEDIUM:!aNULL:!eNULL:@STRENGTH:!DH:!kEDH"` |  |
+| parabolDeployment.env.mailSmtpURL | string | `smtps://username:password@smtp.example.com/?pool=true&tls.rejectUnauthorized=false&tls.ignoreTLS=false` |  |
+| parabolDeployment.env.mailSmtpDebug | string | `"true"` |  |
 | parabolDeployment.env.mattermost | object | `{"enabled":true,"instanceUrl":"https://mattermost.example.com","mattermostSecret":"MATTERMOST_SECRET"}` | Mattermost Plugin integration |
 | parabolDeployment.env.mattermost.enabled | bool | `true` | Create mattermost plugin secret |
 | parabolDeployment.env.mattermost.instanceUrl | string | `"https://mattermost.example.com"` | Mattermost instance URL |

@@ -140,4 +140,5 @@ data:
     bind 0.0.0.0
     appendonly no
     save ""
+    dir /data
 {{ end }}
