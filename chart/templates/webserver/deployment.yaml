@@ -120,6 +120,10 @@ spec:
             value: "{{ .Values.parabolDeployment.env.mailSmtpUseTls }}"
           - name: MAIL_SMTP_CIPHERS
             value: "{{ .Values.parabolDeployment.env.mailsmtpCiphers }}"
+          - name: MAIL_SMTP_URL
+            value: "{{ .Values.parabolDeployment.env.mailSmtpURL }}"
+          - name: MAIL_SMTP_DEBUG
+            value: "{{ .Values.parabolDeployment.env.mailSmtpDebug }}"
           - name: CHRONOS_AUTOPAUSE
             value: "{{ .Values.parabolDeployment.env.chronosAutoPause }}"
           - name: CHRONOS_UPDATE_TOKENS
