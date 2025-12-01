@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.10.0](https://img.shields.io/badge/Version-3.10.0-informational?style=flat-square) ![AppVersion: 10.34.1](https://img.shields.io/badge/AppVersion-10.34.1-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.10.1](https://img.shields.io/badge/Version-3.10.1-informational?style=flat-square) ![AppVersion: 10.34.1](https://img.shields.io/badge/AppVersion-10.34.1-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -69,7 +69,7 @@ helm install parabol chart/
 | services.postgres.affinity | object | `{}` |  |
 | services.postgres.tolerations | list | `[]` |  |
 | services.postgres.annotations | object | `{}` | Pod annotations |
-| services.parabol.image | string | `"ironbank/parabol/parabol:10.31.0"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol:10.34.1"` | Image to use for deploying Parabol |
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
@@ -176,4 +176,3 @@ Please see the [contributing guide](./CONTRIBUTING.md) if you are interested in 
 ---
 
 _This file is programatically generated using `helm-docs` and some BigBang-specific templates. The `gluon` repository has [instructions for regenerating package READMEs](https://repo1.dso.mil/big-bang/product/packages/gluon/-/blob/master/docs/bb-package-readme.md)._
-
