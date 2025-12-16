@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.10.1](https://img.shields.io/badge/Version-3.10.1-informational?style=flat-square) ![AppVersion: 10.34.1](https://img.shields.io/badge/AppVersion-10.34.1-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.10.2](https://img.shields.io/badge/Version-3.10.2-informational?style=flat-square) ![AppVersion: 11.4.0](https://img.shields.io/badge/AppVersion-11.4.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -161,6 +161,7 @@ helm install parabol chart/
 | parabolDeployment.env.mattermost.enabled | bool | `true` | Create mattermost plugin secret |
 | parabolDeployment.env.mattermost.instanceUrl | string | `"https://mattermost.example.com"` | Mattermost instance URL |
 | parabolDeployment.env.mattermost.mattermostSecret | string | `"MATTERMOST_SECRET"` | Mattermost plugin secret |
+| parabolDeployment.env.auditLogs | string | `"false"` | Audit logs configuration |
 | monitoring.enabled | bool | `true` | Enable BigBang Monitoring resources |
 | monitoring.dashboards.namespace | string | `"monitoring"` | K8s namespace where the monitoring stack is deployed |
 | monitoring.dashboards.label | string | `"grafana_dashboard"` | Grafana dashboard labels to check |
@@ -176,3 +177,4 @@ Please see the [contributing guide](./CONTRIBUTING.md) if you are interested in 
 ---
 
 _This file is programatically generated using `helm-docs` and some BigBang-specific templates. The `gluon` repository has [instructions for regenerating package READMEs](https://repo1.dso.mil/big-bang/product/packages/gluon/-/blob/master/docs/bb-package-readme.md)._
+

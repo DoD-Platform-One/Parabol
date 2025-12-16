@@ -1,6 +1,6 @@
-{{- if and .Values.ingress.enabled (.Capabilities.APIVersions.Has "networking.istio.io/v1beta1") }}
-  {{- if .Values.ingress.gateway.create }}
-apiVersion: networking.istio.io/v1beta1
+{{- if and .Values.ingress.enabled (.Capabilities.APIVersions.Has "networking.istio.io/v1") }}
+{{- if .Values.ingress.gateway.create }}
+apiVersion: networking.istio.io/v1
 kind: Gateway
 metadata:
   name: parabol-gateway
@@ -14,9 +14,9 @@ spec:
         protocol: HTTP
       hosts:
         - "{{ .Values.ingress.hostname }}"
-  {{- end }}
+{{- end }}
 ---
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1
 kind: VirtualService
 metadata:
   name: parabol-vs
