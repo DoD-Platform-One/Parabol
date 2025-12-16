@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.10.2](https://img.shields.io/badge/Version-3.10.2-informational?style=flat-square) ![AppVersion: 11.4.0](https://img.shields.io/badge/AppVersion-11.4.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.11.0](https://img.shields.io/badge/Version-3.11.0-informational?style=flat-square) ![AppVersion: 11.4.0](https://img.shields.io/badge/AppVersion-11.4.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -43,7 +43,8 @@ helm install parabol chart/
 | registryCredentials.username | string | `nil` | Username / password auth container registry |
 | registryCredentials.password | string | `nil` |  |
 | services.redis.enabled | bool | `true` | Deploy Redis pods - Disable if using external redis instance |
-| services.redis.image | string | `"ironbank/opensource/redis/redis8:8.2.2"` | Image to use for deploying Redis |
+| services.redis.image | string | `"ironbank/opensource/redis/redis8"` | Image to use for deploying Redis |
+| services.redis.imageTag | string | `"8.2.2"` | Tag of the Redis image |
 | services.redis.exporter | string | `"ironbank/bitnami/analytics/redis-exporter:v1.54.0"` | Image to use for deploying Redis exporter for monitoring |
 | services.redis.resources | object | `{}` | resource requests and limits |
 | services.redis.nodeSelector | object | `{}` | Pod spec for adding node constraints |
@@ -56,7 +57,8 @@ helm install parabol chart/
 | services.redis.runAsNonRoot | bool | `true` |  |
 | services.redis.allowPrivilegeEscalation | bool | `false` |  |
 | services.postgres.enabled | bool | `true` | Deploy Postgres pods - Disable if using external postgres instance |
-| services.postgres.image | string | `"ironbank/opensource/postgres/postgresql:16.2"` | Image to use for deploying PostgreSql |
+| services.postgres.image | string | `"ironbank/opensource/postgres/postgresql"` | Image to use for deploying PostgreSql |
+| services.postgres.imageTag | float | `16.2` | Tag of the PostgreSql image |
 | services.postgres.exporter | string | `"ironbank/opensource/prometheus/postgres-exporter:v0.13.2"` | Image to use for deploying Postgres exporter for monitoring |
 | services.postgres.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for Postgres storage |
 | services.postgres.localStorage.volumeSize | string | `"10Gi"` | Size of PVC volume used |
@@ -69,7 +71,8 @@ helm install parabol chart/
 | services.postgres.affinity | object | `{}` |  |
 | services.postgres.tolerations | list | `[]` |  |
 | services.postgres.annotations | object | `{}` | Pod annotations |
-| services.parabol.image | string | `"ironbank/parabol/parabol:10.34.1"` | Image to use for deploying Parabol |
+| services.parabol.image | string | `"ironbank/parabol/parabol"` | Image to use for deploying Parabol |
+| services.parabol.version | string | `""` | Custom version of the Parabol container image -  defaults to AppVersion |
 | services.parabol.defaultIDP | bool | `false` | Determines if there is a default IDP configure change to true to enable |
 | services.parabol.idp_stub | string | `"bigbang"` | This is the unique ID for the SAML entry in DB |
 | services.parabol.idp_url | string | `"https://fqdn.to.idp.dev.bigbang.mil"` | IDP URL from SAML SP |
@@ -91,6 +94,8 @@ helm install parabol chart/
 | services.parabol.localStorage.accessModes[0] | string | `"ReadWriteMany"` |  |
 | services.parabol.localStorage.driver | string | `"efs.csi.aws.com"` | CSI Driver |
 | services.parabol.localStorage.efsId | string | `"example"` |  |
+| services.parabol.extraVolumes | list | `[]` | Extra volumes to add to all Parabol pods |
+| services.parabol.extraVolumeMounts | list | `[]` |  |
 | services.parabol.resources | object | `{"limits":{"memory":"3Gi"},"requests":{"cpu":"1000m","memory":"3Gi"}}` | Container resource requests and limits |
 | services.parabol.nodeSelector | object | `{}` | Pod spec for adding node constraints |
 | services.parabol.affinity | object | `{}` |  |
@@ -100,7 +105,7 @@ helm install parabol chart/
 | services.parabol.readinessProbe.initialDelaySeconds | int | `30` | Delay before checking for readiness |
 | services.parabol.readinessProbe.periodSeconds | int | `10` | The amount of time to check for |
 | services.parabol.readinessProbe.timeoutSeconds | int | `1` | How long before the check timesout |
-| services.parabol.readinessProbe.failureThreshold | int | `3` | How many time should the check fail before restarting |
+| services.parabol.readinessProbe.failureThreshold | int | `3` | How many time should the check fail before the pod is considered not ready |
 | services.parabol.readinessProbe.successThreshold | int | `1` | How many successes should the check have before ready |
 | services.parabol.readinessProbe.httpGet.path | string | `"/ready"` | Path to HTTP check |
 | services.parabol.readinessProbe.httpGet.port | int | `3000` | Port for HTTP check |
@@ -162,6 +167,8 @@ helm install parabol chart/
 | parabolDeployment.env.mattermost.instanceUrl | string | `"https://mattermost.example.com"` | Mattermost instance URL |
 | parabolDeployment.env.mattermost.mattermostSecret | string | `"MATTERMOST_SECRET"` | Mattermost plugin secret |
 | parabolDeployment.env.auditLogs | string | `"false"` | Audit logs configuration |
+| parabolDeployment.additionalEnv | list | `[]` | Environment variables for all Parabol pods |
+| parabolDeployment.envFrom | list | `[]` | Environments variables from secrets and configmaps for all Parabol pods |
 | monitoring.enabled | bool | `true` | Enable BigBang Monitoring resources |
 | monitoring.dashboards.namespace | string | `"monitoring"` | K8s namespace where the monitoring stack is deployed |
 | monitoring.dashboards.label | string | `"grafana_dashboard"` | Grafana dashboard labels to check |
@@ -177,4 +184,3 @@ Please see the [contributing guide](./CONTRIBUTING.md) if you are interested in 
 ---
 
 _This file is programatically generated using `helm-docs` and some BigBang-specific templates. The `gluon` repository has [instructions for regenerating package READMEs](https://repo1.dso.mil/big-bang/product/packages/gluon/-/blob/master/docs/bb-package-readme.md)._
-
