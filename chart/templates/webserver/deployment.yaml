@@ -12,6 +12,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: parabol-webserver
+  labels:
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/name: parabol
+    app.kubernetes.io/component: webserver
 spec:
   replicas: {{ .Values.services.parabol.replicas }}
   selector:
@@ -25,8 +29,10 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        app.kubernetes.io/component: webserver
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
         app.kubernetes.io/name: parabol
+        app.kubernetes.io/component: webserver
+        app.kubernetes.io/version: "{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
     spec:
       securityContext:
         runAsNonRoot: true
@@ -38,7 +44,7 @@ spec:
       - name: parabol
         command: ["/bin/sh"]
         args: ["-c", "sleep 15s && export SERVER_ID=`../tools/ip-to-server_id/index.js $(POD_IP)` && node dist/preDeploy.js && node --trace-warnings ./dist/web.js"]
-        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
         env:
           - name: FILE_STORE_PROVIDER
             value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
@@ -136,6 +142,8 @@ spec:
             value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"
           - name: HOCUS_POCUS_PORT
             value: "{{ .Values.parabolDeployment.env.hocusPocusPort }}"
+          - name: AUDIT_LOGS
+            value: "{{ .Values.parabolDeployment.env.auditLogs }}"
           - name: MATTERMOST_URL
             value: "{{ .Values.parabolDeployment.env.mattermost.instanceUrl }}"
           - name: MATTERMOST_SECRET
@@ -143,6 +151,7 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-mattermost-secret
                 key: secret
+                optional: true
           - name: POD_IP
             valueFrom:
               fieldRef:

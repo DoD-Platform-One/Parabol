@@ -21,7 +21,9 @@ services:
     # -- Deploy Redis pods - Disable if using external redis instance
     enabled: true
     # -- Image to use for deploying Redis
-    image: ironbank/opensource/redis/redis8:8.2.2
+    image: ironbank/opensource/redis/redis8
+    # -- Tag of the Redis image
+    imageTag: 8.2.2
     # -- Image to use for deploying Redis exporter for monitoring
     exporter: ironbank/bitnami/analytics/redis-exporter:v1.54.0
     # -- resource requests and limits
@@ -43,7 +45,9 @@ services:
     # -- Deploy Postgres pods - Disable if using external postgres instance
     enabled: true
     # -- Image to use for deploying PostgreSql
-    image: ironbank/opensource/postgres/postgresql:16.2
+    image: ironbank/opensource/postgres/postgresql
+    # -- Tag of the PostgreSql image
+    imageTag: 16.2
     # -- Image to use for deploying Postgres exporter for monitoring
     exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
     localStorage:
@@ -73,7 +77,9 @@ services:
 
   parabol:
     # -- Image to use for deploying Parabol
-    image: ironbank/parabol/parabol:10.34.1
+    image: ironbank/parabol/parabol
+    # -- Custom version of the Parabol container image -  defaults to AppVersion
+    version: ""
     # -- Determines if there is a default IDP configure change to true to enable
     defaultIDP: false
     # -- This is the unique ID for the SAML entry in DB
@@ -295,6 +301,8 @@ parabolDeployment:
       # -- Mattermost plugin secret
       mattermostSecret: 'MATTERMOST_SECRET'
 
+    # -- Audit logs configuration
+    auditLogs: 'false'
 
 
 monitoring:

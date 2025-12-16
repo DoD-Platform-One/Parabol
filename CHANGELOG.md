@@ -4,6 +4,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [3.10.2] - 2025-12-15
+### Changed
+- AppVersion to v11.4.0
+- Support Audit Logs
+
+
 ## [3.10.1] - 2025-11-21
 ### Changed (https://keepachangelog.com/en/1.0.0/#how)
 - AppVersion to 10.34.1 (update values.yaml)

@@ -4,6 +4,10 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
+  labels:
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/name: parabol
+    app.kubernetes.io/component: redis
 spec:
   replicas: 1
   serviceName: redis
@@ -14,6 +18,10 @@ spec:
     metadata:
       labels:
         app: redis
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        app.kubernetes.io/name: parabol
+        app.kubernetes.io/component: redis
+        app.kubernetes.io/version: "{{ .Values.services.redis.imageTag }}"
       annotations:
         {{- with .Values.services.redis.annotations }}
         {{- toYaml . | nindent 8 }}
@@ -27,7 +35,7 @@ spec:
         fsGroup: {{ .Values.services.redis.fsGroup }}
       containers:
       - name: redis
-        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.image }}"
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.redis.image }}:{{ .Values.services.redis.imageTag }}"
         command:
           - redis-server
           - "/redis-master/redis.conf"
