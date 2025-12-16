@@ -156,11 +156,23 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-        {{- if .Values.services.parabol.localStorage.enabled }}
+          {{- if .Values.parabolDeployment.additionalEnv }}
+          {{- toYaml .Values.parabolDeployment.additionalEnv | nindent 10 }}
+          {{- end }}
+        {{- with .Values.parabolDeployment.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumeMounts }}
         volumeMounts:
+          {{- with .Values.services.parabol.localStorage.enabled }}
           - name: parabol-data-volume
             mountPath: /home/node/parabol/self-hosted
             subPath: self-hosted
+          {{- end }}
+          {{- with .Values.services.parabol.extraVolumeMounts }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
         {{- end }}
         resources:
             {{- toYaml .Values.services.parabol.resources | nindent 12 }}
@@ -176,7 +188,7 @@ spec:
         readinessProbe:
         {{- toYaml .Values.services.parabol.readinessProbe | nindent 12 }}
         {{- end }}
-        {{- if .Values.services.parabol.livenessProbe }}
+        {{- if .Values.services.parabol.startupProbe }}
         startupProbe:
           {{- toYaml .Values.services.parabol.startupProbe | nindent 12 }}
         {{- end }}
@@ -197,9 +209,14 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.services.parabol.localStorage.enabled }}
+      {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumes }}
       volumes:
-      - name: parabol-data-volume
-        persistentVolumeClaim:
-          claimName: parabol-data-pvc
+        {{- with .Values.services.parabol.localStorage.enabled }}
+        - name: parabol-data-volume
+          persistentVolumeClaim:
+            claimName: parabol-data-pvc
+        {{- end }}
+        {{- with .Values.services.parabol.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}

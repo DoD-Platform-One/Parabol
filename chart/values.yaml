@@ -125,6 +125,11 @@ services:
       # -- CSI Driver
       driver: efs.csi.aws.com
       efsId: "example"
+    
+    # -- Extra volumes to add to all Parabol pods
+    extraVolumes: []
+    ## -- Extra volumes to mount in all Parabol pods on the main container
+    extraVolumeMounts: []
 
     # -- Container resource requests and limits
     resources:
@@ -157,7 +162,7 @@ services:
       periodSeconds: 10
       # -- How long before the check timesout
       timeoutSeconds: 1
-      # -- How many time should the check fail before restarting
+      # -- How many time should the check fail before the pod is considered not ready
       failureThreshold: 3
       # -- How many successes should the check have before ready
       successThreshold: 1
@@ -167,6 +172,14 @@ services:
         # -- Port for HTTP check
         port: 3000
     startupProbe: []
+      # initialDelaySeconds: 10
+      # periodSeconds: 10
+      # timeoutSeconds: 1
+      # failureThreshold: 6
+      # successThreshold: 1
+      # httpGet:
+      #   path: /manifest.json
+      #   port: 3000
 
 database:
   env:
@@ -303,6 +316,11 @@ parabolDeployment:
 
     # -- Audit logs configuration
     auditLogs: 'false'
+
+  # -- Environment variables for all Parabol pods
+  additionalEnv: []
+  # -- Environments variables from secrets and configmaps for all Parabol pods
+  envFrom: []
 
 
 monitoring:
