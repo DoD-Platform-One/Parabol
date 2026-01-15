@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.11.0](https://img.shields.io/badge/Version-3.11.0-informational?style=flat-square) ![AppVersion: 11.4.0](https://img.shields.io/badge/AppVersion-11.4.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.12.0](https://img.shields.io/badge/Version-3.12.0-informational?style=flat-square) ![AppVersion: 11.7.0](https://img.shields.io/badge/AppVersion-11.7.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -184,3 +184,4 @@ Please see the [contributing guide](./CONTRIBUTING.md) if you are interested in 
 ---
 
 _This file is programatically generated using `helm-docs` and some BigBang-specific templates. The `gluon` repository has [instructions for regenerating package READMEs](https://repo1.dso.mil/big-bang/product/packages/gluon/-/blob/master/docs/bb-package-readme.md)._
+

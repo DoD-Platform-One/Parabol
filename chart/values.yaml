@@ -125,7 +125,7 @@ services:
       # -- CSI Driver
       driver: efs.csi.aws.com
       efsId: "example"
-    
+
     # -- Extra volumes to add to all Parabol pods
     extraVolumes: []
     ## -- Extra volumes to mount in all Parabol pods on the main container
