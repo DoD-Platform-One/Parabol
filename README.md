@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.12.0](https://img.shields.io/badge/Version-3.12.0-informational?style=flat-square) ![AppVersion: 11.7.0](https://img.shields.io/badge/AppVersion-11.7.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 3.13.0](https://img.shields.io/badge/Version-3.13.0-informational?style=flat-square) ![AppVersion: 12.0.0](https://img.shields.io/badge/AppVersion-12.0.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -121,6 +121,7 @@ helm install parabol chart/
 | ingress.gateways | list | `["istio-system/public"]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - local | s3 |
 | parabolDeployment.env.cdnBaseUrl | string | `""` | Base url for static assets |
+| parabolDeployment.env.proxyCDN | bool | `false` | If true, the server signs and redirect calls from /build to the CDN. Required for PPMIs without public buckets |
 | parabolDeployment.env.port | int | `3000` | The port on which the application will be exposed. |
 | parabolDeployment.env.hocusPocusPort | int | `3003` | Websocket port for Pages support |
 | parabolDeployment.env.host | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |

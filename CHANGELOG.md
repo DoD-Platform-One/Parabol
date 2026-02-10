@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [3.13.0] - 2026-02-09
+### Changed
+- AppVersion to v12.0.0
+
 ## [3.12.0] - 2026-01-15
 ### Changed
 - AppVersion to v11.6.0
