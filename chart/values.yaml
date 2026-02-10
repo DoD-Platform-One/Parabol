@@ -220,6 +220,9 @@ parabolDeployment:
     # -- Base url for static assets
     cdnBaseUrl: ''
 
+    # -- If true, the server signs and redirect calls from /build to the CDN. Required for PPMIs without public buckets
+    proxyCDN: false
+
     # -- The port on which the application will be exposed.
     port: 3000
 

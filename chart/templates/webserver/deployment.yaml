@@ -50,6 +50,8 @@ spec:
             value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
           - name: CDN_BASE_URL
             value: "{{ .Values.parabolDeployment.env.cdnBaseUrl }}"
+          - name: PROXY_CDN
+            value: "{{ .Values.parabolDeployment.env.proxyCDN }}"
           - name: PORT
             value: "{{ .Values.parabolDeployment.env.port }}"
           - name: POSTGRES_DB
