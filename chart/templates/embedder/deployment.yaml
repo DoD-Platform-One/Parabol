@@ -1,0 +1,180 @@
+{{- if .Values.embedder.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parabol-embedder
+  labels:
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/name: parabol
+    app.kubernetes.io/component: embedder
+    {{- with .Values.embedder.deployment.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.embedder.deployment.replicas }}
+  strategy:
+    type: {{ .Values.embedder.deployment.strategy.type }}
+    {{- if eq .Values.embedder.deployment.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.embedder.deployment.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.embedder.deployment.strategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: embedder
+      app.kubernetes.io/name: parabol
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.embedder.deployment.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        app.kubernetes.io/name: parabol
+        app.kubernetes.io/component: embedder
+        app.kubernetes.io/version: "{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
+        {{- with .Values.embedder.deployment.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+      {{- if or .Values.embedder.deployment.serviceAccount.create .Values.embedder.deployment.serviceAccount.name }}
+      serviceAccountName: {{ .Values.embedder.deployment.serviceAccount.name | default "parabol-embedder" }}
+      {{- end }}
+      {{- if .Release.IsInstall }}
+      initContainers:
+        - name: wait-for-databases
+          image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Waiting for connectivity..."
+              
+              # 1. Wait for Postgres Port (TCP only, ignores SSL/Auth)
+              PG_PORT=${POSTGRES_PORT:-5432}
+              until nc -z -v -w5 "$POSTGRES_HOST" "$PG_PORT"; do
+                echo "Postgres ($POSTGRES_HOST:$PG_PORT) is not listening yet. Sleeping..."
+                sleep 5
+              done
+              echo "Postgres TCP port is open!"
+
+              # 2. Wait for Redis Port
+              # Parsing the host/port from the URL manually to avoid needing redis-cli
+              tmp="${REDIS_URL#*://}"   # remove protocol
+              tmp="${tmp#*@}"          # remove auth
+              tmp="${tmp%%/*}"         # remove db path
+              R_HOST="${tmp%:*}"       # extract host
+              R_PORT="${tmp##*:}"      # extract port
+              [ "$R_HOST" = "$R_PORT" ] && R_PORT=6379 # handle default port case
+
+              until nc -z -v -w5 "$R_HOST" "$R_PORT"; do
+                echo "Redis ($R_HOST:$R_PORT) is not listening yet. Sleeping..."
+                sleep 5
+              done
+              echo "Redis TCP port is open!"
+          env:
+            - name: POSTGRES_HOST
+              value: "{{ .Values.database.env.postgresHost }}"
+            - name: POSTGRES_PORT
+              value: "{{ .Values.database.env.postgresPort }}"
+            - name: REDIS_URL
+              value: "{{ .Values.parabolDeployment.env.redisUrl }}"
+      {{- end }}
+      containers:
+      - name: parabol-embedder
+        command: ["/bin/sh"]
+        args: 
+          - "-c"
+          - |
+            export SERVER_ID=`../tools/ip-to-server_id/index.js $(POD_IP)` && \
+            exec node --trace-warnings ./dist/embedder.js
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
+        env:
+          - name: POSTGRES_DB
+            value: "{{ .Values.database.env.postgresDb }}"
+          - name: POSTGRES_USER
+            value: "{{ .Values.database.env.postgresUser }}"
+          - name: POSTGRES_HOST
+            value: "{{ .Values.database.env.postgresHost }}"
+          - name: POSTGRES_PORT
+            value: "{{ .Values.database.env.postgresPort }}"
+          - name: POSTGRES_PASSWORD
+            value: "{{ .Values.database.env.postgresPassword }}"
+          - name: REDIS_URL
+            value: "{{ .Values.parabolDeployment.env.redisUrl }}"
+          - name: SERVER_SECRET
+            value: "{{ .Values.parabolDeployment.env.serverSecret }}"
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          {{- if .Values.parabolDeployment.additionalEnv }}
+          {{- toYaml .Values.parabolDeployment.additionalEnv | nindent 10 }}
+          {{- end }}
+          {{- if .Values.embedder.deployment.env }}
+          {{- toYaml .Values.embedder.deployment.env | nindent 10 }}
+          {{- end }}
+        {{- if or .Values.parabolDeployment.envFrom .Values.embedder.deployment.envFrom }}
+        envFrom:
+          {{- toYaml .Values.parabolDeployment.envFrom | nindent 10 }}
+          {{- toYaml .Values.embedder.deployment.envFrom | nindent 10 }}
+        {{- end }}
+        {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumeMounts }}
+        volumeMounts:
+          {{- with .Values.services.parabol.localStorage.enabled }}
+          - name: parabol-data-volume
+            mountPath: /home/node/parabol/self-hosted
+            subPath: self-hosted
+          {{- end }}
+          {{- with .Values.services.parabol.extraVolumeMounts }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+        {{- end }}
+        resources:
+            {{- toYaml .Values.embedder.deployment.resources | nindent 12 }}
+        {{- if .Values.embedder.deployment.livenessProbe }}
+        livenessProbe:
+          {{- toYaml .Values.embedder.deployment.livenessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.embedder.deployment.readinessProbe }}
+        readinessProbe:
+        {{- toYaml .Values.embedder.deployment.readinessProbe | nindent 12 }}
+        {{- end }}
+        {{- if .Values.embedder.deployment.startupProbe }}
+        startupProbe:
+          {{- toYaml .Values.embedder.deployment.startupProbe | nindent 12 }}
+        {{- end }}
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.embedder.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.embedder.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.embedder.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumes }}
+      volumes:
+        {{- with .Values.services.parabol.localStorage.enabled }}
+        - name: parabol-data-volume
+          persistentVolumeClaim:
+            claimName: parabol-data-pvc
+        {{- end }}
+        {{- with .Values.services.parabol.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+{{- end }}

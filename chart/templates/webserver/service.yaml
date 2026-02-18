@@ -1,3 +1,11 @@
+{{- $nginxEnabled := false }}
+{{- if .Values.parabolDeployment.nginx.enabled }}
+  {{- if eq .Values.parabolDeployment.env.fileStoreProvider "local" }}
+    {{- $nginxEnabled = true }}
+  {{- else if and (eq .Values.parabolDeployment.env.fileStoreProvider "s3") .Values.parabolDeployment.env.proxyCDN }}
+    {{- $nginxEnabled = true }}
+  {{- end }}
+{{- end }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,10 +15,12 @@ spec:
   ports:
   - name: webserver
     port: 3000
-    targetPort: 3000
-  - name: websocket
-    port: 3003
-    targetPort: 3003
+    {{- if $nginxEnabled }}
+    targetPort: nginx
+    {{- else }}
+    targetPort: webserver
+    {{- end }}
+
   selector:
     app.kubernetes.io/component: webserver
     app.kubernetes.io/name: parabol

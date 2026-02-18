@@ -1,0 +1,113 @@
+{{- if .Values.textEmbeddingsInference.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-text-embeddings-inference
+  labels:
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/name: parabol
+    app.kubernetes.io/component: text-embeddings-inference
+    {{- with .Values.textEmbeddingsInference.deployment.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.textEmbeddingsInference.deployment.replicas }}
+  strategy:
+    type: {{ .Values.textEmbeddingsInference.deployment.strategy.type }}
+    {{- if eq .Values.textEmbeddingsInference.deployment.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.textEmbeddingsInference.deployment.strategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.textEmbeddingsInference.deployment.strategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: text-embeddings-inference
+      app.kubernetes.io/name: parabol
+  template:
+    metadata:
+      annotations:
+        {{- with .Values.textEmbeddingsInference.deployment.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        app.kubernetes.io/name: parabol
+        app.kubernetes.io/component: text-embeddings-inference
+        app.kubernetes.io/version: "{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
+        {{- with .Values.textEmbeddingsInference.deployment.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+      {{- if or .Values.textEmbeddingsInference.deployment.serviceAccount.create .Values.textEmbeddingsInference.deployment.serviceAccount.name }}
+      serviceAccountName: {{ .Values.textEmbeddingsInference.deployment.serviceAccount.name | default "parabol-text-embeddings-inference" }}
+      {{- end }}
+      {{- with .Values.textEmbeddingsInference.deployment.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: text-embeddings-inference
+        {{- with .Values.textEmbeddingsInference.deployment.command }}
+        command:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.textEmbeddingsInference.deployment.args }}
+        args:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.textEmbeddingsInference.deployment.image }}:{{ .Values.textEmbeddingsInference.deployment.imageTag }}"
+        {{- with .Values.textEmbeddingsInference.deployment.env }}
+        env:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.textEmbeddingsInference.deployment.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.textEmbeddingsInference.deployment.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with .Values.textEmbeddingsInference.deployment.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+      {{- if .Values.textEmbeddingsInference.deployment.startupProbe.enabled }}
+      startupProbe:
+        {{- toYaml .Values.textEmbeddingsInference.deployment.startupProbe | nindent 12 }}
+      {{- end }}
+      {{- if .Values.textEmbeddingsInference.deployment.livenessProbe.enabled }}
+      livenessProbe:
+        {{- toYaml .Values.textEmbeddingsInference.deployment.livenessProbe | nindent 12 }}
+      {{- end }}
+      {{- if .Values.textEmbeddingsInference.deployment.readinessProbe.enabled }}
+      readinessProbe:
+        {{- toYaml .Values.textEmbeddingsInference.deployment.readinessProbe | nindent 12 }}
+      {{- end }}
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.textEmbeddingsInference.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.textEmbeddingsInference.deployment.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.textEmbeddingsInference.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.textEmbeddingsInference.deployment.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
