@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 3.13.0](https://img.shields.io/badge/Version-3.13.0-informational?style=flat-square) ![AppVersion: 12.0.0](https://img.shields.io/badge/AppVersion-12.0.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 4.0.0](https://img.shields.io/badge/Version-4.0.0-informational?style=flat-square) ![AppVersion: 12.0.0](https://img.shields.io/badge/AppVersion-12.0.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -57,9 +57,9 @@ helm install parabol chart/
 | services.redis.runAsNonRoot | bool | `true` |  |
 | services.redis.allowPrivilegeEscalation | bool | `false` |  |
 | services.postgres.enabled | bool | `true` | Deploy Postgres pods - Disable if using external postgres instance |
-| services.postgres.image | string | `"ironbank/opensource/postgres/postgresql"` | Image to use for deploying PostgreSql |
-| services.postgres.imageTag | float | `16.2` | Tag of the PostgreSql image |
-| services.postgres.exporter | string | `"ironbank/opensource/prometheus/postgres-exporter:v0.13.2"` | Image to use for deploying Postgres exporter for monitoring |
+| services.postgres.image | string | `"ironbank/opensource/pgvector/pgvector16"` | Image to use for deploying PostgreSql |
+| services.postgres.imageTag | string | `"0.8.0"` | Tag of the PostgreSql image |
+| services.postgres.exporter | string | `"ironbank/opensource/prometheus/postgres-exporter:v0.19.0"` | Image to use for deploying Postgres exporter for monitoring |
 | services.postgres.localStorage.enabled | bool | `true` | Use PersistentVolumeClaim for Postgres storage |
 | services.postgres.localStorage.volumeSize | string | `"10Gi"` | Size of PVC volume used |
 | services.postgres.backups.enabled | bool | `false` | Enable automatic backups |
@@ -82,7 +82,7 @@ helm install parabol chart/
 | services.parabol.ffInsightsToken | string | `"your_long_lived_token"` | Parabol long lived token that is generated from server secret |
 | services.parabol.ffInsightsEmailsDb | string | `"admin@parabol.dev.bigbang.mil"` | Parabol user emails that can view usuage stats/insights |
 | services.parabol.ffInsightsDomain | string | `"parabol.dev.bigbang.mil"` | Parabol domains to be whitelisted for usage stats/insights |
-| services.parabol.replicas | int | `1` | Number of replicas to deploy |
+| services.parabol.replicas | int | `1` | Number of web server replicas |
 | services.parabol.env.redisHost | string | `"redis-service"` | Parabol config to reach Redis |
 | services.parabol.env.postgresHost | string | `"postgres-service"` | Parabol config to reach Postgresql |
 | services.parabol.ports.internal | int | `3000` | Exposed port for Parabol to run internal to cluster |
@@ -101,6 +101,12 @@ helm install parabol chart/
 | services.parabol.affinity | object | `{}` |  |
 | services.parabol.tolerations | list | `[]` |  |
 | services.parabol.annotations | object | `{}` | Pod annotations |
+| services.parabol.annotations | object | `{}` |  |
+| services.parabol.serviceAccount | object | `{"annotations":{},"create":false,"extraLabels":{},"name":""}` | Service Account configuration |
+| services.parabol.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| services.parabol.serviceAccount.name | string | `""` | The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template |
+| services.parabol.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| services.parabol.serviceAccount.extraLabels | object | `{}` | Extra labels to add to the service account |
 | services.parabol.livenessProbe | list | `[]` |  |
 | services.parabol.readinessProbe.initialDelaySeconds | int | `30` | Delay before checking for readiness |
 | services.parabol.readinessProbe.periodSeconds | int | `10` | The amount of time to check for |
@@ -118,12 +124,21 @@ helm install parabol chart/
 | ingress.enabled | bool | `true` | Enables external routing to Parabol service via Istio |
 | ingress.gateway | object | `{"create":false}` | Create additional istio gateway resource if needed |
 | ingress.hostname | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |
-| ingress.gateways | list | `["istio-system/public"]` | Istio gateway that should be used for routing ex. gateways:       - istio-system/public |
+| ingress.gateways | list | `["istio-gateway/public-ingressgateway"]` | Istio gateway that should be used for routing ex. gateways:       - istio-gateway/public-ingressgateway |
+| parabolDeployment.strategy.type | string | `"RollingUpdate"` |  |
+| parabolDeployment.strategy.rollingUpdate.maxSurge | string | `"100%"` |  |
+| parabolDeployment.strategy.rollingUpdate.maxUnavailable | string | `"0%"` |  |
+| parabolDeployment.extraInitContainers | list | `[]` | Extra init containers to add to the parabol deployment |
+| parabolDeployment.extraContainers | list | `[]` | Extra containers to add to the parabol deployment |
+| parabolDeployment.nginx | object | `{"enabled":false,"existingConfigMap":"","image":{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"},"resources":{}}` | Nginx Sidecar configuration |
+| parabolDeployment.nginx.enabled | bool | `false` | Enable Nginx sidecar to serve assets |
+| parabolDeployment.nginx.image | object | `{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"}` | Image to use for Nginx |
+| parabolDeployment.nginx.resources | object | `{}` | Resource requests and limits for Nginx |
+| parabolDeployment.nginx.existingConfigMap | string | `""` | existingConfigMap: Specifies the name of an existing ConfigMap to use for Nginx configuration. If set, the chart will not create the default nginx-config ConfigMap. |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - local | s3 |
 | parabolDeployment.env.cdnBaseUrl | string | `""` | Base url for static assets |
 | parabolDeployment.env.proxyCDN | bool | `false` | If true, the server signs and redirect calls from /build to the CDN. Required for PPMIs without public buckets |
 | parabolDeployment.env.port | int | `3000` | The port on which the application will be exposed. |
-| parabolDeployment.env.hocusPocusPort | int | `3003` | Websocket port for Pages support |
 | parabolDeployment.env.host | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |
 | parabolDeployment.env.protocol | string | `"https"` | The protocol used by the server ("http" or "https"). |
 | parabolDeployment.env.serverSecret | string | `"QmtzUGVRUXJSa1hoRHJ1Z3pRRGc1TncK"` | The secret key used to generate JWT tokens |
@@ -170,6 +185,72 @@ helm install parabol chart/
 | parabolDeployment.env.auditLogs | string | `"false"` | Audit logs configuration |
 | parabolDeployment.additionalEnv | list | `[]` | Environment variables for all Parabol pods |
 | parabolDeployment.envFrom | list | `[]` | Environments variables from secrets and configmaps for all Parabol pods |
+| preDeploy.enabled | bool | `true` | Enable or disable the pre-deploy hook (job and configMap) |
+| preDeploy.job.resources | object | `{"limits":{"memory":"2Gi"},"requests":{"cpu":"500m","memory":"2Gi"}}` | Resources for the pod. Not set by default, but recommended. |
+| preDeploy.job.extraLabels | object | `{}` | Labels added to both the job and the pods of pre-deploy |
+| preDeploy.job.initContainers | list | `[]` | Init containers to add sidecar or any init task |
+| preDeploy.job.serviceAccount | object | `{"annotations":{},"create":false,"extraLabels":{},"name":""}` | Service Account configuration |
+| preDeploy.job.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| preDeploy.job.serviceAccount.name | string | `""` | The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template |
+| preDeploy.job.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| preDeploy.job.serviceAccount.extraLabels | object | `{}` | Extra labels to add to the service account |
+| embedder.enabled | bool | `false` | Enable or disable the Embedder |
+| embedder.deployment.replicaCount | int | `1` | 1 replica by default for simplicity as it is a background stateless process |
+| embedder.deployment.env | list | `[]` |  |
+| embedder.deployment.envFrom | list | `[]` |  |
+| embedder.deployment.livenessProbe | object | `{}` | No Liveness Probe by default |
+| embedder.deployment.readinessProbe | object | `{}` | No Readiness Probe by default |
+| embedder.deployment.startupProbe | object | `{}` | No Startup Probe by default |
+| embedder.deployment.resources | object | `{}` | No limitation on resources by default. It is highly recommended to set them up |
+| embedder.deployment.strategy.type | string | `"RollingUpdate"` |  |
+| embedder.deployment.strategy.rollingUpdate | object | `{"maxSurge":"100%","maxUnavailable":"0%"}` | used only if strategy type is RollingUpdate. |
+| embedder.deployment.extraLabels | object | `{}` |  |
+| embedder.deployment.serviceAccount | object | `{"annotations":{},"create":false,"extraLabels":{},"name":""}` | Service Account configuration |
+| embedder.deployment.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| embedder.deployment.serviceAccount.name | string | `""` | The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template |
+| embedder.deployment.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| embedder.deployment.serviceAccount.extraLabels | object | `{}` | Extra labels to add to the service account |
+| embedder.deployment.podAnnotations | object | `{}` |  |
+| embedder.deployment.nodeSelector | object | `{}` |  |
+| embedder.deployment.tolerations | list | `[]` |  |
+| embedder.deployment.affinity | object | `{}` | Pod affinity @default the chart will setup default anti affinity with preferredDuringSchedulingIgnoredDuringExecution, trying to avoid ending with two pods of the same component in the same node |
+| textEmbeddingsInference.enabled | bool | `false` |  |
+| textEmbeddingsInference.deployment.replicaCount | int | `1` | 1 replica by default for simplicity as it is a background stateless process |
+| textEmbeddingsInference.deployment.image | string | `"ironbank/parabol/text-embeddings-inference"` | Image to use for deploying text embeddings inference |
+| textEmbeddingsInference.deployment.imageTag | string | `"1.8.3"` | Tag of the image |
+| textEmbeddingsInference.deployment.livenessProbe | object | `{"enabled":true,"failureThreshold":3,"httpGet":{"path":"/health","port":"http","scheme":"HTTP"},"periodSeconds":30,"successThreshold":1,"timeoutSeconds":45}` | Liveness probe |
+| textEmbeddingsInference.deployment.readinessProbe | object | `{"enabled":false,"failureThreshold":3,"httpGet":{"path":"/health","port":"http","scheme":"HTTP"},"periodSeconds":30,"successThreshold":1,"timeoutSeconds":10}` | Readiness probe |
+| textEmbeddingsInference.deployment.readinessProbe.enabled | bool | `false` | Disabled by default. |
+| textEmbeddingsInference.deployment.startupProbe | object | `{"enabled":true,"failureThreshold":6,"httpGet":{"path":"/health","port":"http","scheme":"HTTP"},"initialDelaySeconds":90,"periodSeconds":30,"successThreshold":1,"timeoutSeconds":10}` | startupProbe enabled by default |
+| textEmbeddingsInference.deployment.resources | object | `{}` | No limitation on resources by default. It is highly recommended to set them up |
+| textEmbeddingsInference.deployment.strategy.type | string | `"RollingUpdate"` |  |
+| textEmbeddingsInference.deployment.strategy.rollingUpdate | object | `{"maxSurge":"100%","maxUnavailable":"0%"}` | used only if strategy type is RollingUpdate. |
+| textEmbeddingsInference.deployment.extraLabels | object | `{}` |  |
+| textEmbeddingsInference.deployment.serviceAccount | object | `{"annotations":{},"create":false,"extraLabels":{},"name":""}` | Service Account configuration |
+| textEmbeddingsInference.deployment.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
+| textEmbeddingsInference.deployment.serviceAccount.name | string | `""` | The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template |
+| textEmbeddingsInference.deployment.serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| textEmbeddingsInference.deployment.serviceAccount.extraLabels | object | `{}` | Extra labels to add to the service account |
+| textEmbeddingsInference.deployment.podAnnotations | object | `{}` |  |
+| textEmbeddingsInference.deployment.nodeSelector | object | `{}` |  |
+| textEmbeddingsInference.deployment.tolerations | list | `[]` |  |
+| textEmbeddingsInference.deployment.affinity | object | `{}` | Pod affinity @default the chart will setup default anti affinity with preferredDuringSchedulingIgnoredDuringExecution, trying to avoid ending with two pods of the same component in the same node |
+| textEmbeddingsInference.deployment.volumes | list | `[]` |  |
+| textEmbeddingsInference.deployment.volumeMounts | list | `[]` |  |
+| textEmbeddingsInference.deployment.command | list | `[]` | Command to override container entrypoint |
+| textEmbeddingsInference.deployment.args | list | `[]` | Arguments to pass to the command |
+| textEmbeddingsInference.deployment.env[0].name | string | `"MODEL_ID"` |  |
+| textEmbeddingsInference.deployment.env[0].value | string | `"Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8"` |  |
+| textEmbeddingsInference.deployment.env[1].name | string | `"AUTO_TRUNCATE"` |  |
+| textEmbeddingsInference.deployment.env[1].value | string | `"true"` |  |
+| textEmbeddingsInference.deployment.env[2].name | string | `"MAX_BATCH_TOKENS"` |  |
+| textEmbeddingsInference.deployment.env[2].value | string | `"2048"` |  |
+| textEmbeddingsInference.deployment.env[3].name | string | `"MAX_CLIENT_BATCH_SIZE"` |  |
+| textEmbeddingsInference.deployment.env[3].value | string | `"8"` |  |
+| textEmbeddingsInference.deployment.env[4].name | string | `"POOLING"` |  |
+| textEmbeddingsInference.deployment.env[4].value | string | `"mean"` |  |
+| textEmbeddingsInference.deployment.envFrom | list | `[]` |  |
+| textEmbeddingsInference.deployment.initContainers | list | `[]` |  |
 | monitoring.enabled | bool | `true` | Enable BigBang Monitoring resources |
 | monitoring.dashboards.namespace | string | `"monitoring"` | K8s namespace where the monitoring stack is deployed |
 | monitoring.dashboards.label | string | `"grafana_dashboard"` | Grafana dashboard labels to check |

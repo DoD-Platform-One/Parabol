@@ -1,0 +1,71 @@
+global:
+  imagePullSecrets:
+    - name: regcred
+services:
+  parabol:
+    replicas: 1
+    serviceAccount:
+      create: true
+      name: webserver
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/parabol-pre-deploy-role
+    localStorage:
+      enabled: true
+      volumeSize: 1Gi
+      awsEbs: false
+      storageClassName: "local-path"
+      accessModes:
+        - ReadWriteOnce
+
+preDeploy:
+  job:
+    serviceAccount:
+      create: true
+      name: predeploy
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/parabol-pre-deploy-role
+
+parabolDeployment:
+  nginx:
+    enabled: true
+  env:
+    mailProvider: debug
+  additionalEnv:
+    - name: "AI_EMBEDDING_MODELS"
+      value: "[{\"model\": \"text-embeddings-inference:Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8\", \"url\": \"http://parabol-text-embeddings-inference:3040/\", \"maxTokens\": 1024}]"
+    - name: "AI_GENERATION_MODELS"
+      value: "[{\"model\": \"text-generation-inference:TheBloke/zephyr-7b-beta\", \"url\": \"http://parabol-text-embeddings-inference:3040/\", \"maxTokens\": 512}]"
+    - name: "AI_EMBEDDER_WORKERS"
+      value: "2"
+    - name: "POSTGRES_USE_PGVECTOR"
+      value: "true"
+
+embedder:
+  enabled: true
+  deployment:
+    serviceAccount:
+      create: true
+      name: embedder
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/parabol-pre-deploy-role
+
+textEmbeddingsInference:
+  enabled: true
+  deployment:
+    serviceAccount:
+      create: true
+      name: text-embeddings-inference
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/parabol-pre-deploy-role
+
+ingress:
+  enabled: true
+  gateways:
+    - istio-gateway/public-ingressgateway
+
+networkPolicies:
+  enabled: false
+monitoring:
+  enabled: false
+grafana:
+  enabled: false

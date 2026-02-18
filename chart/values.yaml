@@ -45,11 +45,11 @@ services:
     # -- Deploy Postgres pods - Disable if using external postgres instance
     enabled: true
     # -- Image to use for deploying PostgreSql
-    image: ironbank/opensource/postgres/postgresql
+    image: ironbank/opensource/pgvector/pgvector16
     # -- Tag of the PostgreSql image
-    imageTag: 16.2
+    imageTag: 0.8.0
     # -- Image to use for deploying Postgres exporter for monitoring
-    exporter: ironbank/opensource/prometheus/postgres-exporter:v0.13.2
+    exporter: ironbank/opensource/prometheus/postgres-exporter:v0.19.0
     localStorage:
       # -- Use PersistentVolumeClaim for Postgres storage
       enabled: true
@@ -98,7 +98,7 @@ services:
     ffInsightsEmailsDb: "admin@parabol.dev.bigbang.mil"
     # -- Parabol domains to be whitelisted for usage stats/insights
     ffInsightsDomain: "parabol.dev.bigbang.mil"
-    # -- Number of replicas to deploy
+    # -- Number of web server replicas
     replicas: 1
     env:
       # -- Parabol config to reach Redis
@@ -144,6 +144,17 @@ services:
     tolerations: []
     # -- Pod annotations
     annotations: {}
+    annotations: {}
+    # -- Service Account configuration
+    serviceAccount:
+      # -- Specifies whether a service account should be created
+      create: false
+      # -- The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template
+      name: ""
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- Extra labels to add to the service account
+      extraLabels: {}
     # traffic.sidecar.istio.io/excludeOutboundPorts: "28015,6379,9121,5432,9187,8080,29015,3000"
 
     livenessProbe: []
@@ -208,11 +219,32 @@ ingress:
   hostname: parabol.dev.bigbang.mil
   # -- Istio gateway that should be used for routing
   # ex. gateways:
-  #       - istio-system/public
+  #       - istio-gateway/public-ingressgateway
   gateways:
-  - istio-system/public
+  - istio-gateway/public-ingressgateway
 
 parabolDeployment:
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: "100%"
+      maxUnavailable: "0%"
+  # -- Extra init containers to add to the parabol deployment
+  extraInitContainers: []
+  # -- Extra containers to add to the parabol deployment
+  extraContainers: []
+  # -- Nginx Sidecar configuration
+  nginx:
+    # -- Enable Nginx sidecar to serve assets
+    enabled: false
+    # -- Image to use for Nginx
+    image:
+      repository: registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine
+      tag: 1.29.5
+    # -- Resource requests and limits for Nginx
+    resources: {}
+    # -- existingConfigMap: Specifies the name of an existing ConfigMap to use for Nginx configuration. If set, the chart will not create the default nginx-config ConfigMap.
+    existingConfigMap: ""
   env:
     # -- fileStoreProvider: Specifies the provider for file storage - local | s3
     fileStoreProvider: local
@@ -225,9 +257,6 @@ parabolDeployment:
 
     # -- The port on which the application will be exposed.
     port: 3000
-
-    # -- Websocket port for Pages support
-    hocusPocusPort: 3003
 
     # -- The external hostname for Parabol application
     host: parabol.dev.bigbang.mil
@@ -325,6 +354,174 @@ parabolDeployment:
   # -- Environments variables from secrets and configmaps for all Parabol pods
   envFrom: []
 
+preDeploy:
+  # -- Enable or disable the pre-deploy hook (job and configMap)
+  enabled: true
+  job:
+    # -- Resources for the pod. Not set by default, but recommended.
+    resources:
+      limits:
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 2Gi
+    # -- Labels added to both the job and the pods of pre-deploy
+    extraLabels: {}
+    # -- Init containers to add sidecar or any init task
+    initContainers: []
+    # -- Service Account configuration
+    serviceAccount:
+      # -- Specifies whether a service account should be created
+      create: false
+      # -- The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template
+      name: ""
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- Extra labels to add to the service account
+      extraLabels: {}
+
+embedder:
+  # -- Enable or disable the Embedder
+  enabled: false
+  deployment:
+    # -- 1 replica by default for simplicity as it is a background stateless process
+    replicaCount: 1
+    env: []
+    envFrom: []
+    # -- No Liveness Probe by default
+    livenessProbe: {}
+    # -- No Readiness Probe by default
+    readinessProbe: {}
+    # -- No Startup Probe by default
+    startupProbe: {}
+    # -- No limitation on resources by default. It is highly recommended to set them up
+    resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    strategy:
+      type: "RollingUpdate"
+      # -- used only if strategy type is RollingUpdate.
+      rollingUpdate:
+        maxSurge: "100%"
+        maxUnavailable: "0%"
+    extraLabels: {}
+    # -- Service Account configuration
+    serviceAccount:
+      # -- Specifies whether a service account should be created
+      create: false
+      # -- The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template
+      name: ""
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- Extra labels to add to the service account
+      extraLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    # -- Pod affinity
+    # @default the chart will setup default anti affinity with preferredDuringSchedulingIgnoredDuringExecution,
+    # trying to avoid ending with two pods of the same component in the same node
+    affinity: {}
+
+textEmbeddingsInference:
+  enabled: false
+  deployment:
+    # -- 1 replica by default for simplicity as it is a background stateless process
+    replicaCount: 1
+    # -- Image to use for deploying text embeddings inference
+    image: ironbank/parabol/text-embeddings-inference
+    # -- Tag of the image
+    imageTag: 1.8.3
+    # -- Liveness probe
+    livenessProbe:
+      enabled: true
+      failureThreshold: 3
+      periodSeconds: 30
+      successThreshold: 1
+      timeoutSeconds: 45
+      httpGet:
+        path: /health
+        port: http
+        scheme: HTTP
+    # -- Readiness probe
+    readinessProbe:
+      # -- Disabled by default.
+      enabled: false
+      failureThreshold: 3
+      periodSeconds: 30
+      successThreshold: 1
+      timeoutSeconds: 10
+      httpGet:
+        path: /health
+        port: http
+        scheme: HTTP
+    # -- startupProbe enabled by default
+    startupProbe:
+      enabled: true
+      initialDelaySeconds: 90
+      periodSeconds: 30
+      timeoutSeconds: 10
+      failureThreshold: 6
+      successThreshold: 1
+      httpGet:
+        path: /health
+        port: http
+        scheme: HTTP
+    # -- No limitation on resources by default. It is highly recommended to set them up
+    resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    strategy:
+      type: "RollingUpdate"
+      # -- used only if strategy type is RollingUpdate.
+      rollingUpdate:
+        maxSurge: "100%"
+        maxUnavailable: "0%"
+    extraLabels: {}
+    # -- Service Account configuration
+    serviceAccount:
+      # -- Specifies whether a service account should be created
+      create: false
+      # -- The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template
+      name: ""
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- Extra labels to add to the service account
+      extraLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    # -- Pod affinity
+    # @default the chart will setup default anti affinity with preferredDuringSchedulingIgnoredDuringExecution,
+    # trying to avoid ending with two pods of the same component in the same node
+    affinity: {}
+    volumes: []
+    volumeMounts: []
+    # -- Command to override container entrypoint
+    command: []
+    # -- Arguments to pass to the command
+    args: []
+    env:
+      - name: MODEL_ID
+        value: "Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8"
+      - name: AUTO_TRUNCATE
+        value: "true"
+      - name: MAX_BATCH_TOKENS
+        value: "2048"
+      - name: MAX_CLIENT_BATCH_SIZE
+        value: "8"
+      - name: POOLING
+        value: "mean"
+    envFrom: []
+    initContainers: []
 
 monitoring:
   # -- Enable BigBang Monitoring resources

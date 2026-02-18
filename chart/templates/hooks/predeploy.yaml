@@ -1,68 +1,48 @@
-apiVersion: v1
-kind: ConfigMap
+apiVersion: batch/v1
+kind: Job
 metadata:
-  name: parabol-config
-data:
-  {{- range $key, $value := .Values.parabolDeployment.env }}
-  {{ $key }}: {{ $value | quote }}
+  name: parabol-predeploy
+  {{- if .Release.IsUpgrade }}
+  annotations:
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-weight: "-2"
+    helm.sh/hook-delete-policy: before-hook-creation
   {{- end }}
-{{- $nginxEnabled := false }}
-{{- if .Values.parabolDeployment.nginx.enabled }}
-  {{- if eq .Values.parabolDeployment.env.fileStoreProvider "local" }}
-    {{- $nginxEnabled = true }}
-  {{- else if and (eq .Values.parabolDeployment.env.fileStoreProvider "s3") .Values.parabolDeployment.env.proxyCDN }}
-    {{- $nginxEnabled = true }}
-  {{- end }}
-{{- end }}
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: parabol-webserver
   labels:
     app.kubernetes.io/instance: "{{ .Release.Name }}"
     app.kubernetes.io/name: parabol
-    app.kubernetes.io/component: webserver
-spec:
-  replicas: {{ .Values.services.parabol.replicas }}
-  strategy:
-    type: {{ .Values.parabolDeployment.strategy.type }}
-    {{- if eq .Values.parabolDeployment.strategy.type "RollingUpdate" }}
-    rollingUpdate:
-      maxSurge: {{ .Values.parabolDeployment.strategy.rollingUpdate.maxSurge }}
-      maxUnavailable: {{ .Values.parabolDeployment.strategy.rollingUpdate.maxUnavailable }}
+    app.kubernetes.io/component: predeploy
+    {{- with .Values.preDeploy.job.extraLabels }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: webserver
-      app.kubernetes.io/name: parabol
+spec:
+  backoffLimit: 0
   template:
     metadata:
-      annotations:
-        {{- with .Values.services.parabol.annotations }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- if and $nginxEnabled (not .Values.parabolDeployment.nginx.existingConfigMap) }}
-        checksum/nginx-config: {{ include (print $.Template.BasePath "/webserver/nginx-config.yaml") . | sha256sum }}
-        {{- end }}
       labels:
         app.kubernetes.io/instance: "{{ .Release.Name }}"
         app.kubernetes.io/name: parabol
-        app.kubernetes.io/component: webserver
+        app.kubernetes.io/component: predeploy
         app.kubernetes.io/version: "{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
+        {{- with .Values.preDeploy.job.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
+      restartPolicy: Never
+      {{- with .Values.global.imageRegistry.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: "OnRootMismatch"
-      {{- if or .Values.services.parabol.serviceAccount.create .Values.services.parabol.serviceAccount.name }}
-      serviceAccountName: {{ .Values.services.parabol.serviceAccount.name | default "parabol-webserver" }}
+      {{- if or .Values.preDeploy.job.serviceAccount.create .Values.preDeploy.job.serviceAccount.name }}
+      serviceAccountName: {{ .Values.preDeploy.job.serviceAccount.name | default "parabol-predeploy" }}
       {{- end }}
-      {{- if or .Release.IsInstall .Values.parabolDeployment.extraInitContainers $nginxEnabled }}
       initContainers:
-        {{- if .Release.IsInstall }}
         - name: wait-for-databases
           image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
           command: ["/bin/sh", "-c"]
@@ -99,37 +79,20 @@ spec:
               value: "{{ .Values.database.env.postgresPort }}"
             - name: REDIS_URL
               value: "{{ .Values.parabolDeployment.env.redisUrl }}"
-        {{- end }}
-        {{- with .Values.parabolDeployment.extraInitContainers }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- if $nginxEnabled }}
-        - name: copy-static-assets
-          image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
-          command: ["/bin/sh", "-c"]
-          args:
-            - "cp -r /home/node/parabol/build/* /var/www/build/"
-          volumeMounts:
-            - name: static-assets
-              mountPath: /var/www/build
-        {{- end }}
-      {{- end }}
       containers:
-      - name: parabol
+      - name: parabol-predeploy
+        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
         command: ["/bin/sh"]
         args: 
           - "-c"
           - |
             export SERVER_ID=`../tools/ip-to-server_id/index.js $(POD_IP)` && \
-            exec node --trace-warnings ./dist/web.js
-        image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
+            node dist/preDeploy.js
         env:
           - name: FILE_STORE_PROVIDER
             value: "{{ .Values.parabolDeployment.env.fileStoreProvider }}"
           - name: CDN_BASE_URL
             value: "{{ .Values.parabolDeployment.env.cdnBaseUrl }}"
-          - name: PROXY_CDN
-            value: "{{ .Values.parabolDeployment.env.proxyCDN }}"
           - name: PORT
             value: "{{ .Values.parabolDeployment.env.port }}"
           - name: POSTGRES_DB
@@ -220,8 +183,6 @@ spec:
             value: "{{ .Values.parabolDeployment.env.chronosScheduleJobs }}"
           - name: CHRONOS_BATCH_EMAILS
             value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"
-          - name: AUDIT_LOGS
-            value: "{{ .Values.parabolDeployment.env.auditLogs }}"
           - name: MATTERMOST_URL
             value: "{{ .Values.parabolDeployment.env.mattermost.instanceUrl }}"
           - name: MATTERMOST_SECRET
@@ -239,8 +200,10 @@ spec:
           {{- end }}
         {{- with .Values.parabolDeployment.envFrom }}
         envFrom:
-          {{- toYaml . | nindent 10 }}
+          {{- toYaml . | nindent 12 }}
         {{- end }}
+        resources:
+          {{- toYaml .Values.preDeploy.job.resources | nindent 12 }}
         {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumeMounts }}
         volumeMounts:
           {{- with .Values.services.parabol.localStorage.enabled }}
@@ -252,71 +215,7 @@ spec:
           {{- toYaml . | nindent 10 }}
           {{- end }}
         {{- end }}
-        resources:
-            {{- toYaml .Values.services.parabol.resources | nindent 12 }}
-        ports:
-        - name: webserver
-          containerPort: {{ .Values.parabolDeployment.env.port }}          
-          protocol: TCP
-        {{- if .Values.services.parabol.livenessProbe }}
-        livenessProbe:
-          {{- toYaml .Values.services.parabol.livenessProbe | nindent 12 }}
-        {{- end }}
-        {{- if .Values.services.parabol.readinessProbe }}
-        readinessProbe:
-        {{- toYaml .Values.services.parabol.readinessProbe | nindent 12 }}
-        {{- end }}
-        {{- if .Values.services.parabol.startupProbe }}
-        startupProbe:
-          {{- toYaml .Values.services.parabol.startupProbe | nindent 12 }}
-        {{- end }}
-      {{- if $nginxEnabled }}
-      - name: nginx-sidecar
-        image: "{{ .Values.parabolDeployment.nginx.image.repository }}:{{ .Values.parabolDeployment.nginx.image.tag }}"
-        ports:
-        - name: nginx
-          containerPort: 80
-          protocol: TCP
-        volumeMounts:
-          - name: static-assets
-            mountPath: /usr/share/nginx/html/build
-            readOnly: true
-          - name: nginx-config
-            mountPath: /etc/nginx/conf.d/default.conf
-            subPath: default.conf
-          - name: nginx-cache
-            mountPath: /var/cache/nginx
-          {{- if eq .Values.parabolDeployment.env.fileStoreProvider "local" }}
-            {{- if .Values.services.parabol.localStorage.enabled }}
-          - name: parabol-data-volume
-            mountPath: /usr/share/nginx/html/assets
-            subPath: self-hosted
-            readOnly: true
-            {{- end }}
-          {{- end }}
-        resources:
-          {{- toYaml .Values.parabolDeployment.nginx.resources | nindent 10 }}
-      {{- end }}
-      {{- with .Values.parabolDeployment.extraContainers }}
-      {{- toYaml . | nindent 6 }}
-      {{- end }}
-      {{- with .Values.global.imageRegistry.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.services.parabol.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.services.parabol.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.services.parabol.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumes $nginxEnabled }}
+      {{- if or .Values.services.parabol.localStorage.enabled .Values.services.parabol.extraVolumes }}
       volumes:
         {{- with .Values.services.parabol.localStorage.enabled }}
         - name: parabol-data-volume
@@ -325,14 +224,5 @@ spec:
         {{- end }}
         {{- with .Values.services.parabol.extraVolumes }}
         {{- toYaml . | nindent 8 }}
-        {{- end }}
-        {{- if $nginxEnabled }}
-        - name: static-assets
-          emptyDir: {}
-        - name: nginx-cache
-          emptyDir: {}
-        - name: nginx-config
-          configMap:
-            name: {{ .Values.parabolDeployment.nginx.existingConfigMap | default (printf "%s-nginx-config" .Release.Name) }}
         {{- end }}
       {{- end }}
