@@ -69,7 +69,7 @@ spec:
           args:
             - |
               echo "Waiting for connectivity..."
-              
+
               # 1. Wait for Postgres Port (TCP only, ignores SSL/Auth)
               PG_PORT=${POSTGRES_PORT:-5432}
               until nc -z -v -w5 "$POSTGRES_HOST" "$PG_PORT"; do
@@ -117,7 +117,7 @@ spec:
       containers:
       - name: parabol
         command: ["/bin/sh"]
-        args: 
+        args:
           - "-c"
           - |
             export SERVER_ID=`../tools/ip-to-server_id/index.js $(POD_IP)` && \
@@ -256,7 +256,7 @@ spec:
             {{- toYaml .Values.services.parabol.resources | nindent 12 }}
         ports:
         - name: webserver
-          containerPort: {{ .Values.parabolDeployment.env.port }}          
+          containerPort: {{ .Values.parabolDeployment.env.port }}
           protocol: TCP
         {{- if .Values.services.parabol.livenessProbe }}
         livenessProbe:
@@ -275,7 +275,7 @@ spec:
         image: "{{ .Values.parabolDeployment.nginx.image.repository }}:{{ .Values.parabolDeployment.nginx.image.tag }}"
         ports:
         - name: nginx
-          containerPort: 80
+          containerPort: {{ .Values.parabolDeployment.nginx.port | default 80 }}
           protocol: TCP
         volumeMounts:
           - name: static-assets

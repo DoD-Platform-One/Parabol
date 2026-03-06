@@ -144,7 +144,6 @@ services:
     tolerations: []
     # -- Pod annotations
     annotations: {}
-    annotations: {}
     # -- Service Account configuration
     serviceAccount:
       # -- Specifies whether a service account should be created
@@ -241,6 +240,8 @@ parabolDeployment:
     image:
       repository: registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine
       tag: 1.29.5
+    # -- Port on which the Nginx sidecar will listen.
+    port: 80
     # -- Resource requests and limits for Nginx
     resources: {}
     # -- existingConfigMap: Specifies the name of an existing ConfigMap to use for Nginx configuration. If set, the chart will not create the default nginx-config ConfigMap.

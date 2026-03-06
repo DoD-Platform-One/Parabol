@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 4.0.0](https://img.shields.io/badge/Version-4.0.0-informational?style=flat-square) ![AppVersion: 12.0.0](https://img.shields.io/badge/AppVersion-12.0.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 4.0.1](https://img.shields.io/badge/Version-4.0.1-informational?style=flat-square) ![AppVersion: 12.0.0](https://img.shields.io/badge/AppVersion-12.0.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -101,7 +101,6 @@ helm install parabol chart/
 | services.parabol.affinity | object | `{}` |  |
 | services.parabol.tolerations | list | `[]` |  |
 | services.parabol.annotations | object | `{}` | Pod annotations |
-| services.parabol.annotations | object | `{}` |  |
 | services.parabol.serviceAccount | object | `{"annotations":{},"create":false,"extraLabels":{},"name":""}` | Service Account configuration |
 | services.parabol.serviceAccount.create | bool | `false` | Specifies whether a service account should be created |
 | services.parabol.serviceAccount.name | string | `""` | The name of the service account to use. If set and create is false, it will assign that name as serviceAccountName. If not set and create is true, a name is generated using the fullname template |
@@ -130,9 +129,10 @@ helm install parabol chart/
 | parabolDeployment.strategy.rollingUpdate.maxUnavailable | string | `"0%"` |  |
 | parabolDeployment.extraInitContainers | list | `[]` | Extra init containers to add to the parabol deployment |
 | parabolDeployment.extraContainers | list | `[]` | Extra containers to add to the parabol deployment |
-| parabolDeployment.nginx | object | `{"enabled":false,"existingConfigMap":"","image":{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"},"resources":{}}` | Nginx Sidecar configuration |
+| parabolDeployment.nginx | object | `{"enabled":false,"existingConfigMap":"","image":{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"},"port":80,"resources":{}}` | Nginx Sidecar configuration |
 | parabolDeployment.nginx.enabled | bool | `false` | Enable Nginx sidecar to serve assets |
 | parabolDeployment.nginx.image | object | `{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"}` | Image to use for Nginx |
+| parabolDeployment.nginx.port | int | `80` | Port on which the Nginx sidecar will listen. |
 | parabolDeployment.nginx.resources | object | `{}` | Resource requests and limits for Nginx |
 | parabolDeployment.nginx.existingConfigMap | string | `""` | existingConfigMap: Specifies the name of an existing ConfigMap to use for Nginx configuration. If set, the chart will not create the default nginx-config ConfigMap. |
 | parabolDeployment.env.fileStoreProvider | string | `"local"` | fileStoreProvider: Specifies the provider for file storage - local | s3 |
