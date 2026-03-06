@@ -4,12 +4,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [4.0.1] - 2026-03-06
+### Changed
+- Nginx listen and container ports configurable via `values.yaml`.
+
 ## [4.0.0] - 2025-12-16
 ### Breaking changes !!!
 > **Please read the document upgrading-to-4.0.0.md for more information.**
 - Default `ingress.gateways` is set now to `["istio-gateway/public-ingressgateway"]` which is the default istio-gateway available when Big Bang is deployed.
 - PreDeploy script is running as a Helm hook (Job) on upgrades. On first install, the job is run without any hook.
-- Storage must support writing from multiple pods. PreDeploy must have access to the same storage as any of the web servers. 
+- Storage must support writing from multiple pods. PreDeploy must have access to the same storage as any of the web servers.
 - Web Server deployment stragegy is set to `RollingUpdate` with `maxSurge: 100%` and `maxUnavailable: 0%`.
 - PostgreSQL image changed to pgvector16:0.8.0 to support Parabol Search.
 
