@@ -1,11 +1,34 @@
 # Integrations
 
 ## Mattermost
+
+### Simple webhook
 Parabol leverages Mattermost's incoming webhook feature to connect a team to a channel.
 
 See https://developers.mattermost.com/integrate/webhooks/incoming/ to create an incoming webhook
 
 Add that url in Parabol team settings > integrations > mattermost > add webhook
+
+### Plugin for private instances
+If you have private Parabol and Mattermost instances, both using the same IdP, then you can use the [Parabol Mattermost Plugin](https://github.com/ParabolInc/parabol-mattermost-plugin) to get additional features:
+- notifications
+- starting meetings
+- inviting the channel
+- post reflections to open retrospectives
+
+#### Setup
+- Parabol and Mattermost share the same IdP, a user logged in to Mattermost is trusted in Parabol
+- build the [plugin](https://github.com/ParabolInc/parabol-mattermost-plugin/blob/main/README.md#building)
+- upload the plugin to Mattermost via System Console -> Plugin Management -> Upload Plugin
+- in Plugin Management -> Parabol configure the plugin
+  - Parabol URL - the base URL of your Parabol instance, including protocol, e.g. https://action.parabol.co
+  - Parabol API Token - shared secret between the plugin and Parabol
+- set the following environment variables for Parabol's predeploy step
+  - MATTERMOST_URL - the base URL of your Mattermost instance, e.g. https://mattermost.example.com
+  - MATTERMOST_SECRET - the shared secret between the plugin and Parabol
+
+#### Usage
+- in Mattermost type `/parabol help` or open the Parabol side panel
 
 ## JIRA Server
 ### Preparation

@@ -4,6 +4,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [4.0.4] - 2026-03-18
+### Changed
+- Bump verison to 13.6.6
+
+## [4.0.3] - 2026-03-17
+### Changed
+- AppVersion to v13.6.1
+
+## [4.0.2] - 2026-03-11
+### Changed
+- Fixed Nginx configurion to correctly serve web sockets.
+- Improved documnentation for Load Balancer and Assets Serving.
+- Mattemost integration: documentation on how-to set up improved. Variables removed from Web Server and defaulted to empty values. Mattemost secret not created by default.
+- Removed unused variables from PreDeploy and WebServer.
+
 ## [4.0.1] - 2026-03-06
 ### Changed
 - Nginx listen and container ports configurable via `values.yaml`.

@@ -19,6 +19,8 @@ spec:
   backoffLimit: 0
   template:
     metadata:
+      annotations:
+        proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'
       labels:
         app.kubernetes.io/instance: "{{ .Release.Name }}"
         app.kubernetes.io/name: parabol
@@ -49,10 +51,12 @@ spec:
           args:
             - |
               echo "Waiting for connectivity..."
-              
+              DEADLINE=$(( $(date +%s) + 600 ))
+
               # 1. Wait for Postgres Port (TCP only, ignores SSL/Auth)
               PG_PORT=${POSTGRES_PORT:-5432}
               until nc -z -v -w5 "$POSTGRES_HOST" "$PG_PORT"; do
+                [ "$(date +%s)" -gt "$DEADLINE" ] && echo "ERROR: Timed out after 10 minutes waiting for Postgres" && exit 1
                 echo "Postgres ($POSTGRES_HOST:$PG_PORT) is not listening yet. Sleeping..."
                 sleep 5
               done
@@ -67,11 +71,12 @@ spec:
               R_PORT="${tmp##*:}"      # extract port
               [ "$R_HOST" = "$R_PORT" ] && R_PORT=6379 # handle default port case
 
-              until nc -z -v -w5 "$R_HOST" "$R_PORT"; do
-                echo "Redis ($R_HOST:$R_PORT) is not listening yet. Sleeping..."
+              until { printf "PING\r\n"; sleep 1; } | nc -w 3 "$R_HOST" "$R_PORT" 2>/dev/null | grep -q "+PONG"; do
+                [ "$(date +%s)" -gt "$DEADLINE" ] && echo "ERROR: Timed out after 10 minutes waiting for Redis" && exit 1
+                echo "Redis ($R_HOST:$R_PORT) is not ready yet. Sleeping..."
                 sleep 5
               done
-              echo "Redis TCP port is open!"
+              echo "Redis is ready!"
           env:
             - name: POSTGRES_HOST
               value: "{{ .Values.database.env.postgresHost }}"
@@ -83,7 +88,7 @@ spec:
       - name: parabol-predeploy
         image: "{{ .Values.global.imageRegistry.host }}/{{ .Values.services.parabol.image }}:{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
         command: ["/bin/sh"]
-        args: 
+        args:
           - "-c"
           - |
             export SERVER_ID=`../tools/ip-to-server_id/index.js $(POD_IP)` && \
@@ -173,16 +178,6 @@ spec:
             value: "{{ .Values.parabolDeployment.env.mailSmtpURL }}"
           - name: MAIL_SMTP_DEBUG
             value: "{{ .Values.parabolDeployment.env.mailSmtpDebug }}"
-          - name: CHRONOS_AUTOPAUSE
-            value: "{{ .Values.parabolDeployment.env.chronosAutoPause }}"
-          - name: CHRONOS_UPDATE_TOKENS
-            value: "{{ .Values.parabolDeployment.env.chronosUpdateTokens }}"
-          - name: CHRONOS_PROCESS_RECURRENCE
-            value: "{{ .Values.parabolDeployment.env.chronosProcessRecurrence }}"
-          - name: CHRONOS_SCHEDULE_JOBS
-            value: "{{ .Values.parabolDeployment.env.chronosScheduleJobs }}"
-          - name: CHRONOS_BATCH_EMAILS
-            value: "{{ .Values.parabolDeployment.env.chronosBatchEmails }}"
           - name: MATTERMOST_URL
             value: "{{ .Values.parabolDeployment.env.mattermost.instanceUrl }}"
           - name: MATTERMOST_SECRET

@@ -223,6 +223,8 @@ ingress:
   - istio-gateway/public-ingressgateway
 
 parabolDeployment:
+  # -- terminationGracePeriodSeconds: Override the default Kubernetes pod termination grace period. Required for the graceful shutdown process.
+  terminationGracePeriodSeconds: 60
   strategy:
     type: "RollingUpdate"
     rollingUpdate:
@@ -239,7 +241,7 @@ parabolDeployment:
     # -- Image to use for Nginx
     image:
       repository: registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine
-      tag: 1.29.5
+      tag: 1.29.6
     # -- Port on which the Nginx sidecar will listen.
     port: 80
     # -- Resource requests and limits for Nginx
@@ -343,9 +345,9 @@ parabolDeployment:
       # -- Create mattermost plugin secret
       enabled: true
       # -- Mattermost instance URL
-      instanceUrl: 'https://mattermost.example.com'
+      instanceUrl: ''
       # -- Mattermost plugin secret
-      mattermostSecret: 'MATTERMOST_SECRET'
+      mattermostSecret: ''
 
     # -- Audit logs configuration
     auditLogs: 'false'

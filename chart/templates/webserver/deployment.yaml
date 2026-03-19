@@ -51,6 +51,9 @@ spec:
         app.kubernetes.io/component: webserver
         app.kubernetes.io/version: "{{ .Values.services.parabol.version | default .Chart.AppVersion }}"
     spec:
+      {{- if .Values.parabolDeployment.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.parabolDeployment.terminationGracePeriodSeconds }}
+      {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -69,10 +72,12 @@ spec:
           args:
             - |
               echo "Waiting for connectivity..."
+              DEADLINE=$(( $(date +%s) + 600 ))
 
               # 1. Wait for Postgres Port (TCP only, ignores SSL/Auth)
               PG_PORT=${POSTGRES_PORT:-5432}
               until nc -z -v -w5 "$POSTGRES_HOST" "$PG_PORT"; do
+                [ "$(date +%s)" -gt "$DEADLINE" ] && echo "ERROR: Timed out after 10 minutes waiting for Postgres" && exit 1
                 echo "Postgres ($POSTGRES_HOST:$PG_PORT) is not listening yet. Sleeping..."
                 sleep 5
               done
@@ -88,6 +93,7 @@ spec:
               [ "$R_HOST" = "$R_PORT" ] && R_PORT=6379 # handle default port case
 
               until nc -z -v -w5 "$R_HOST" "$R_PORT"; do
+                [ "$(date +%s)" -gt "$DEADLINE" ] && echo "ERROR: Timed out after 10 minutes waiting for Redis" && exit 1
                 echo "Redis ($R_HOST:$R_PORT) is not listening yet. Sleeping..."
                 sleep 5
               done
@@ -273,6 +279,15 @@ spec:
       {{- if $nginxEnabled }}
       - name: nginx-sidecar
         image: "{{ .Values.parabolDeployment.nginx.image.repository }}:{{ .Values.parabolDeployment.nginx.image.tag }}"
+        lifecycle:
+          preStop:
+            exec:
+              # Wait for the parabol container to stop before shutting down Nginx,
+              # so in-flight requests and WebSocket connections are not dropped.
+              command:
+                - /bin/sh
+                - -c
+                - until ! nc -z localhost {{ .Values.parabolDeployment.env.port }}; do sleep 1; done
         ports:
         - name: nginx
           containerPort: {{ .Values.parabolDeployment.nginx.port | default 80 }}

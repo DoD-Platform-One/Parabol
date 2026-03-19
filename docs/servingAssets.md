@@ -64,6 +64,59 @@ When `FILE_STORE_PROVIDER` is set to `s3`, Parabol will serve assets from S3, bu
 
 ### Private S3 bucket
 
+#### AWS Bucket Setup
+
+**1. Create the S3 bucket:**
+
+```bash
+aws s3api create-bucket \
+  --bucket $BUCKET_NAME \
+  --region $BUCKET_REGION
+```
+
+For regions other than `us-east-1`, add `--create-bucket-configuration LocationConstraint=$BUCKET_REGION`.
+
+**2. Block all public access:**
+
+```bash
+aws s3api put-public-access-block \
+  --bucket $BUCKET_NAME \
+  --public-access-block-configuration \
+    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+```
+
+**3. IAM permissions required:**
+
+The role/user generating signed URLs needs:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "uploads",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::$BUCKET_NAME/*"
+        },
+        {
+            "Sid": "checkExists",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": "arn:aws:s3:::$BUCKET_NAME"
+        }
+    ]
+}
+```
+
+#### Parabol Configuration
+
 If the S3 bucket is private:
 - **static** assets must be served through Parabol, as they are not available directly through S3. This might impact performance if not served through Nginx.
 - **dynamic** assets are always served through S3 using presigned urls.

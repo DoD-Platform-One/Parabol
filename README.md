@@ -1,7 +1,7 @@
 <!-- Warning: Do not manually edit this file. See notes on gluon + helm-docs at the end of this file for more information. -->
 # parabol
 
-![Version: 4.0.1](https://img.shields.io/badge/Version-4.0.1-informational?style=flat-square) ![AppVersion: 12.0.0](https://img.shields.io/badge/AppVersion-12.0.0-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
+![Version: 4.0.4](https://img.shields.io/badge/Version-4.0.4-informational?style=flat-square) ![AppVersion: 13.6.6](https://img.shields.io/badge/AppVersion-13.6.6-informational?style=flat-square) ![Maintenance Track: bb_community](https://img.shields.io/badge/Maintenance_Track-bb_community-red?style=flat-square)
 
 A Helm chart to deploy Redis, Postgres, and Parabol containers.
 
@@ -124,14 +124,15 @@ helm install parabol chart/
 | ingress.gateway | object | `{"create":false}` | Create additional istio gateway resource if needed |
 | ingress.hostname | string | `"parabol.dev.bigbang.mil"` | The external hostname for Parabol application |
 | ingress.gateways | list | `["istio-gateway/public-ingressgateway"]` | Istio gateway that should be used for routing ex. gateways:       - istio-gateway/public-ingressgateway |
+| parabolDeployment.terminationGracePeriodSeconds | int | `60` | terminationGracePeriodSeconds: Override the default Kubernetes pod termination grace period. Required for the graceful shutdown process. |
 | parabolDeployment.strategy.type | string | `"RollingUpdate"` |  |
 | parabolDeployment.strategy.rollingUpdate.maxSurge | string | `"100%"` |  |
 | parabolDeployment.strategy.rollingUpdate.maxUnavailable | string | `"0%"` |  |
 | parabolDeployment.extraInitContainers | list | `[]` | Extra init containers to add to the parabol deployment |
 | parabolDeployment.extraContainers | list | `[]` | Extra containers to add to the parabol deployment |
-| parabolDeployment.nginx | object | `{"enabled":false,"existingConfigMap":"","image":{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"},"port":80,"resources":{}}` | Nginx Sidecar configuration |
+| parabolDeployment.nginx | object | `{"enabled":false,"existingConfigMap":"","image":{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.6"},"port":80,"resources":{}}` | Nginx Sidecar configuration |
 | parabolDeployment.nginx.enabled | bool | `false` | Enable Nginx sidecar to serve assets |
-| parabolDeployment.nginx.image | object | `{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.5"}` | Image to use for Nginx |
+| parabolDeployment.nginx.image | object | `{"repository":"registry1.dso.mil/ironbank/opensource/nginx/nginx-alpine","tag":"1.29.6"}` | Image to use for Nginx |
 | parabolDeployment.nginx.port | int | `80` | Port on which the Nginx sidecar will listen. |
 | parabolDeployment.nginx.resources | object | `{}` | Resource requests and limits for Nginx |
 | parabolDeployment.nginx.existingConfigMap | string | `""` | existingConfigMap: Specifies the name of an existing ConfigMap to use for Nginx configuration. If set, the chart will not create the default nginx-config ConfigMap. |
@@ -178,10 +179,10 @@ helm install parabol chart/
 | parabolDeployment.env.chronosProcessRecurrence | string | `"0 */5 * * * *"` |  |
 | parabolDeployment.env.chronosAutoPause | string | `"0 0 5 * * *"` |  |
 | parabolDeployment.env.chronosBatchEmails | string | `"0 0 10 * * *"` |  |
-| parabolDeployment.env.mattermost | object | `{"enabled":true,"instanceUrl":"https://mattermost.example.com","mattermostSecret":"MATTERMOST_SECRET"}` | Mattermost Plugin integration |
+| parabolDeployment.env.mattermost | object | `{"enabled":true,"instanceUrl":"","mattermostSecret":""}` | Mattermost Plugin integration |
 | parabolDeployment.env.mattermost.enabled | bool | `true` | Create mattermost plugin secret |
-| parabolDeployment.env.mattermost.instanceUrl | string | `"https://mattermost.example.com"` | Mattermost instance URL |
-| parabolDeployment.env.mattermost.mattermostSecret | string | `"MATTERMOST_SECRET"` | Mattermost plugin secret |
+| parabolDeployment.env.mattermost.instanceUrl | string | `""` | Mattermost instance URL |
+| parabolDeployment.env.mattermost.mattermostSecret | string | `""` | Mattermost plugin secret |
 | parabolDeployment.env.auditLogs | string | `"false"` | Audit logs configuration |
 | parabolDeployment.additionalEnv | list | `[]` | Environment variables for all Parabol pods |
 | parabolDeployment.envFrom | list | `[]` | Environments variables from secrets and configmaps for all Parabol pods |
